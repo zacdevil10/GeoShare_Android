@@ -1,0 +1,68 @@
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    card_view:cardCornerRadius="4dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#EEEEEE"
+        android:gravity="center_horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/signup_header"
+            android:textSize="24dp"
+            android:textColor="@color/signUpText" />
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:inputType="text"
+            android:hint="@string/prompt_username"
+            android:textColor="@color/signUpText"
+            android:textColorHint="@color/signUpText" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:inputType="textPassword"
+            android:hint="@string/prompt_password"
+            android:textColor="@color/signUpText"
+            android:textColorHint="@color/signUpText" />
+
+        <EditText
+            android:id="@+id/password_confirm"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:inputType="textPassword"
+            android:hint="@string/signup_hint_password_confirm"
+            android:textColor="@color/signUpText"
+            android:textColorHint="@color/signUpText" />
+
+        <Button
+            android:id="@+id/sign_up_sign_up"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:text="@string/login_sign_up"
+            android:onClick="buttonCallback"/>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
