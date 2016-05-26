@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/maps"
+            android:checked="false"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="@string/maps" />
+
+        <item
+            android:id="@+id/friends"
+            android:checked="false"
+            android:icon="@drawable/ic_people_black_24dp"
+            android:title="@string/friends" />
+
+        <item
+            android:id="@+id/settings"
+            android:checked="false"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
+
+        <item
+            android:id="@+id/delete"
+            android:checked="false"
+            android:icon="@drawable/ic_people_black_24dp"
+            android:title="Delete user" />
+
+        <item
+            android:id="@+id/logout"
+            android:checked="false"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="@string/logout" />
+
+    </group>
+
+</menu>

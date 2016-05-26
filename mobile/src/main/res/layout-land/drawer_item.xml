@@ -8,13 +8,13 @@
     android:orientation="horizontal"
     android:minHeight="?android:attr/listPreferredItemHeightSmall">
 
-    <ImageView
+    <!--ImageView
         android:id="@+id/item_image"
         android:layout_width="24dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:textColor="#DF000000" />
+        android:textColor="#DF000000" /-->
 
     <TextView
         android:id="@+id/item_name"

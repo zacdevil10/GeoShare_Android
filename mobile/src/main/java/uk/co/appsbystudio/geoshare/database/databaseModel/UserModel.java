@@ -2,48 +2,64 @@ package uk.co.appsbystudio.geoshare.database.databaseModel;
 
 public class UserModel {
 
-    String id;
-    String password;
+    String pID;
+    String username;
+    String email;
     Integer remember;
 
     public UserModel() {}
 
-    public UserModel(String id) {
-        this.id = id;
+    public UserModel(String pID) {
+        this.pID = pID;
     }
 
-    public UserModel(String id, String password) {
-        this.id = id;
-        this.password = password;
+    public UserModel(String pID, String username) {
+        this.pID = pID;
+        this.username = username;
     }
 
-    public UserModel(String id, String password, Integer remember) {
-        this.id = id;
-        this.password = password;
+    public UserModel(String pID, String username, String email) {
+        this.pID = pID;
+        this.username = username;
+        this.email = email;
+    }
+
+    public UserModel(String pID, String username, String email, Integer remember) {
+        this.pID = pID;
+        this.username = username;
+        this.email = email;
         this.remember = remember;
     }
 
-    public void setUserId(String id) {
-        this.id = id;
+    public String getpID() {
+        return pID;
     }
 
-    public void setUserPassword(String password) {
-        this.password = password;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserRemember(Integer remember) {
-        this.remember = remember;
+    public String getEmail() {
+        return email;
     }
 
-    public String getUserId() {
-        return id;
-    }
-
-    public String getUserPassword() {
-        return password;
-    }
-
-    public Integer getUserRemember() {
+    public Integer getRemember() {
         return remember;
+    }
+
+    public void setpID(String pID) {
+        this.pID = pID;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRemember(Integer remember) {
+        this.remember = remember;
     }
 }

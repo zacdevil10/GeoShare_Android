@@ -1,8 +1,14 @@
 package uk.co.appsbystudio.geoshare.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,21 +16,54 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.marlonmafra.android.widget.EditTextPassword;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class LoginFragment extends Fragment {
 
-    private UserLoginTask mAuthTask = null;
+    //TODO: NETWORK CONNECTIVITY DETECTION
 
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "zac1999ad@gmail.com:1234", "j15t98j@gmail.com:1234"
-    };
+    private UserLoginTask mAuthTask = null;
 
     private Button loginButton;
     private EditText usernameEntry;
-    private EditText passwordEntry;
+    private EditTextPassword passwordEntry;
+
+    private RequestQueue requestQueue;
+    private JsonObjectRequest request;
+
+    boolean success = false;
+    boolean connection_status = false;
+    String mUsernameDatabase;
+
+    DatabaseHelper db;
 
     public LoginFragment() {
     }
@@ -33,18 +72,55 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        db = new DatabaseHelper(getActivity());
+
+        requestQueue = Volley.newRequestQueue(getContext());
+
         usernameEntry = (EditText) view.findViewById(R.id.username);
-        passwordEntry = (EditText) view.findViewById(R.id.password);
+        passwordEntry = (EditTextPassword) view.findViewById(R.id.password);
         loginButton = (Button) view.findViewById(R.id.log_in);
+
+        List<UserModel> userModelList = db.getAllUsers();
+        for (UserModel id: userModelList) {
+            mUsernameDatabase = id.getUsername();
+        }
+
+        if (mUsernameDatabase != null) {
+            usernameEntry.setText(mUsernameDatabase);
+            passwordEntry.requestFocus();
+        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptLogin();
+                if (isConnection_status()) {
+                    attemptLogin();
+                } else {
+                    System.out.println("No network");
+                }
             }
         });
 
         return view;
+    }
+
+    public boolean isConnection_status() {
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
+            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                connection_status = true;
+            } else {
+                networkInfo = connectivityManager.getNetworkInfo(1);
+                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                    connection_status = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return connection_status;
     }
 
     public void attemptLogin() {
@@ -58,8 +134,8 @@ public class LoginFragment extends Fragment {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            passwordEntry.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            passwordEntry.setError(getString(R.string.error_field_required));
             focusView = passwordEntry;
             cancel = true;
         }
@@ -68,30 +144,14 @@ public class LoginFragment extends Fragment {
             usernameEntry.setError(getString(R.string.error_field_required));
             focusView = usernameEntry;
             cancel = true;
-        } else if (!isUsernameValid(username)) {
-            usernameEntry.setError(getString(R.string.error_invalid_email));
-            focusView = usernameEntry;
-            cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
             mAuthTask = new UserLoginTask(username, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isUsernameValid(String username) {
-        //TODO: Replace this with your own logic
-        return username.length() > 2;
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 5;
     }
 
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
@@ -106,25 +166,52 @@ public class LoginFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+
+            HashMap<String, String> hashMap = new HashMap<String, String>();
+            hashMap.put("password", mPassword);
+
+            RequestFuture<JSONObject> future = RequestFuture.newFuture();
+
+            request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/session/", new JSONObject(hashMap), future, future){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+                    headers.put("User-agent", System.getProperty("http.agent"));
+                    return headers;
+                }
+            };
+
+            requestQueue.add(request);
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                JSONObject response = null;
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mUsername)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                while (response == null) {
+                    try {
+                        response = future.get(30, TimeUnit.SECONDS);
+                        success = true;
+                        UserModel userModel = null;
+                        try {
+                            userModel = new UserModel((String) response.get("pID"), mUsername);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        db.addUsers(userModel);
+                        db.close();
+                    } catch (InterruptedException e) {
+                        success = false;
+                        Thread.currentThread().interrupt();
+                    }
                 }
+
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                Toast.makeText(getContext(), "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
             }
 
-            // TODO: register a new account here.
-            return true;
+            return success;
         }
 
         @Override
@@ -132,18 +219,23 @@ public class LoginFragment extends Fragment {
             mAuthTask = null;
 
             if (success) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                login();
             } else {
-                passwordEntry.setError(getString(R.string.error_incorrect_password));
+                passwordEntry.setError(getString(R.string.error_incorrect_password_username));
                 passwordEntry.requestFocus();
             }
+            db.close();
         }
 
         @Override
         protected void onCancelled() {
             mAuthTask = null;
         }
+    }
+
+    public void login() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

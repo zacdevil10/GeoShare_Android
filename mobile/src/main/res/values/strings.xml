@@ -5,16 +5,13 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string name="friends">Friends</string>
-    <string name="settings">Settings</string>
-
     <!-- Strings login -->
     <string name="login_header">GeoShare</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="error_invalid_email">This username is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_incorrect_password_username">Username and password do not match!</string>
     <string name="error_field_required">This field is required</string>
     <string name="login_remember">REMEMBER ME</string>
     <string name="login_submit">LOG IN</string>
@@ -25,5 +22,13 @@
     <string name="signup_header">SIGN UP</string>
     <string name="signup_hint_password_confirm">Confirm password</string>
     <string name="signup_hint_username">Username</string>
+    <string name="prompt_email">Email</string>
+
+    <!-- main activity -->
+    <string name="maps">GeoMaps</string>
+    <string name="friends">Friends</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+    <string name="user_message">"Welcome, "</string>
 
 </resources>

@@ -3,109 +3,190 @@ package uk.co.appsbystudio.geoshare;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.arlib.floatingsearchview.FloatingSearchView;
-import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
 
+import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.appsbystudio.geoshare.nav.NavItem;
-import uk.co.appsbystudio.geoshare.nav.NavItems;
+import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.databaseModel.RecentSearchModel;
+import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.json.JSONRequests;
+import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private NavigationView navigationView;
+    private RecyclerView rightNavigationView;
     private DrawerLayout drawerLayout;
-    private ListView drawerList;
-    private ActionBarDrawerToggle drawerToggle;
-    private List<NavItem> drawerItems = new ArrayList<>();
+
+    CircleImageView profileImage;
+
+    TextView usernameTextView;
+
+    String pID;
+    String mUsername;
+
+    DatabaseHelper db;
 
     MapView mapView;
     GoogleMap map;
-    FloatingSearchView searchView;
 
-    protected static final int REQUEST_CODE = 0;
+    SearchBox searchBox;
+    boolean isSearching;
+
+    protected static final int REQUEST_CODE = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        searchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        usernameTextView = (TextView) findViewById(R.id.username);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.left_nav_view);
+        rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-                searchView.closeMenu(true);
+            public boolean onNavigationItemSelected(MenuItem item) {
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
+
+                drawerLayout.closeDrawers();
+
+                switch (item.getItemId()) {
+                    case R.id.maps:
+                        Toast.makeText(getApplicationContext(), "Maps", Toast.LENGTH_LONG).show();
+                        return true;
+                    case R.id.friends:
+                        Toast.makeText(getApplicationContext(), "Friends", Toast.LENGTH_LONG).show();
+                        return true;
+                    case R.id.settings:
+                        Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_LONG).show();
+                        return true;
+                    case R.id.delete:
+                        deleteUser();
+                        return true;
+                    case R.id.logout:
+                        logout();
+                        return true;
+                }
+                return true;
             }
+        });
 
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-                searchView.openMenu(true);
-            }
-        };
+        View header = navigationView.getHeaderView(0);
 
-        drawerLayout.setDrawerListener(drawerToggle);
+        db = new DatabaseHelper(this);
 
-        for (NavItems item : NavItems.values()) {
-            drawerItems.add(new NavItem(item.getItemNameID(), item.getItemImageID()));
+        List<UserModel> userModelList = db.getUsername();
+        for (UserModel id: userModelList) {
+            mUsername = id.getUsername();
         }
 
-        drawerList = (ListView) findViewById(R.id.left_drawer);
-        //drawerList.setAdapter(new NavAdapter(this, R.layout.drawer_item, drawerItems));
-        //drawerList.setOnItemClickListener(new DrawerItemCLickListener());
+        //profileImage = (CircleImageView) findViewById(R.id.profile_image);
 
-        searchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
-            @Override
-            public void onMenuOpened() {
-                drawerLayout.openDrawer(drawerList);
-            }
+        System.out.println(mUsername);
 
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image)).execute("http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/img/");
+
+
+        usernameTextView = (TextView) header.findViewById(R.id.username);
+        usernameTextView.setText(getString(R.string.user_message) + mUsername);
+
+        searchBox = (SearchBox) findViewById(R.id.searchbox);
+        searchBox.enableVoiceRecognition(this);
+
+        searchBox.setHint("Search...");
+        searchBox.setLogoText("Search...");
+
+        List<RecentSearchModel> recentSearchModelList = db.getSearchHistory();
+        for (RecentSearchModel term : recentSearchModelList) {
+            SearchResult option = new SearchResult(term.getTerm(), getResources().getDrawable(R.drawable.ic_history_black_48dp));
+            searchBox.addSearchable(option);
+        }
+
+        searchBox.setMenuListener(new SearchBox.MenuListener() {
             @Override
-            public void onMenuClosed() {
-                drawerLayout.closeDrawer(drawerList);
+            public void onMenuClick() {
+                drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
-        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
             @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.voiceSearch:
-                        displaySpeechDialog();
+            public void onSearchOpened() {
+                isSearching = true;
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+            @Override
+            public void onSearchClosed() {
+                isSearching = false;
+            }
+
+            @Override
+            public void onSearchTermChanged(String s) {
+                if (s.isEmpty()) {
+                    searchBox.setLogoText("Search...");
+                } else {
+                    searchBox.setLogoText(s);
                 }
             }
-        });
 
-        final AutocompleteFilter typeFilter = new AutocompleteFilter.Builder().setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS).build();
-
-        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
-            public void onSearchTextChanged(String oldQuery, String newQuery) {
+            public void onSearch(String s) {
+                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new java.util.Date());
+
+                RecentSearchModel recentSearchModel = new RecentSearchModel(null, s, currentDateTimeString);
+
+                db.addSearchHistory(recentSearchModel);
+            }
+
+            @Override
+            public void onResultClick(SearchResult searchResult) {
 
             }
         });
+
+        db.close();
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -128,21 +209,14 @@ public class MainActivity extends AppCompatActivity {
         map.animateCamera(cameraUpdate);
     }
 
-    private void displaySpeechDialog() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        startActivityForResult(intent, REQUEST_CODE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            List<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            String spokenText = result.get(0).substring(0, 1).toUpperCase() + result.get(0).substring(1);
-
-            searchView.setSearchText(spokenText);
+            ArrayList<String> matches = data
+                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            searchBox.populateEditText(matches.get(0));
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -165,19 +239,84 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(drawerList)) {
-            drawerLayout.closeDrawer(drawerList);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
 
-    public class DrawerItemCLickListener implements ListView.OnItemClickListener {
+    public void logout() {
+        List<UserModel> userModelList = db.getAllUsers();
+        for (UserModel id: userModelList) {
+            pID = id.getpID();
+            mUsername = id.getUsername();
+        }
 
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            drawerList.setItemChecked(position, true);
-            drawerLayout.closeDrawer(drawerList);
+        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/session/" + pID, pID, this);
+
+        db.clearAllUserData();
+        db.close();
+
+        loginReturn();
+    }
+
+    public void deleteUser() {
+        List<UserModel> userModelList = db.getAllUsers();
+        for (UserModel id: userModelList) {
+            pID = id.getpID();
+            mUsername = id.getUsername();
+        }
+
+        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + mUsername, pID, this);
+
+        db.clearAllUserData();
+        db.close();
+
+        loginReturn();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && isSearching) {
+            searchBox.toggleSearch();
+            isSearching = false;
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    public void loginReturn() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+
+    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        CircleImageView bmImage;
+
+        public DownloadImageTask(CircleImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
+
+
 }
