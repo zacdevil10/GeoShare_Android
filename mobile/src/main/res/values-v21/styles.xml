@@ -17,4 +17,9 @@
         <item name="android:colorAccent">#FFF</item>
     </style>
 
+    <style name="TutorialTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
 </resources>

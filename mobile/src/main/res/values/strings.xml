@@ -31,4 +31,14 @@
     <string name="logout">Logout</string>
     <string name="user_message">"Welcome, "</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_tutorial">GeoShare</string>
+    <string name="hello_world">Hello world!</string>
+
+    <array name="profilePictureOptions">
+        <item>Upload picture</item>
+        <item>Take photo</item>
+    </array>
+
 </resources>

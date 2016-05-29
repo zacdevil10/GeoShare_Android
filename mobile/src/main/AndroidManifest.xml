@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.co.appsbystudio.geoshare">
+    package="uk.co.appsbystudio.geoshare" >
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,30 +9,41 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/LoginActivity">
-
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAzvFSiVYw1oyCB94C7Wrj3NYnnWM0yLmk"/>
-
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        android:supportsRtl="true" >
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAzvFSiVYw1oyCB94C7Wrj3NYnnWM0yLmk" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/LoginActivity">
+            android:theme="@style/LoginActivity"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".MainActivity" android:theme="@style/MainTheme" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/MainTheme" />
 
         <receiver android:name=".services.NetworkStateChange" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".tutorial.TutorialActivity"
+            android:theme="@style/TutorialTheme"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

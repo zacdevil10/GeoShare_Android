@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 import uk.co.appsbystudio.geoshare.services.NetworkStateChange;
 
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainCoordinator);
 
-        loginFragment = new  LoginFragment();
+        loginFragment = new LoginFragment();
         signupFragment = new SignupFragment();
 
         getSession();

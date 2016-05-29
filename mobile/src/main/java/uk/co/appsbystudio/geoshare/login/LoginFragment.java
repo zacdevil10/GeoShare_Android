@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -44,17 +45,20 @@ import java.util.concurrent.TimeoutException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.json.JSONRequests;
+import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
 public class LoginFragment extends Fragment {
-
-    //TODO: NETWORK CONNECTIVITY DETECTION
 
     private UserLoginTask mAuthTask = null;
 
     private Button loginButton;
     private EditText usernameEntry;
     private EditTextPassword passwordEntry;
+    private CheckBox rememberMe;
+    Integer rememberInt;
 
     private RequestQueue requestQueue;
     private JsonObjectRequest request;
@@ -79,6 +83,7 @@ public class LoginFragment extends Fragment {
         usernameEntry = (EditText) view.findViewById(R.id.username);
         passwordEntry = (EditTextPassword) view.findViewById(R.id.password);
         loginButton = (Button) view.findViewById(R.id.log_in);
+        rememberMe = (CheckBox) view.findViewById(R.id.remember);
 
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
@@ -128,8 +133,15 @@ public class LoginFragment extends Fragment {
             return;
         }
 
+        if (rememberMe.isChecked()) {
+            rememberInt = 1;
+        } else {
+            rememberInt = 0;
+        }
+
         String username = usernameEntry.getText().toString();
         String password = passwordEntry.getText().toString();
+
 
         boolean cancel = false;
         View focusView = null;
@@ -149,7 +161,7 @@ public class LoginFragment extends Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            mAuthTask = new UserLoginTask(username, password);
+            mAuthTask = new UserLoginTask(username, password, rememberInt);
             mAuthTask.execute((Void) null);
         }
     }
@@ -158,10 +170,12 @@ public class LoginFragment extends Fragment {
 
         private final String mUsername;
         private final String mPassword;
+        private final Integer mRemember;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, Integer remember) {
             mUsername = email;
             mPassword = password;
+            mRemember = remember;
         }
 
         @Override
@@ -193,7 +207,7 @@ public class LoginFragment extends Fragment {
                         success = true;
                         UserModel userModel = null;
                         try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername);
+                            userModel = new UserModel((String) response.get("pID"), mUsername, null, rememberInt);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.RecentSearchModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
