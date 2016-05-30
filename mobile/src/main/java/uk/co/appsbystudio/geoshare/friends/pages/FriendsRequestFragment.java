@@ -39,18 +39,13 @@ import java.util.concurrent.TimeoutException;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 
 public class FriendsRequestFragment extends Fragment {
 
     private ListView friendRequestList;
-    private ListAdapter friendsRequestAdapter;
 
     private SwipeRefreshLayout swipeRefresh;
-
-    private FriendRequestsTask friendRequestsTask = null;
-
-    private RequestQueue requestQueue;
-    private JsonArrayRequest request;
 
     String pID;
     String mUsername;
@@ -66,8 +61,6 @@ public class FriendsRequestFragment extends Fragment {
         friendRequestList = (ListView) view.findViewById(R.id.friend_request_list);
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
-        requestQueue = Volley.newRequestQueue(getContext());
-
         db = new DatabaseHelper(getContext());
 
         List<UserModel> userModelList = db.getAllUsers();
@@ -79,94 +72,12 @@ public class FriendsRequestFragment extends Fragment {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                friendRequestsTask = new FriendRequestsTask(mUsername, pID);
-                friendRequestsTask.execute((Void) null);
+                new JSONStringRequests(getActivity(), friendRequestList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/request/", pID).execute();
             }
         });
 
-        friendRequestsTask = new FriendRequestsTask(mUsername, pID);
-        friendRequestsTask.execute((Void) null);
+        new JSONStringRequests(getActivity(), friendRequestList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/request/", pID).execute();
 
         return view;
-    }
-
-    public class FriendRequestsTask extends AsyncTask<Void, Void, ArrayList> {
-
-        private final String mUsername;
-        private final String pID;
-
-        FriendRequestsTask(String username, String pIDFinal) {
-            mUsername = username;
-            pID = pIDFinal;
-        }
-
-        @Override
-        protected ArrayList doInBackground(Void... params) {
-            RequestFuture<JSONArray> future = RequestFuture.newFuture();
-
-            final ArrayList friend_pending_username = new ArrayList<>();
-
-            request = new JsonArrayRequest("http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/request/", future, future){
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("REST_API_TOKEN", pID);
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-                    headers.put("User-agent", System.getProperty("http.agent"));
-                    return headers;
-                }
-            };
-
-            requestQueue.add(request);
-
-            try {
-                JSONArray response = null;
-
-                while (response == null) {
-                    try {
-                        response = future.get(30, TimeUnit.SECONDS);
-
-                        if (response != null) {
-                            for (int i=0;i<response.length();i++) {
-                                try {
-                                    friend_pending_username.add(response.get(i).toString());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                    } catch (InterruptedException e) {
-
-                        Thread.currentThread().interrupt();
-                    }
-                }
-
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                Toast.makeText(getContext(), "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
-            }
-
-
-            return friend_pending_username;
-        }
-
-        @Override
-        protected void onPostExecute(final ArrayList username) {
-            friendRequestsTask = null;
-
-            if (swipeRefresh.isRefreshing()) {
-                swipeRefresh.setRefreshing(false);
-            }
-
-            friendsRequestAdapter = new ArrayAdapter<String>(getActivity(), R.layout.friends_list_item, R.id.friend_name, username);
-            friendRequestList.setAdapter(friendsRequestAdapter);
-        }
-
-        @Override
-        protected void onCancelled() {
-            friendRequestsTask = null;
-        }
     }
 }
