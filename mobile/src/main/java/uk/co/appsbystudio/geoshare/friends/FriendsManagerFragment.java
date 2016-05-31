@@ -25,13 +25,12 @@ public class FriendsManagerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
         final Context context = new ContextThemeWrapper(getActivity(), R.style.test_theme);
-
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
-
         View view = layoutInflater.inflate(R.layout.fragment_friends_manager, container, false);
 
+        /* SET UP TOOLBAR */
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         TabLayout friendsTabs = (TabLayout) view.findViewById(R.id.friends_tabs);
 
@@ -46,6 +45,7 @@ public class FriendsManagerFragment extends Fragment {
         });
         toolbar.setTitle("Friends Manager");
 
+        /* TOOLBAR TABS FRAGMENT SWAPPING */
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
@@ -85,5 +85,4 @@ public class FriendsManagerFragment extends Fragment {
 
         return view;
     }
-
 }

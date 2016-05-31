@@ -27,10 +27,6 @@ import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private RecyclerView rightNavigationView;
-    private ListView footerView;
-    private ListAdapter footerListAdapter;
     private final ArrayList footerItems = new ArrayList<>();
 
     private MapsFragment mapsFragment;
@@ -47,35 +43,29 @@ public class MainActivity extends AppCompatActivity {
         footerItems.add("Settings");
         footerItems.add("Logout");
 
+        /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.left_nav_view);
-        rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
-        footerView = (ListView) findViewById(R.id.footer);
-        footerListAdapter = new ArrayAdapter<>(this, R.layout.friends_list_item, R.id.friend_name, footerItems);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.left_nav_view);
+        RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
+        ListView footerView = (ListView) findViewById(R.id.footer);
+        ListAdapter footerListAdapter = new ArrayAdapter<>(this, R.layout.friends_list_item, R.id.friend_name, footerItems);
         footerView.setAdapter(footerListAdapter);
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
-
         View header = navigationView.getHeaderView(0);
-
         CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
 
         mapsFragment = new MapsFragment();
         friendsManagerFragment = new FriendsManagerFragment();
         settingsFragment = new SettingsFragment();
 
+        /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, mapsFragment).commit();
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                } else {
-                    item.setChecked(true);
-                }
-
+                item.setChecked(true);
                 drawerLayout.closeDrawers();
 
                 switch (item.getItemId()) {
@@ -88,29 +78,21 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
-                        if (friendsManagerFragment.isAdded()) {
-                            System.out.println("Already added");
-                        } else {
-                            getSupportFragmentManager().beginTransaction().add(R.id.content_frame, friendsManagerFragment).commit();
-                        }
+                        if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().add(R.id.content_frame, friendsManagerFragment).commit();
                         return true;
                     case R.id.settings:
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getFragmentManager().executePendingTransactions();
-                        if (settingsFragment.isAdded()) {
-                            System.out.println("Already added");
-                        } else {
-                            getSupportFragmentManager().beginTransaction().add(R.id.content_frame, settingsFragment).commit();
-                        }
+                        if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().add(R.id.content_frame, settingsFragment).commit();
                         return true;
                 }
                 return true;
             }
         });
 
+        /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
         new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image)).execute("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
-
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
         usernameTextView.setText(getString(R.string.user_message) + username);
-
     }
 
+    /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
     public void openDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+    /* CLICK FUNCTIONALITY FOR PROFILE PIC */
     private void profilePictureSettings() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment profileDialog = new ProfilePictureOptions();

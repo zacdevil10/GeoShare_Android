@@ -7,7 +7,6 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -25,26 +24,21 @@ import uk.co.appsbystudio.geoshare.R;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private PlaceAutocompleteFragment placeAutocompleteFragment;
-    private MapFragment mapFragment;
-    private ImageView drawer_open;
 
-    public MapsFragment() {
-    }
+    public MapsFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
         final Context context = new ContextThemeWrapper(getActivity(), R.style.MainTheme);
-
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
-
         View view = layoutInflater.inflate(R.layout.fragment_maps, container, false);
 
-        mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
+        /* HANDLES FOR VARIOUS VIEWS */
+        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-        drawer_open = (ImageView) view.findViewById(R.id.drawer_open);
-
-        drawer_open.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.drawer_open).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity) getActivity()).openDrawer();
@@ -66,9 +60,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
 
             @Override
-            public void onError(Status status) {
-
-            }
+            public void onError(Status status) { }
         });
     }
 }
