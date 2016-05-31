@@ -8,21 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.List;
-
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 
 public class FriendsRequestFragment extends Fragment {
 
-    private ListView friendRequestList;
-
+    private ListView friendsRequestList;
     private SwipeRefreshLayout swipeRefresh;
-
-    private String pID;
-    private String mUsername;
 
     public FriendsRequestFragment() {}
 
@@ -30,26 +23,22 @@ public class FriendsRequestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_request, container, false);
 
-        friendRequestList = (ListView) view.findViewById(R.id.friend_request_list);
+        friendsRequestList = (ListView) view.findViewById(R.id.friend_request_list);
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
-        DatabaseHelper db = new DatabaseHelper(getContext());
-
-        List<UserModel> userModelList = db.getAllUsers();
-        for (UserModel id: userModelList) {
-            pID = id.getpID();
-            mUsername = id.getUsername();
-        }
+        requestFriends(friendsRequestList, swipeRefresh);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new JSONStringRequests(getActivity(), friendRequestList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/request/", pID).execute();
+                requestFriends(friendsRequestList, swipeRefresh);
             }
         });
 
-        new JSONStringRequests(getActivity(), friendRequestList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/request/", pID).execute();
-
         return view;
+    }
+
+    private void requestFriends(ListView friendsList, SwipeRefreshLayout swipeRefresh) {
+        new JSONStringRequests(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity())).execute();
     }
 }

@@ -4,57 +4,56 @@
     android:layout_height="match_parent"
     tools:context="uk.co.appsbystudio.geoshare.maps.MapsFragment">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <fragment
             android:name="com.google.android.gms.maps.MapFragment"
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="uk.co.appsbystudio.geoshare.maps.MapsFragment"/>
+            android:layout_height="match_parent"/>
 
-        <LinearLayout
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"
-            android:fitsSystemWindows="true">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:fitsSystemWindows="true">
 
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:paddingLeft="16dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="?attr/actionBarSize"
-                        android:src="@drawable/ic_menu_black_24dp"/>
-
-                    <fragment
-                        android:id="@+id/place_autocomplete_fragment"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-                        />
+                        android:layout_height="wrap_content">
 
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/drawer_open"
+                            android:paddingStart="16dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="?attr/actionBarSize"
+                            android:src="@drawable/ic_menu_black_24dp"/>
 
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
+                        <fragment
+                            android:id="@+id/place_autocomplete_fragment"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_add_white_24dp" />
+                    </LinearLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/ic_add_white_24dp" />
+
+        </android.support.design.widget.CoordinatorLayout>
 
 </FrameLayout>

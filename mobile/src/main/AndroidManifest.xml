@@ -32,7 +32,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/MainTheme" />
+            android:theme="@style/MainTheme"
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".services.NetworkStateChange" >
             <intent-filter>

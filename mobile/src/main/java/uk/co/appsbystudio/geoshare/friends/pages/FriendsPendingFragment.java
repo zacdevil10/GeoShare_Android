@@ -8,21 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.List;
-
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 
 public class FriendsPendingFragment extends Fragment {
 
     private ListView friendsPendingList;
-
     private SwipeRefreshLayout swipeRefresh;
-
-    private String pID;
-    private String mUsername;
 
     public FriendsPendingFragment() {}
 
@@ -33,26 +26,19 @@ public class FriendsPendingFragment extends Fragment {
         friendsPendingList = (ListView) view.findViewById(R.id.friend_pending_list);
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
-        DatabaseHelper db = new DatabaseHelper(getContext());
-
-        List<UserModel> userModelList = db.getAllUsers();
-        for (UserModel id: userModelList) {
-            pID = id.getpID();
-            mUsername = id.getUsername();
-        }
-
+        requestFriends(friendsPendingList, swipeRefresh);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new JSONStringRequests(getActivity(), friendsPendingList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/pending/", pID).execute();
+                requestFriends(friendsPendingList, swipeRefresh);
             }
         });
-
-        new JSONStringRequests(getActivity(), friendsPendingList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/friends/pending/", pID).execute();
 
         return view;
     }
 
-
+    private void requestFriends(ListView friendsList, SwipeRefreshLayout swipeRefresh) {
+        new JSONStringRequests(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity())).execute();
+    }
 }

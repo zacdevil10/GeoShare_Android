@@ -1,32 +1,32 @@
 package uk.co.appsbystudio.geoshare.json;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.os.AsyncTask;
+        import android.support.v4.widget.SwipeRefreshLayout;
+        import android.widget.ArrayAdapter;
+        import android.widget.ListAdapter;
+        import android.widget.ListView;
+        import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.RequestFuture;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+        import com.android.volley.AuthFailureError;
+        import com.android.volley.Request;
+        import com.android.volley.RequestQueue;
+        import com.android.volley.toolbox.RequestFuture;
+        import com.android.volley.toolbox.StringRequest;
+        import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+        import org.json.JSONArray;
+        import org.json.JSONException;
+        import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.Map;
+        import java.util.concurrent.ExecutionException;
+        import java.util.concurrent.TimeUnit;
+        import java.util.concurrent.TimeoutException;
 
-import uk.co.appsbystudio.geoshare.R;
+        import uk.co.appsbystudio.geoshare.R;
 
 public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
@@ -79,7 +79,6 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
                             try {
                                 JSONObject inner = (JSONObject) friends.get(i);
                                 friends_username.add((String) inner.get("username"));
-                                System.out.println(friends_username);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

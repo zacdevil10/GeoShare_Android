@@ -21,18 +21,6 @@
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/settings" />
 
-        <item
-            android:id="@+id/delete"
-            android:checked="false"
-            android:icon="@drawable/ic_people_black_24dp"
-            android:title="Delete user" />
-
-        <item
-            android:id="@+id/logout"
-            android:checked="false"
-            android:icon="@drawable/ic_lock_black_24dp"
-            android:title="@string/logout" />
-
     </group>
 
 </menu>

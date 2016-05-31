@@ -42,7 +42,7 @@ public class TutorialActivity extends Activity {
                 Color.parseColor("#2196F3"), R.drawable.ic_map_black_24dp, R.drawable.ic_map_black_24dp);
         PaperOnboardingPage scr3 = new PaperOnboardingPage("Something else",
                 "You can also do other stuff with the app (not yet)\nSwipe right to continue to the app ->",
-                Color.parseColor("#9E9E9E"), R.drawable.ic_lock_black_24dp, R.drawable.ic_action_mic);
+                Color.parseColor("#9E9E9E"), R.drawable.ic_lock_black_24dp, R.drawable.ic_keyboard_voice_black_24dp);
 
         ArrayList<PaperOnboardingPage> elements = new ArrayList<>();
         elements.add(scr1);
@@ -64,7 +64,7 @@ public class TutorialActivity extends Activity {
 
     }
 
-    public void login() {
+    private void login() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();

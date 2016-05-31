@@ -22,4 +22,12 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="test_theme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">#FFF</item>
+    </style>
+
 </resources>
