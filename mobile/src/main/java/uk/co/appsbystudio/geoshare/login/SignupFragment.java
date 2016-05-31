@@ -14,14 +14,11 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -36,16 +33,13 @@ public class SignupFragment extends Fragment {
 
     private UserSignUpTask mAuthTask = null;
 
-    private Button signUp;
-
     private EditText emailEntry;
     private EditText usernameEntry;
     private EditTextPassword passwordEntry;
 
     private RequestQueue requestQueue;
-    private JsonObjectRequest request;
 
-    boolean success = false;
+    private boolean success = false;
 
     public SignupFragment() {
     }
@@ -58,7 +52,7 @@ public class SignupFragment extends Fragment {
         emailEntry = (EditText) view.findViewById(R.id.email_signup);
         passwordEntry = (EditTextPassword) view.findViewById(R.id.password_signup);
 
-        signUp = (Button) view.findViewById(R.id.sign_up_sign_up);
+        Button signUp = (Button) view.findViewById(R.id.sign_up_sign_up);
 
         requestQueue = Volley.newRequestQueue(getContext());
 
@@ -72,7 +66,7 @@ public class SignupFragment extends Fragment {
         return view;
     }
 
-    public void attemptSignUp() {
+    private void attemptSignUp() {
         if (mAuthTask != null) {
             return;
         }
@@ -135,7 +129,7 @@ public class SignupFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            HashMap<String, String> hashMap = new HashMap<String, String>();
+            HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("username", mUsername);
             hashMap.put("email", mEmail);
             hashMap.put("password", mPassword);
@@ -144,10 +138,10 @@ public class SignupFragment extends Fragment {
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
-            request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), future, future){
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), future, future) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
+                    HashMap<String, String> headers = new HashMap<>();
                     headers.put("Content-Type", "application/json; charset=utf-8");
                     headers.put("User-agent", System.getProperty("http.agent"));
                     return headers;

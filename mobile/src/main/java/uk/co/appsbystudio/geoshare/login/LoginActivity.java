@@ -6,19 +6,15 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -33,14 +29,12 @@ import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
-import uk.co.appsbystudio.geoshare.services.NetworkStateChange;
 
 public class LoginActivity extends AppCompatActivity {
 
-    LoginFragment loginFragment;
-    SignupFragment signupFragment;
+    private LoginFragment loginFragment;
+    private SignupFragment signupFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +65,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private RequestQueue requestQueue;
-    private StringRequest stringRequest;
+    private String pIDDatabase;
+    private String mUsernameDatabase;
 
-    String pIDDatabase;
-    String mUsernameDatabase;
+    private void getSession() {
 
-    DatabaseHelper db;
+        DatabaseHelper db = new DatabaseHelper(this);
 
-    public void getSession() {
-
-        db = new DatabaseHelper(this);
-
-        requestQueue = Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
@@ -93,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (pIDDatabase != null && isConnection_status()) {
 
-            stringRequest = new StringRequest(Request.Method.GET, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {
                     try {
@@ -120,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
+                    HashMap<String, String> headers = new HashMap<>();
                     headers.put("REST_API_TOKEN", pIDDatabase);
                     headers.put("Content-Type", "application/json; charset=utf-8");
                     headers.put("User-agent", System.getProperty("http.agent"));
@@ -142,9 +131,9 @@ public class LoginActivity extends AppCompatActivity {
         db.close();
     }
 
-    boolean connection_status = false;
+    private boolean connection_status = false;
 
-    public boolean isConnection_status() {
+    private boolean isConnection_status() {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);

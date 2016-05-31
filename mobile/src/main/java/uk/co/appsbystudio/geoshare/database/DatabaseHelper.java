@@ -9,14 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.RecentSearchModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "cache.db";
-    public static final Integer DATABASE_VERSION = 1;
+    private static final Integer DATABASE_VERSION = 1;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,13 +50,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("email", userItem.getEmail());
         values.put("remember", userItem.getRemember());
 
-        long userItems = db.insert("LOGIN_DETAILS", null, values);
-
-        return userItems;
+        return db.insert("LOGIN_DETAILS", null, values);
     }
 
     public List<UserModel> getAllUsers() {
-        List<UserModel> userModelList = new ArrayList<UserModel>();
+        List<UserModel> userModelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM LOGIN_DETAILS", null);
@@ -73,11 +70,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        cursor.close();
+
         return userModelList;
     }
 
     public List<UserModel> getUsername() {
-        List<UserModel> userModelList = new ArrayList<UserModel>();
+        List<UserModel> userModelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT username FROM LOGIN_DETAILS", null);
@@ -89,6 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userModelList.add(userModel);
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
 
         return userModelList;
     }
@@ -112,13 +113,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("term", recentSearchModel.getTerm());
         values.put("Timestamp", recentSearchModel.getDateTime());
 
-        long savedItems = db.insert("SEARCH_HISTORY", null, values);
-
-        return savedItems;
+        return db.insert("SEARCH_HISTORY", null, values);
     }
 
     public List<RecentSearchModel> getSearchHistory() {
-        List<RecentSearchModel> recentSearchModelList = new ArrayList<RecentSearchModel>();
+        List<RecentSearchModel> recentSearchModelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM SEARCH_HISTORY ORDER BY Timestamp DESC", null);
@@ -131,12 +130,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        cursor.close();
+
         return recentSearchModelList;
     }
 
     public void close() {
         SQLiteDatabase db = this.getReadableDatabase();
-        if (db != null & db.isOpen()) {
+        if (db != null && db.isOpen()) {
             db.close();
         }
     }

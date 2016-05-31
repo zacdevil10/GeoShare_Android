@@ -2,33 +2,18 @@ package uk.co.appsbystudio.geoshare.database.databaseModel;
 
 public class UserModel {
 
-    String pID;
-    String username;
-    String email;
-    Integer remember;
+    private String pID;
+    private String username;
+    private String email;
+    private Integer remember;
 
     public UserModel() {}
 
-    public UserModel(String pID) {
-        this.pID = pID;
-    }
-
-    public UserModel(String pID, String username) {
-        this.pID = pID;
-        this.username = username;
-    }
-
-    public UserModel(String pID, String username, String email) {
-        this.pID = pID;
-        this.username = username;
-        this.email = email;
-    }
-
     public UserModel(String pID, String username, String email, Integer remember) {
-        this.pID = pID;
-        this.username = username;
-        this.email = email;
-        this.remember = remember;
+        this.pID = pID != null? pID : this.pID;
+        this.username = username != null? username : this.username;
+        this.email = email != null? email : this.email;
+        this.remember = remember != null? remember : this.remember;
     }
 
     public String getpID() {

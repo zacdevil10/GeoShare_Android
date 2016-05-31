@@ -2,9 +2,9 @@ package uk.co.appsbystudio.geoshare.database.databaseModel;
 
 
 public class RecentSearchModel {
-    Integer id;
-    String term;
-    String dateTime;
+    private Integer id;
+    private String term;
+    private String dateTime;
 
     public RecentSearchModel() {}
 

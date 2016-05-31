@@ -1,27 +1,19 @@
 package uk.co.appsbystudio.geoshare;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,28 +30,18 @@ import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NavigationView navigationView;
-    private RecyclerView rightNavigationView;
     private DrawerLayout drawerLayout;
-    private ListView footerView;
-    private ListAdapter listAdapter;
-    final ArrayList footerItems = new ArrayList<>();
+    private final ArrayList footerItems = new ArrayList<>();
 
-    CircleImageView profilePicture;
+    private MapsFragment mapsFragment;
+    private FriendsManagerFragment friendsManagerFragment;
+    private SettingsFragment settingsFragment;
 
-    MapsFragment mapsFragment;
-    FriendsManagerFragment friendsManagerFragment;
-    SettingsFragment settingsFragment;
+    private String pID;
+    private String mUsername;
+    private Integer remember;
 
-    View header;
-
-    TextView usernameTextView;
-
-    String pID;
-    String mUsername;
-    Integer remember;
-
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +51,18 @@ public class MainActivity extends AppCompatActivity {
         footerItems.add("Settings");
         footerItems.add("Logout");
 
-        usernameTextView = (TextView) findViewById(R.id.username);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.left_nav_view);
-        rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
-        footerView = (ListView) findViewById(R.id.footer);
-        listAdapter = new ArrayAdapter<String>(this, R.layout.friends_list_item, R.id.friend_name, footerItems);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.left_nav_view);
+        RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
+        ListView footerView = (ListView) findViewById(R.id.footer);
+        ListAdapter listAdapter = new ArrayAdapter<>(this, R.layout.friends_list_item, R.id.friend_name, footerItems);
         footerView.setAdapter(listAdapter);
 
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        header = navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
 
-        profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
+        CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
 
         mapsFragment = new MapsFragment();
         friendsManagerFragment = new FriendsManagerFragment();
@@ -138,14 +119,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        usernameTextView = (TextView) header.findViewById(R.id.username);
+        TextView usernameTextView = (TextView) header.findViewById(R.id.username);
         usernameTextView.setText(getString(R.string.user_message) + mUsername);
 
         db.close();
 
     }
 
-    public void profilePictureSettings() {
+    private void profilePictureSettings() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment profileDialog = new ProfilePictureOptions();
         profileDialog.show(fragmentManager, "");
@@ -161,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void rememberLogout() {
+    private void rememberLogout() {
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             pID = id.getpID();
@@ -179,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    public void logout() {
+    private void logout() {
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             pID = id.getpID();
@@ -194,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         loginReturn();
     }
 
-    public void deleteUser() {
+    private void deleteUser() {
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             pID = id.getpID();
@@ -209,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         loginReturn();
     }
 
-    public void loginReturn() {
+    private void loginReturn() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();

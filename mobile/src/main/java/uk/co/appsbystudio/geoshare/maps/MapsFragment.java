@@ -1,11 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,23 +10,17 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import uk.co.appsbystudio.geoshare.R;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
-    MapFragment mapFragment;
-    GoogleMap mapView;
-
-    PlaceAutocompleteFragment placeAutocompleteFragment;
+    private PlaceAutocompleteFragment placeAutocompleteFragment;
 
     public MapsFragment() {
     }
@@ -40,7 +29,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         mapFragment.getMapAsync(this);
@@ -50,8 +39,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        mapView = googleMap;
-
         placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -64,7 +51,5 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
-
-
     }
 }

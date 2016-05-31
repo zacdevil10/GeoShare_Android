@@ -20,8 +20,6 @@ public class ProfilePictureOptions extends DialogFragment {
 
                 } if (which == 1) {
 
-                } if (which == 2) {
-
                 }
             }
         });

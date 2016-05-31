@@ -1,10 +1,6 @@
 package uk.co.appsbystudio.geoshare.json;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -19,7 +15,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,14 +22,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class JSONRequests {
 
     private RequestQueue requestQueue;
     private JsonObjectRequest request;
 
-    boolean result;
+    private boolean result;
 
     public boolean onPostRequest(String URL, final String pID, Context mContext) {
         requestQueue = Volley.newRequestQueue(mContext);
@@ -52,7 +45,7 @@ public class JSONRequests {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers = new HashMap<>();
                 headers.put("REST_API_TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
@@ -76,7 +69,7 @@ public class JSONRequests {
         request = new JsonObjectRequest(Request.Method.GET, URL, null, future, future) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers = new HashMap<>();
                 headers.put("REST_API_TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
@@ -119,7 +112,7 @@ public class JSONRequests {
     public boolean onPatchRequest(String URL, final String pID, Context mContext, String key, String value) {
         requestQueue = Volley.newRequestQueue(mContext);
 
-        HashMap<String, String> hashMap = new HashMap<String, String>();
+        HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put(key, value);
 
         request = new JsonObjectRequest(Request.Method.PATCH, URL, new JSONObject(hashMap), new Response.Listener<JSONObject>() {
@@ -135,7 +128,7 @@ public class JSONRequests {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers = new HashMap<>();
                 headers.put("REST_API_TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
@@ -154,7 +147,7 @@ public class JSONRequests {
         request = new JsonObjectRequest(Request.Method.DELETE, URL, null, null, null){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers = new HashMap<>();
                 headers.put("REST_API_TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));

@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,22 +19,17 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -45,29 +37,24 @@ import java.util.concurrent.TimeoutException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
-import uk.co.appsbystudio.geoshare.json.JSONRequests;
-import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
 public class LoginFragment extends Fragment {
 
     private UserLoginTask mAuthTask = null;
 
-    private Button loginButton;
     private EditText usernameEntry;
     private EditTextPassword passwordEntry;
     private CheckBox rememberMe;
-    Integer rememberInt;
+    private Integer rememberInt;
 
     private RequestQueue requestQueue;
-    private JsonObjectRequest request;
 
-    boolean success = false;
-    boolean connection_status = false;
-    String mUsernameDatabase;
+    private boolean success = false;
+    private boolean connection_status = false;
+    private String mUsernameDatabase;
 
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     public LoginFragment() {
     }
@@ -82,7 +69,7 @@ public class LoginFragment extends Fragment {
 
         usernameEntry = (EditText) view.findViewById(R.id.username);
         passwordEntry = (EditTextPassword) view.findViewById(R.id.password);
-        loginButton = (Button) view.findViewById(R.id.log_in);
+        Button loginButton = (Button) view.findViewById(R.id.log_in);
         rememberMe = (CheckBox) view.findViewById(R.id.remember);
 
         List<UserModel> userModelList = db.getAllUsers();
@@ -109,7 +96,7 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    public boolean isConnection_status() {
+    private boolean isConnection_status() {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
@@ -128,7 +115,7 @@ public class LoginFragment extends Fragment {
         return connection_status;
     }
 
-    public void attemptLogin() {
+    private void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
@@ -181,15 +168,15 @@ public class LoginFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            HashMap<String, String> hashMap = new HashMap<String, String>();
+            HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
-            request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/session/", new JSONObject(hashMap), future, future){
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/session/", new JSONObject(hashMap), future, future) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
+                    HashMap<String, String> headers = new HashMap<>();
                     headers.put("Content-Type", "application/json; charset=utf-8");
                     headers.put("User-agent", System.getProperty("http.agent"));
                     return headers;

@@ -19,8 +19,6 @@ import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
 public class TutorialActivity extends Activity {
 
-    private FragmentManager fragmentManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +32,7 @@ public class TutorialActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-        fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
 
         PaperOnboardingPage scr1 = new PaperOnboardingPage("Find people",
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit,",

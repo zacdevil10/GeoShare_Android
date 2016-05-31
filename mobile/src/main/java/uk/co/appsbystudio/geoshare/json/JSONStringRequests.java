@@ -21,30 +21,22 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
-    RequestFuture<String> future;
-    ArrayList<String> friends_username;
-    StringRequest stringRequest;
-    RequestQueue requestQueue;
+    private final ListView friendsList;
+    private final SwipeRefreshLayout refreshList;
 
-    ListView friendsList;
-    SwipeRefreshLayout refreshList;
+    private final String pID;
+    private final String URL;
 
-    String pID;
-    String URL;
-
-    Context context;
+    private final Context context;
 
     public JSONStringRequests (Context context, ListView friendsList, SwipeRefreshLayout refreshList, String URL, String pID) {
         this.context = context;
@@ -56,14 +48,14 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     @Override
     protected ArrayList doInBackground(Void... params) {
-        future = RequestFuture.newFuture();
-        requestQueue = Volley.newRequestQueue(context);
-        friends_username = new ArrayList<>();
+        RequestFuture<String> future = RequestFuture.newFuture();
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        ArrayList<String> friends_username = new ArrayList<>();
 
-        stringRequest = new StringRequest(Request.Method.GET, URL, future, future) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, future, future) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers = new HashMap<>();
                 headers.put("REST_API_TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
@@ -115,7 +107,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     @Override
     protected void onPostExecute(ArrayList arrayList) {
-        ListAdapter friendsAdapter = new ArrayAdapter<String>(context, R.layout.friends_list_item, R.id.friend_name, arrayList);
+        ListAdapter friendsAdapter = new ArrayAdapter<>(context, R.layout.friends_list_item, R.id.friend_name, arrayList);
 
         friendsList.setAdapter(friendsAdapter);
 

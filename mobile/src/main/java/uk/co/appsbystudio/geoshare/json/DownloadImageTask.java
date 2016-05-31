@@ -11,7 +11,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
-    CircleImageView viewById;
+    private final CircleImageView viewById;
 
     public DownloadImageTask(CircleImageView viewById) {
         this.viewById = viewById;

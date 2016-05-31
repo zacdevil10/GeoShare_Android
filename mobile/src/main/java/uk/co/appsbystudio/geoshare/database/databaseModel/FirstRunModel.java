@@ -1,8 +1,8 @@
 package uk.co.appsbystudio.geoshare.database.databaseModel;
 
-public class FirstRunModel {
+class FirstRunModel {
 
-    Integer seenTutorial;
+    private Integer seenTutorial;
 
     public FirstRunModel() {}
 
