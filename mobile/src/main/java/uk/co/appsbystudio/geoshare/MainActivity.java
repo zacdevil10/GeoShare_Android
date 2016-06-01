@@ -1,6 +1,9 @@
 package uk.co.appsbystudio.geoshare;
 
+import android.app.ActivityManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -15,6 +18,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -22,6 +27,7 @@ import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 import uk.co.appsbystudio.geoshare.json.JSONRequests;
+import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
@@ -55,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         friendsManagerFragment = new FriendsManagerFragment();
         settingsFragment = new SettingsFragment();
 
+        /* RECENT APPS COLOR */
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.recent_color));
+        ((MainActivity)this).setTaskDescription(taskDesc);
+
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -83,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.logout:
                         item.setChecked(false);
+                        logout();
                         return true;
                     case R.id.feedback:
                         item.setChecked(false);
@@ -145,5 +157,22 @@ public class MainActivity extends AppCompatActivity {
         if (remember != 1) {
             new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/session/" + pID, pID, this);
         }
+    }
+
+    public void logout() {
+        String pID = new ReturnData().getpID(this);
+        String username = new ReturnData().getUsername(this);
+
+        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/session/" + pID, pID, this);
+
+        new ReturnData().clearData(this);
+
+        loginReturn();
+    }
+
+    public void loginReturn() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 }

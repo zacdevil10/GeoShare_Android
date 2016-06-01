@@ -51,4 +51,11 @@ public class ReturnData {
 
         return remember;
     }
+
+    public void clearData(Context context) {
+        db = new DatabaseHelper(context);
+
+        db.clearAllUserData();
+        db.close();
+    }
 }

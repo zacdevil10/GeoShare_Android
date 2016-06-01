@@ -29,10 +29,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.MainTheme);
-        LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = layoutInflater.inflate(R.layout.fragment_maps, container, false);
+        /* INFLATE LAYOUT */
+        View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         /* HANDLES FOR VARIOUS VIEWS */
         MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);

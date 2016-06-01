@@ -20,7 +20,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.test_theme);
+        final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_settings, container, false);
 
@@ -28,7 +28,7 @@ public class SettingsFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

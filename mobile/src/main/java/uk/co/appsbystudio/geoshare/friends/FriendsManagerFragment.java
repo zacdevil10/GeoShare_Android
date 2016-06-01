@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
@@ -26,7 +28,7 @@ public class FriendsManagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.test_theme);
+        final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_friends_manager, container, false);
 
@@ -36,7 +38,7 @@ public class FriendsManagerFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
