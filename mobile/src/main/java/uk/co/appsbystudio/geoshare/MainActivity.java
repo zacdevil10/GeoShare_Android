@@ -1,5 +1,7 @@
 package uk.co.appsbystudio.geoshare;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         settingsFragment = new SettingsFragment();
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, mapsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -71,13 +73,29 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
-                        if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().add(R.id.content_frame, friendsManagerFragment).commit();
+                        if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, friendsManagerFragment).commit();
                         return true;
                     case R.id.settings:
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getFragmentManager().executePendingTransactions();
-                        if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().add(R.id.content_frame, settingsFragment).commit();
+                        if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
+                        return true;
+                    case R.id.logout:
+                        item.setChecked(false);
+                        return true;
+                    case R.id.feedback:
+                        item.setChecked(false);
+                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                        emailIntent.setType("text/plain");
+                        emailIntent.setData(Uri.parse("mailto:support@appsbystudio.co.uk"));
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback");
+                        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(Intent.createChooser(emailIntent, "Send email via"));
+                        } else {
+                            //TODO: Make toast.
+                            System.out.println("No email applications found on this device!");
+                        }
                         return true;
                 }
                 return true;

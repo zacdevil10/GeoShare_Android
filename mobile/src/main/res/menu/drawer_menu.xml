@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:id="@+id/main_menu" android:checkableBehavior="single">
 
@@ -27,15 +28,15 @@
 
         <item
             android:id="@+id/logout"
-            android:checked="false"
+            android:checkable="false"
             android:icon="@drawable/ic_lock_black_24dp"
             android:title="@string/logout"/>
 
         <item
             android:id="@+id/feedback"
-            android:checked="false"
+            android:checkable="false"
             android:icon="@drawable/ic_message_black_24dp"
-            android:title="Send feedback"/>
+            android:title="@string/send_feedback"/>
 
     </group>
 
