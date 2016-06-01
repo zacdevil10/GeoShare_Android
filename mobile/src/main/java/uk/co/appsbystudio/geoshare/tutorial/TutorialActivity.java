@@ -61,7 +61,6 @@ public class TutorialActivity extends Activity {
                 login();
             }
         });
-
     }
 
     private void login() {
