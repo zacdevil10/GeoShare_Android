@@ -5,9 +5,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -28,8 +25,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 
 public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
@@ -38,15 +36,17 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     private final String pID;
     private final String URL;
+    private final Integer arrayMethod;
 
     private final Context context;
 
-    public JSONStringRequests (Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID) {
+    public JSONStringRequests (Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID, Integer arrayMethod) {
         this.context = context;
         this.friendsList = friendsList;
         this.refreshList = refreshList;
         this.pID = pID;
         this.URL = URL;
+        this.arrayMethod = arrayMethod;
     }
 
     @Override
@@ -109,12 +109,21 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     @Override
     protected void onPostExecute(ArrayList arrayList) {
-        FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
-        friendsList.setAdapter(friendsAdapter);
+
+        switch (arrayMethod) {
+            case 0:
+                FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
+                friendsList.setAdapter(friendsAdapter);
+            case 1:
+                FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
+                friendsList.setAdapter(friendsRequestAdapter);
+            case 2:
+                FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
+                friendsList.setAdapter(friendsPendingAdapter);
+        }
 
         if (refreshList.isRefreshing()) {
             refreshList.setRefreshing(false);
         }
-
     }
 }

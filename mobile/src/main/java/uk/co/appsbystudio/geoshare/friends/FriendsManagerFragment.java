@@ -13,13 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
-
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
-import uk.co.appsbystudio.geoshare.friends.pages.FriendsRequestFragment;
 
 public class FriendsManagerFragment extends Fragment {
 
@@ -38,7 +35,7 @@ public class FriendsManagerFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 
 public class FriendsRequestFragment extends Fragment {
 

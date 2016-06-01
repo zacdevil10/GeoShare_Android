@@ -27,16 +27,16 @@
             android:title="@string/settings"/>
 
         <item
-            android:id="@+id/logout"
-            android:checkable="false"
-            android:icon="@drawable/ic_lock_black_24dp"
-            android:title="@string/logout"/>
-
-        <item
             android:id="@+id/feedback"
             android:checkable="false"
             android:icon="@drawable/ic_message_black_24dp"
             android:title="@string/send_feedback"/>
+
+        <item
+            android:id="@+id/logout"
+            android:checkable="false"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="@string/logout"/>
 
     </group>
 

@@ -28,7 +28,7 @@
     <string name="maps">GeoMaps</string>
     <string name="friends">Friends Manager</string>
     <string name="settings">Settings</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Log out</string>
     <string name="user_message">"Welcome, "</string>
 
     <!-- TODO: Remove or change this placeholder text -->

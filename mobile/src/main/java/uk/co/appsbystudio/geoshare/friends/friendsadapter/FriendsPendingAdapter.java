@@ -13,11 +13,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
-public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHolder>{
+public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
     private Context context;
     private ArrayList namesArray;
 
-    public FriendsAdapter(Context context, ArrayList namesArray) {
+    public FriendsPendingAdapter(Context context, ArrayList namesArray) {
         this.context = context;
         this.namesArray = namesArray;
     }
