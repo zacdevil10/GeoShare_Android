@@ -36,14 +36,14 @@ public class FriendsManagerFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity) getActivity()).openDrawer();
             }
         });
-        toolbar.setTitle("Friends Manager");
+        toolbar.setTitle(R.string.friends);
 
         /* TOOLBAR TABS FRAGMENT SWAPPING */
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
@@ -54,8 +54,6 @@ public class FriendsManagerFragment extends Fragment {
                     case 0:
                         return new FriendsFragment();
                     case 1:
-                        return new FriendsRequestFragment();
-                    case 2:
                         return new FriendsPendingFragment();
                     default:
                         return null;
@@ -64,7 +62,7 @@ public class FriendsManagerFragment extends Fragment {
 
             @Override
             public int getCount() {
-                return 3;
+                return 2;
             }
 
             @Override
