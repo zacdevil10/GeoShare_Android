@@ -18,15 +18,9 @@
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
         android:layout_gravity="start"
+        app:itemBackground="@drawable/navigation_selected"
         app:headerLayout="@layout/header_layout"
         app:menu="@menu/drawer_menu">
-
-        <ListView
-            android:id="@+id/footer"
-            android:layout_width="match_parent"
-            android:layout_height="97dp"
-            android:layout_gravity="bottom"
-            android:orientation="vertical" />
 
     </android.support.design.widget.NavigationView>
 

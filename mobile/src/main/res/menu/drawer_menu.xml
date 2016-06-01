@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/main_menu" android:checkableBehavior="single">
 
         <item
             android:id="@+id/maps"
@@ -15,11 +15,27 @@
             android:icon="@drawable/ic_people_black_24dp"
             android:title="@string/friends" />
 
+    </group>
+
+    <group android:id="@+id/settings_menu" android:checkableBehavior="single">
+
         <item
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/settings" />
+            android:title="@string/settings"/>
+
+        <item
+            android:id="@+id/logout"
+            android:checked="false"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="@string/logout"/>
+
+        <item
+            android:id="@+id/feedback"
+            android:checked="false"
+            android:icon="@drawable/ic_message_black_24dp"
+            android:title="Send feedback"/>
 
     </group>
 

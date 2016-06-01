@@ -27,7 +27,6 @@ import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private final ArrayList footerItems = new ArrayList<>();
 
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
@@ -40,16 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         String username = new ReturnData().getUsername(this);
 
-        footerItems.add("Settings");
-        footerItems.add("Logout");
-
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
-        ListView footerView = (ListView) findViewById(R.id.footer);
-        ListAdapter footerListAdapter = new ArrayAdapter<>(this, R.layout.friends_list_item, R.id.friend_name, footerItems);
-        footerView.setAdapter(footerListAdapter);
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
