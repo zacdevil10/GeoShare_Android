@@ -1,8 +1,10 @@
 package uk.co.appsbystudio.geoshare.json;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -27,10 +29,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 
 public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
-    private final ListView friendsList;
+    private final RecyclerView friendsList;
     private final SwipeRefreshLayout refreshList;
 
     private final String pID;
@@ -38,7 +41,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     private final Context context;
 
-    public JSONStringRequests (Context context, ListView friendsList, SwipeRefreshLayout refreshList, String URL, String pID) {
+    public JSONStringRequests (Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID) {
         this.context = context;
         this.friendsList = friendsList;
         this.refreshList = refreshList;
@@ -51,6 +54,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
         RequestFuture<String> future = RequestFuture.newFuture();
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         ArrayList<String> friends_username = new ArrayList<>();
+        ArrayList<Bitmap> friends_profile_pictures = new ArrayList<>();
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, future, future) {
             @Override
@@ -105,8 +109,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     @Override
     protected void onPostExecute(ArrayList arrayList) {
-        ListAdapter friendsAdapter = new ArrayAdapter<>(context, R.layout.friends_list_item, R.id.friend_name, arrayList);
-
+        FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
         friendsList.setAdapter(friendsAdapter);
 
         if (refreshList.isRefreshing()) {

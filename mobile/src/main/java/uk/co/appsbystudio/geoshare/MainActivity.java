@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         /* RECENT APPS COLOR */
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.recent_color));
-        ((MainActivity)this).setTaskDescription(taskDesc);
+        this.setTaskDescription(taskDesc);
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image)).execute("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
