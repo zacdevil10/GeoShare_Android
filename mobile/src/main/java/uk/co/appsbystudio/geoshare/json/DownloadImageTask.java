@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -49,6 +50,13 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
                 headers.put("If-Modified-Since", "Thu, 2 Jun 2016 00:15:25 GMT");
                 return headers;
             }
+
+            @Override
+            protected Response<Bitmap> parseNetworkResponse(NetworkResponse response) {
+                System.out.println(response.statusCode);
+
+                return super.parseNetworkResponse(response);
+            }
         };
         requestQueue.add(imageRequest);
 
@@ -59,7 +67,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
                 try {
                     response = future.get(30, TimeUnit.SECONDS);
 
-                    System.out.println(future.get());
+                    System.out.println(response);
 
                     mIcon11[0] = response;
 
