@@ -110,16 +110,15 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
     @Override
     protected void onPostExecute(ArrayList arrayList) {
 
-        switch (arrayMethod) {
-            case 0:
-                FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
-                friendsList.setAdapter(friendsAdapter);
-            case 1:
-                FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
-                friendsList.setAdapter(friendsRequestAdapter);
-            case 2:
-                FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
-                friendsList.setAdapter(friendsPendingAdapter);
+        if (arrayMethod == 0) {
+            FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
+            friendsList.setAdapter(friendsAdapter);
+        } else if (arrayMethod == 1) {
+            FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
+            friendsList.setAdapter(friendsRequestAdapter);
+        } else if (arrayMethod == 2) {
+            FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
+            friendsList.setAdapter(friendsPendingAdapter);
         }
 
         if (refreshList.isRefreshing()) {

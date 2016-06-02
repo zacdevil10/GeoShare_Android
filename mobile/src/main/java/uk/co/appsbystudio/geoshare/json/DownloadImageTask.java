@@ -4,37 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.RequestFuture;
-import com.android.volley.toolbox.Volley;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.DateUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
@@ -53,19 +30,13 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
     protected Bitmap doInBackground(String... params) {
         String urlString = params[0];
         Bitmap image_bitmap = null;
-        int statusCode = 0;
-
-        RequestFuture<Bitmap> future = RequestFuture.newFuture();
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(urlString);
         httpGet.addHeader("If-Modified-Since", "Mon, 30 May 2016 00:15:25 GMT");
         try {
             HttpResponse response = httpClient.execute(httpGet);
-            statusCode = response.getStatusLine().getStatusCode();
-
-            System.out.println(statusCode);
+            int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode == 200) {
                 try {
@@ -75,12 +46,9 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
                     e.printStackTrace();
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
 
         return image_bitmap;
     }
