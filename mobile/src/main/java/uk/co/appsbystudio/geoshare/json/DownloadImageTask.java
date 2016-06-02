@@ -11,11 +11,25 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.DateUtils;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,52 +51,38 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     @Override
     protected Bitmap doInBackground(String... params) {
+        String urlString = params[0];
+        Bitmap image_bitmap = null;
+        int statusCode = 0;
+
         RequestFuture<Bitmap> future = RequestFuture.newFuture();
         RequestQueue requestQueue = Volley.newRequestQueue(context);
 
-        String url = params[0];
-        final Bitmap[] mIcon11 = {null};
-
-        ImageRequest imageRequest = new ImageRequest(url, future, 0, 0, null, future){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("If-Modified-Since", "Thu, 2 Jun 2016 00:15:25 GMT");
-                return headers;
-            }
-
-            @Override
-            protected Response<Bitmap> parseNetworkResponse(NetworkResponse response) {
-                System.out.println(response.statusCode);
-
-                return super.parseNetworkResponse(response);
-            }
-        };
-        requestQueue.add(imageRequest);
-
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(urlString);
+        httpGet.addHeader("If-Modified-Since", "Mon, 30 May 2016 00:15:25 GMT");
         try {
-            Bitmap response = null;
+            HttpResponse response = httpClient.execute(httpGet);
+            statusCode = response.getStatusLine().getStatusCode();
 
-            while (response == null) {
+            System.out.println(statusCode);
+
+            if (statusCode == 200) {
                 try {
-                    response = future.get(30, TimeUnit.SECONDS);
-
-                    System.out.println(response);
-
-                    mIcon11[0] = response;
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                    InputStream inputStream = response.getEntity().getContent();
+                    image_bitmap = BitmapFactory.decodeStream(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
 
-        } catch (ExecutionException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (TimeoutException e) {
-            Toast.makeText(context, "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
         }
 
-        return mIcon11[0];
+
+
+        return image_bitmap;
     }
 
     @Override
