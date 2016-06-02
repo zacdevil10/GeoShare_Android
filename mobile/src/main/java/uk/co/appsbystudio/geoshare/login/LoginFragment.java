@@ -155,7 +155,7 @@ public class LoginFragment extends Fragment {
 
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mUsername;
+        private String mUsername;
         private final String mPassword;
         private final Integer mRemember;
 
@@ -170,6 +170,8 @@ public class LoginFragment extends Fragment {
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
+
+            mUsername = mUsername.replace(" ", "%20");
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
@@ -194,7 +196,7 @@ public class LoginFragment extends Fragment {
                         success = true;
                         UserModel userModel = null;
                         try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername, null, rememberInt);
+                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, rememberInt);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

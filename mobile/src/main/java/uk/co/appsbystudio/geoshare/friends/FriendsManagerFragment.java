@@ -20,6 +20,8 @@ import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
 
 public class FriendsManagerFragment extends Fragment {
 
+    //TODO: long usernames
+
     public FriendsManagerFragment() {}
 
     @Override

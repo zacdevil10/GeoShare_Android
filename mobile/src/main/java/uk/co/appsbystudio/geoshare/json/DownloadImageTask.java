@@ -19,7 +19,7 @@ import uk.co.appsbystudio.geoshare.R;
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     private final CircleImageView viewById;
-    private Context context;
+    private final Context context;
 
     public DownloadImageTask(CircleImageView viewById, Context context) {
         this.viewById = viewById;
@@ -28,7 +28,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     @Override
     protected Bitmap doInBackground(String... params) {
-        String urlString = params[0];
+        String urlString = params[0].replace(" ", "%20");
         Bitmap image_bitmap = null;
 
         HttpClient httpClient = new DefaultHttpClient();

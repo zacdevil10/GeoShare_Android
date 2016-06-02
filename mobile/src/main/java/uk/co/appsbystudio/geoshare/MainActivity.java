@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 import uk.co.appsbystudio.geoshare.json.JSONRequests;
+import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
@@ -44,6 +46,15 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
+        if (rightNavigationView != null) {
+            rightNavigationView.setHasFixedSize(true);
+        }
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        if (rightNavigationView != null) {
+            rightNavigationView.setLayoutManager(layoutManager);
+        }
+
+        new JSONStringRequests(this, rightNavigationView, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -152,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void logout() {
+    private void logout() {
         String pID = new ReturnData().getpID(this);
         String username = new ReturnData().getUsername(this);
 
@@ -163,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         loginReturn();
     }
 
-    public void loginReturn() {
+    private void loginReturn() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();

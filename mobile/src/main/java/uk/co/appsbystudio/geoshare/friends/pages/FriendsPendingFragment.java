@@ -36,6 +36,7 @@ public class FriendsPendingFragment extends Fragment {
         friendsPendingList.setLayoutManager(layoutManagerPending);
 
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
         requestFriends(friendsRequestList, swipeRefresh);
         pendingFriends(friendsPendingList, swipeRefresh);

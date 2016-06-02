@@ -17,7 +17,6 @@ public class FriendsFragment extends Fragment {
 
     private RecyclerView friendsList;
     private SwipeRefreshLayout swipeRefresh;
-    private RecyclerView.LayoutManager layoutManager;
 
     public FriendsFragment() {}
 
@@ -27,10 +26,11 @@ public class FriendsFragment extends Fragment {
 
         friendsList = (RecyclerView) view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         friendsList.setLayoutManager(layoutManager);
 
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
         requestFriends(friendsList, swipeRefresh);
 

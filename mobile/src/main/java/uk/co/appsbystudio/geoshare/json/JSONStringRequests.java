@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.json;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -35,7 +34,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
     private final SwipeRefreshLayout refreshList;
 
     private final String pID;
-    private final String URL;
+    private String URL;
     private final Integer arrayMethod;
 
     private final Context context;
@@ -54,7 +53,8 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
         RequestFuture<String> future = RequestFuture.newFuture();
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         ArrayList<String> friends_username = new ArrayList<>();
-        ArrayList<Bitmap> friends_profile_pictures = new ArrayList<>();
+
+        URL = URL.replace(" ", "%20");
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, future, future) {
             @Override
@@ -121,8 +121,10 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
             friendsList.setAdapter(friendsPendingAdapter);
         }
 
-        if (refreshList.isRefreshing()) {
-            refreshList.setRefreshing(false);
+        if (refreshList != null) {
+            if (refreshList.isRefreshing()) {
+                refreshList.setRefreshing(false);
+            }
         }
     }
 }

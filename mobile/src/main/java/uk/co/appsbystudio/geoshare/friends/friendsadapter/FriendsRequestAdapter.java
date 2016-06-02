@@ -14,8 +14,8 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
-    private Context context;
-    private ArrayList namesArray;
+    private final Context context;
+    private final ArrayList namesArray;
 
     public FriendsRequestAdapter(Context context, ArrayList namesArray) {
         this.context = context;
@@ -43,8 +43,8 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView friend_name;
-        CircleImageView friends_pictures;
+        final TextView friend_name;
+        final CircleImageView friends_pictures;
 
         public ViewHolder(View itemView) {
             super(itemView);
