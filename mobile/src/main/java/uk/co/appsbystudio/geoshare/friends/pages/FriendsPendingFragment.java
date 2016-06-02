@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
@@ -17,11 +16,7 @@ import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
 public class FriendsPendingFragment extends Fragment {
 
     private RecyclerView friendsRequestList;
-    private RecyclerView.LayoutManager layoutManagerRequests;
-
     private RecyclerView friendsPendingList;
-    private RecyclerView.LayoutManager layoutManagerPending;
-
     private SwipeRefreshLayout swipeRefresh;
 
     public FriendsPendingFragment() {}
@@ -32,12 +27,12 @@ public class FriendsPendingFragment extends Fragment {
 
         friendsRequestList = (RecyclerView) view.findViewById(R.id.friend_request_list);
         friendsRequestList.setHasFixedSize(true);
-        layoutManagerRequests = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
         friendsRequestList.setLayoutManager(layoutManagerRequests);
 
         friendsPendingList = (RecyclerView) view.findViewById(R.id.friend_pending_list);
         friendsPendingList.setHasFixedSize(true);
-        layoutManagerPending = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsPendingList.setLayoutManager(layoutManagerPending);
 
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
