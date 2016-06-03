@@ -55,7 +55,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        Bitmap default_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_person_black_48dp);
+        Bitmap default_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_person_black_green_76dp);
 
         if (bitmap != null) {
             viewById.setImageBitmap(bitmap);
