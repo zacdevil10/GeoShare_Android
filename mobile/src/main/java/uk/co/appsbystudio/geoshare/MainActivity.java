@@ -1,11 +1,13 @@
 package uk.co.appsbystudio.geoshare;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,12 +18,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
+import uk.co.appsbystudio.geoshare.json.ImageUpload;
 import uk.co.appsbystudio.geoshare.json.JSONRequests;
-import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
+import uk.co.appsbystudio.geoshare.json.JSONStringRequestFriendsList;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
@@ -34,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
     private SettingsFragment settingsFragment;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             rightNavigationView.setLayoutManager(layoutManager);
         }
 
-        new JSONStringRequests(this, rightNavigationView, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
+        new JSONStringRequestFriendsList(this, rightNavigationView, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -129,6 +139,32 @@ public class MainActivity extends AppCompatActivity {
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
         usernameTextView.setText(getString(R.string.user_message) + username);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+
+            File imageFile = new File(this.getCacheDir(), "picture");
+            try {
+                imageFile.createNewFile();
+
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                if (bitmap != null) {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
+                }
+
+                fileOutputStream.close();
+
+                new ImageUpload(imageFile, this).execute();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */

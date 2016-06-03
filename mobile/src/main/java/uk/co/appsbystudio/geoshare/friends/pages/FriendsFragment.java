@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.JSONStringRequests;
+import uk.co.appsbystudio.geoshare.json.JSONStringRequestFriendsList;
 
 public class FriendsFragment extends Fragment {
 
@@ -45,6 +45,15 @@ public class FriendsFragment extends Fragment {
     }
 
     private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh) {
-        new JSONStringRequests(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/", new ReturnData().getpID(getActivity()), 0).execute();
+        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/", new ReturnData().getpID(getActivity()), 0).execute();
+    }
+
+    public void refreshList() {
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestFriends(friendsList, swipeRefresh);
+            }
+        });
     }
 }

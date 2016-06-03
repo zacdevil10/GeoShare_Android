@@ -171,11 +171,9 @@ public class LoginFragment extends Fragment {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
 
-            mUsername = mUsername.replace(" ", "%20");
-
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername + "/session/", new JSONObject(hashMap), future, future) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsername.replace(" ", "%20") + "/session/", new JSONObject(hashMap), future, future) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<>();

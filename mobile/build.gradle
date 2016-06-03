@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -35,4 +36,10 @@ dependencies {
     compile 'com.marlonmafra.android.widget:edittext-password:1.0.0'
     compile 'com.ramotion.paperonboarding:paper-onboarding:1.0.0'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    compile 'com.android.support:multidex:1.0.1'
+
+    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    compile('org.apache.httpcomponents:httpmime:4.3') {
+        exclude module: "httpclient"
+    }
 }

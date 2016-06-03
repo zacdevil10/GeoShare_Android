@@ -28,7 +28,7 @@ import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 
-public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
+public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayList> {
 
     private final RecyclerView friendsList;
     private final SwipeRefreshLayout refreshList;
@@ -39,7 +39,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
 
     private final Context context;
 
-    public JSONStringRequests (Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID, Integer arrayMethod) {
+    public JSONStringRequestFriendsList(Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID, Integer arrayMethod) {
         this.context = context;
         this.friendsList = friendsList;
         this.refreshList = refreshList;
@@ -54,9 +54,7 @@ public class JSONStringRequests extends AsyncTask<Void, Void, ArrayList> {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         ArrayList<String> friends_username = new ArrayList<>();
 
-        URL = URL.replace(" ", "%20");
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, future, future) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL.replace(" ", "%20"), future, future) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();

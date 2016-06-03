@@ -44,7 +44,7 @@
     <string name="send_feedback">Send feedback</string>
 
     <array name="profilePictureOptions">
-        <item>Upload picture</item>
+        <item>Select from gallery</item>
         <item>Take photo</item>
     </array>
 

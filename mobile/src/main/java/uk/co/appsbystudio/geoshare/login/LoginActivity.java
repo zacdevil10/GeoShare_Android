@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             pIDDatabase = id.getpID();
-            mUsernameDatabase = id.getUsername();
+            mUsernameDatabase = id.getUsername().replace(" ", "%20");
         }
 
         if (pIDDatabase != null && isConnection_status()) {

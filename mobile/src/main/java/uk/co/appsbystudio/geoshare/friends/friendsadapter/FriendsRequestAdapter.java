@@ -1,17 +1,22 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
+import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
+import uk.co.appsbystudio.geoshare.friends.pages.FriendConfirmationDialog;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
+import uk.co.appsbystudio.geoshare.json.JSONObjectRequest;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
     private final Context context;
@@ -31,9 +36,23 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
         new DownloadImageTask(holder.friends_pictures, context).execute("http://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+
+        holder.accept_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
+            }
+        });
+
+        holder.decline_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+            }
+        });
     }
 
     @Override
@@ -45,11 +64,15 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
         final TextView friend_name;
         final CircleImageView friends_pictures;
+        final ImageView accept_request;
+        final ImageView decline_request;
 
         public ViewHolder(View itemView) {
             super(itemView);
             friend_name = (TextView) itemView.findViewById(R.id.friend_name);
             friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
+            accept_request = (ImageView) itemView.findViewById(R.id.friend_accept);
+            decline_request = (ImageView) itemView.findViewById(R.id.friend_reject);
         }
     }
 }
