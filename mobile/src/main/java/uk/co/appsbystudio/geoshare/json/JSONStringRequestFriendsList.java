@@ -3,7 +3,10 @@ package uk.co.appsbystudio.geoshare.json;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -114,9 +117,11 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
         } else if (arrayMethod == 1) {
             FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
             friendsList.setAdapter(friendsRequestAdapter);
+            //noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
         } else if (arrayMethod == 2) {
             FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
             friendsList.setAdapter(friendsPendingAdapter);
+            //noPending.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
         }
 
         if (refreshList != null) {

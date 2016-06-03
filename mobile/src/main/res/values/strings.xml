@@ -36,6 +36,8 @@
     <string name="friends_pending">OUTGOING</string>
     <string name="friends_accept_request">Accept request</string>
     <string name="friends_reject_request">Reject request</string>
+    <string name="friends_no_pending">You have no outgoing friend requests</string>
+    <string name="friends_no_requests">You have no incoming friend requests</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

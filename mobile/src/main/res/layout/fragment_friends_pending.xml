@@ -35,6 +35,17 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
+                    android:id="@+id/friends_no_requests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/friends_no_requests"
+                    android:visibility="gone"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="#AAA"/>
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/friends_pending"
@@ -47,6 +58,17 @@
                     android:id="@+id/friend_pending_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/friends_no_pending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/friends_no_pending"
+                    android:visibility="gone"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="#AAA"/>
 
             </LinearLayout>
 
