@@ -30,7 +30,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
     private String URL;
     private String status;
     private String pID;
-    private boolean success = false;
+    private boolean success = true;
 
     private final Context context;
 
@@ -72,12 +72,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
                 return super.parseNetworkResponse(response);
             }
         };
-
         requestQueue.add(request);
-
-        System.out.println(success);
-
-
 
         return success;
     }
@@ -85,8 +80,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(final Boolean success) {
         if (success) {
-            new FriendsFragment().refreshList();
-            new FriendsPendingFragment().refreshList();
+            //TODO: refresh list
         }
     }
 }

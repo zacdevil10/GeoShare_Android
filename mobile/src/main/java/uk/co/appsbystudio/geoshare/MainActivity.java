@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             rightNavigationView.setLayoutManager(layoutManager);
         }
 
-        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
+        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshPicture() {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
     }
 
     @Override
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         String pID = new ReturnData().getpID(this);
 
         if (remember != 1) {
-            new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
+            new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
         }
     }
 
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         String pID = new ReturnData().getpID(this);
         String username = new ReturnData().getUsername(this);
 
-        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
+        new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
 
         new ReturnData().clearData(this);
 

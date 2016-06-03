@@ -90,13 +90,10 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
                                 e.printStackTrace();
                             }
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 } catch (InterruptedException e) {
-
                     Thread.currentThread().interrupt();
                 }
             }
@@ -112,7 +109,6 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
 
     @Override
     protected void onPostExecute(ArrayList arrayList) {
-
         if (arrayMethod == 0) {
             FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
             friendsList.setAdapter(friendsAdapter);

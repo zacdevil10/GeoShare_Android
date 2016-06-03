@@ -46,15 +46,6 @@ public class FriendsFragment extends Fragment {
     }
 
     private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh) {
-        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/", new ReturnData().getpID(getActivity()), 0).execute();
-    }
-
-    public void refreshList() {
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                requestFriends(friendsList, swipeRefresh);
-            }
-        });
+        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/", new ReturnData().getpID(getActivity()), 0).execute();
     }
 }

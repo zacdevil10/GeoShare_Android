@@ -38,19 +38,19 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, context).execute("http://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        new DownloadImageTask(holder.friends_pictures, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
 
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
+                new JSONObjectRequest(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
             }
         });
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                new JSONObjectRequest(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

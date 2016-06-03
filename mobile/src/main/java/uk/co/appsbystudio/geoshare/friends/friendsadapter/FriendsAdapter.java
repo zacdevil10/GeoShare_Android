@@ -33,7 +33,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, context).execute("http://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        new DownloadImageTask(holder.friends_pictures, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
     }
 
     @Override

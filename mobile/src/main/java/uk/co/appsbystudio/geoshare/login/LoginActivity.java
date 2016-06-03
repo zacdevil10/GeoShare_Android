@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (pIDDatabase != null && isConnection_status()) {
 
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {
                     try {

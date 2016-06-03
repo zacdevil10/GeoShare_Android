@@ -24,6 +24,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.File;
 import java.io.IOException;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 
 public class ImageUpload extends AsyncTask {
@@ -43,7 +44,7 @@ public class ImageUpload extends AsyncTask {
             HttpParams httpParams = new BasicHttpParams();
             httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
             httpClient = new DefaultHttpClient(httpParams);
-            HttpPost httpPost = new HttpPost("http://geoshare.appsbystudio.co.uk/api/user/img/");
+            HttpPost httpPost = new HttpPost("https://geoshare.appsbystudio.co.uk/api/user/img/");
 
             MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
@@ -70,7 +71,7 @@ public class ImageUpload extends AsyncTask {
             int code = httpResponse.getStatusLine().getStatusCode();
 
             if (code == 204) {
-
+                ((MainActivity) context).refreshPicture();
             }
 
             return null;
