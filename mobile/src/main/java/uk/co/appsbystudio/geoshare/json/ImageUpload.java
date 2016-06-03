@@ -52,9 +52,7 @@ public class ImageUpload extends AsyncTask {
             multipartEntity.addPart("image", new FileBody(image));
             httpPost.setEntity(multipartEntity);
 
-            System.out.println(httpPost);
-
-            httpClient.execute(httpPost);
+            httpClient.execute(httpPost, new PhotoResponseHandler());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,9 +64,14 @@ public class ImageUpload extends AsyncTask {
         @Override
         public Object handleResponse(HttpResponse httpResponse) throws ClientProtocolException, IOException {
 
-            HttpEntity httpEntity = httpResponse.getEntity();
-            String response = EntityUtils.toString(httpEntity);
-            Log.d("Upload", response);
+            //HttpEntity httpEntity = httpResponse.getEntity();
+            //String response = EntityUtils.toString(httpEntity);
+
+            int code = httpResponse.getStatusLine().getStatusCode();
+
+            if (code == 204) {
+
+            }
 
             return null;
         }

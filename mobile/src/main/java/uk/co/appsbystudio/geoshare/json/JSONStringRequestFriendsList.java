@@ -35,6 +35,7 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
 
     private final RecyclerView friendsList;
     private final SwipeRefreshLayout refreshList;
+    private final TextView noRequest;
 
     private final String pID;
     private String URL;
@@ -42,10 +43,11 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
 
     private final Context context;
 
-    public JSONStringRequestFriendsList(Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, String URL, String pID, Integer arrayMethod) {
+    public JSONStringRequestFriendsList(Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, TextView noRequest,String URL, String pID, Integer arrayMethod) {
         this.context = context;
         this.friendsList = friendsList;
         this.refreshList = refreshList;
+        this.noRequest = noRequest;
         this.pID = pID;
         this.URL = URL;
         this.arrayMethod = arrayMethod;
@@ -117,11 +119,11 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
         } else if (arrayMethod == 1) {
             FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
             friendsList.setAdapter(friendsRequestAdapter);
-            //noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
+            noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
         } else if (arrayMethod == 2) {
             FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
             friendsList.setAdapter(friendsPendingAdapter);
-            //noPending.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
+            noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
         }
 
         if (refreshList != null) {

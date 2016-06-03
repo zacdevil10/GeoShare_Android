@@ -19,6 +19,8 @@ public class FriendsPendingFragment extends Fragment {
     private RecyclerView friendsRequestList;
     private RecyclerView friendsPendingList;
     private SwipeRefreshLayout swipeRefresh;
+    private TextView noRequests;
+    private TextView noPending;
 
     public FriendsPendingFragment() {}
 
@@ -39,34 +41,37 @@ public class FriendsPendingFragment extends Fragment {
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
-        requestFriends(friendsRequestList, swipeRefresh);
-        pendingFriends(friendsPendingList, swipeRefresh);
+        noRequests = (TextView) view.findViewById(R.id.friends_no_requests);
+        noPending = (TextView) view.findViewById(R.id.friends_no_pending);
+
+        requestFriends(friendsRequestList, swipeRefresh, noRequests);
+        pendingFriends(friendsPendingList, swipeRefresh, noPending);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestFriends(friendsRequestList, swipeRefresh);
-                pendingFriends(friendsPendingList, swipeRefresh);
+                requestFriends(friendsRequestList, swipeRefresh, noRequests);
+                pendingFriends(friendsPendingList, swipeRefresh, noPending);
             }
         });
 
         return view;
     }
 
-    private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh) {
-        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
+    private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noRequests) {
+        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noRequests, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
     }
 
-    private void pendingFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh) {
-        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
+    private void pendingFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noPending) {
+        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noPending, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
 
     public void refreshList() {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestFriends(friendsRequestList, swipeRefresh);
-                pendingFriends(friendsPendingList, swipeRefresh);
+                requestFriends(friendsRequestList, swipeRefresh, noRequests);
+                pendingFriends(friendsPendingList, swipeRefresh, noPending);
             }
         });
     }

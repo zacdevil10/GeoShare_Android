@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
     private SettingsFragment settingsFragment;
+    View header;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -64,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
             rightNavigationView.setLayoutManager(layoutManager);
         }
 
-        new JSONStringRequestFriendsList(this, rightNavigationView, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
+        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
-        View header = navigationView.getHeaderView(0);
+        header = navigationView.getHeaderView(0);
         CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
 
         mapsFragment = new MapsFragment();
@@ -141,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
         usernameTextView.setText(getString(R.string.user_message) + username);
     }
 
+    public void refreshPicture() {
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
@@ -192,10 +197,9 @@ public class MainActivity extends AppCompatActivity {
     private void rememberLogout() {
         Integer remember = new ReturnData().getRemember(this);
         String pID = new ReturnData().getpID(this);
-        String username = new ReturnData().getUsername(this);
 
         if (remember != 1) {
-            new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/session/" + pID, pID, this);
+            new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
         }
     }
 
@@ -203,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         String pID = new ReturnData().getpID(this);
         String username = new ReturnData().getUsername(this);
 
-        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + username + "/session/" + pID, pID, this);
+        new JSONRequests().onDeleteRequest("http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
 
         new ReturnData().clearData(this);
 

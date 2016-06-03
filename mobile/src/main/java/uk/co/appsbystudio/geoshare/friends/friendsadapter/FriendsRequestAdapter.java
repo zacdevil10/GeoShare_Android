@@ -43,14 +43,14 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
+                new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
             }
         });
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

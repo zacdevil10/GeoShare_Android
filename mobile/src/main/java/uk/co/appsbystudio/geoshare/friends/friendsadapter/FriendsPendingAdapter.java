@@ -41,7 +41,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                //new JSONObjectRequest(context, "http://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

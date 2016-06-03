@@ -5,11 +5,16 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,9 +48,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
 
-        RequestFuture<String> future = RequestFuture.newFuture();
-
-        StringRequest request = new StringRequest(Request.Method.POST, URL, future, future) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PATCH, URL, new JSONObject(hashMap), null, null) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
@@ -57,33 +60,24 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
             }
 
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String, String> hashMap = new HashMap<>();
-                hashMap.put("action", status);
-                return hashMap;
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                System.out.println(response.statusCode);
+
+                if (response.statusCode == 200) {
+                    success = true;
+                } else {
+                    success = false;
+                }
+
+                return super.parseNetworkResponse(response);
             }
         };
 
         requestQueue.add(request);
 
-        try {
-            String response = null;
+        System.out.println(success);
 
-            while (response == null) {
-                try {
-                    response = future.get(30, TimeUnit.SECONDS);
-                    success = true;
-                } catch (InterruptedException e) {
-                    success = false;
-                    Thread.currentThread().interrupt();
-                }
-            }
 
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            Toast.makeText(context, "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
-        }
 
         return success;
     }
