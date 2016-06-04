@@ -43,5 +43,5 @@ dependencies {
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.android.support:multidex:1.0.1'
 
-    compile 'com.roughike:bottom-bar:1.2.1'
+    compile 'com.aurelhubert:ahbottomnavigation:1.2.3'
 }

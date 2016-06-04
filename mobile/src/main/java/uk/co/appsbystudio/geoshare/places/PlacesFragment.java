@@ -1,9 +1,9 @@
 package uk.co.appsbystudio.geoshare.places;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -12,8 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabSelectedListener;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
@@ -27,6 +27,8 @@ public class PlacesFragment extends Fragment {
         final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_places, container, false);
+
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.places_coordinator);
 
         /* SET UP TOOLBAR */
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
@@ -42,27 +44,19 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        BottomBar bottomBar = BottomBar.attach(getActivity(), savedInstanceState);
-        bottomBar.setItemsFromMenu(R.menu.places_bottom_bar, new OnMenuTabSelectedListener() {
-            @Override
-            public void onMenuItemSelected(@IdRes int menuItemId) {
-                switch (menuItemId){
-                    case R.id.recent:
-                        System.out.println("Recent");
-                        break;
-                    case R.id.favorites:
-                        System.out.println("Favorites");
-                        break;
-                    case R.id.nearby:
-                        System.out.println("Nearby");
-                        break;
-                }
-            }
-        });
+        AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
-        bottomBar.setActiveTabColor(getResources().getColor(R.color.colorPrimary));
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recents", R.drawable.ic_history_black_24dp);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_message_black_24dp);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Nearby", R.drawable.ic_location_on_black_24dp);
+
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+        bottomNavigation.addItem(item3);
+
+        bottomNavigation.setAccentColor(getResources().getColor(R.color.colorPrimary));
+        bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
 
         return view;
     }
-
 }

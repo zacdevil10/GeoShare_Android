@@ -7,9 +7,9 @@
         android:title="Recents" />
 
     <item
-        android:id="@+id/favorites"
+        android:id="@+id/favourites"
         android:icon="@drawable/ic_message_black_24dp"
-        android:title="Favorites" />
+        android:title="Favourites" />
 
     <item
         android:id="@+id/nearby"
