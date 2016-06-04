@@ -57,16 +57,12 @@ public class ImageUpload extends AsyncTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     private class PhotoResponseHandler implements ResponseHandler<Object> {
         @Override
         public Object handleResponse(HttpResponse httpResponse) throws ClientProtocolException, IOException {
-
-            //HttpEntity httpEntity = httpResponse.getEntity();
-            //String response = EntityUtils.toString(httpEntity);
 
             int code = httpResponse.getStatusLine().getStatusCode();
 

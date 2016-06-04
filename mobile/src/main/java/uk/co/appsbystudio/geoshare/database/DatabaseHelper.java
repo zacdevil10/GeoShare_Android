@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            db.execSQL("CREATE TABLE IF NOT EXISTS LOGIN_DETAILS(_pID TEXT, username TEXT, email TEXT, remember INTEGER)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(_pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER)");
             db.execSQL("CREATE TABLE IF NOT EXISTS SEARCH_HISTORY(_id TEXT PRIMARY KEY, term TEXT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
             db.setTransactionSuccessful();
         } finally {
@@ -35,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS LOGIN_DETAILS");
+        db.execSQL("DROP TABLE IF EXISTS USER_DETAILS");
         db.execSQL("DROP TABLE IF EXISTS SEARCH_HISTORY");
         onCreate(db);
     }
@@ -50,14 +50,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("email", userItem.getEmail());
         values.put("remember", userItem.getRemember());
 
-        return db.insert("LOGIN_DETAILS", null, values);
+        return db.insert("USER_DETAILS", null, values);
     }
 
     public List<UserModel> getAllUsers() {
         List<UserModel> userModelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM LOGIN_DETAILS", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM USER_DETAILS", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -79,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<UserModel> userModelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT username FROM LOGIN_DETAILS", null);
+        Cursor cursor = db.rawQuery("SELECT username FROM USER_DETAILS", null);
 
         if (cursor.moveToFirst()) {
             do {

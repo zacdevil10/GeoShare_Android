@@ -32,6 +32,7 @@ import uk.co.appsbystudio.geoshare.json.JSONRequests;
 import uk.co.appsbystudio.geoshare.json.JSONStringRequestFriendsList;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
+import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
+    private PlacesFragment placesFragment;
     private SettingsFragment settingsFragment;
     View header;
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         mapsFragment = new MapsFragment();
         friendsManagerFragment = new FriendsManagerFragment();
+        placesFragment = new PlacesFragment();
         settingsFragment = new SettingsFragment();
 
         /* RECENT APPS COLOR */
@@ -96,14 +99,17 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
-                        getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, friendsManagerFragment).commit();
                         return true;
+                    case R.id.places:
+                        getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
+                        getFragmentManager().executePendingTransactions();
+                        if(!placesFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, placesFragment).commit();
+                        return true;
                     case R.id.settings:
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                        getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
                         return true;
@@ -155,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 imageFile.createNewFile();
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
@@ -169,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+        } else if (requestCode == 2 && resultCode == RESULT_OK) {
+            //System.out.println(data.getExtras().get("data"));
         }
     }
 

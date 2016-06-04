@@ -10,6 +10,12 @@
             android:title="@string/maps" />
 
         <item
+            android:id="@+id/places"
+            android:checked="false"
+            android:icon="@drawable/ic_location_on_black_24dp"
+            android:title="@string/places" />
+
+        <item
             android:id="@+id/friends"
             android:checked="false"
             android:icon="@drawable/ic_people_black_24dp"

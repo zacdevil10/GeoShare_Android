@@ -26,6 +26,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
     testCompile 'junit:junit:4.12'
+
+    compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
+    compile('org.apache.httpcomponents:httpmime:4.3') {
+        exclude module: "httpclient"
+    }
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services:9.0.1'
     compile 'com.android.support:design:23.4.0'
@@ -38,8 +43,5 @@ dependencies {
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.android.support:multidex:1.0.1'
 
-    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
-    compile('org.apache.httpcomponents:httpmime:4.3') {
-        exclude module: "httpclient"
-    }
+    compile 'com.roughike:bottom-bar:1.2.1'
 }

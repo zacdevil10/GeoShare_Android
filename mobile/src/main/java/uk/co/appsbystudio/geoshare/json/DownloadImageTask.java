@@ -62,6 +62,5 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
         } else {
             viewById.setImageBitmap(default_image);
         }
-
     }
 }

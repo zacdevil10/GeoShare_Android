@@ -30,7 +30,7 @@ public class ProfilePictureOptions extends DialogFragment {
                     Intent selectPicture = new Intent();
                     selectPicture.setType("image/*");
                     selectPicture.setAction(Intent.ACTION_GET_CONTENT);
-                    getActivity().startActivityForResult(Intent.createChooser(selectPicture, "Select Picture"), 1);
+                    getActivity().startActivityForResult(Intent.createChooser(selectPicture, "Select Picture"), 2);
                 } if (which == 1) {
                     Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (takePicture.resolveActivity(getActivity().getPackageManager()) != null) {
