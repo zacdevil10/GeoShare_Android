@@ -1,22 +1,14 @@
 package uk.co.appsbystudio.geoshare.settings;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.ImageUpload;
 
 public class ProfilePictureOptions extends DialogFragment {
 
