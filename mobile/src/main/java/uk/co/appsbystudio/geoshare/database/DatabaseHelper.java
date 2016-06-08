@@ -96,7 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void clearAllUserData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM LOGIN_DETAILS");
+        db.execSQL("DELETE FROM USER_DETAILS");
     }
 
     public void clearUserSession() {
