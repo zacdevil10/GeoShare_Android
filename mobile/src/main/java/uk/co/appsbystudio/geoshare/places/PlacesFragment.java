@@ -47,7 +47,7 @@ public class PlacesFragment extends Fragment {
         AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recents", R.drawable.ic_history_black_24dp);
-        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_message_black_24dp);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_24dp);
         AHBottomNavigationItem item3 = new AHBottomNavigationItem("Nearby", R.drawable.ic_location_on_black_24dp);
 
         bottomNavigation.addItem(item1);
