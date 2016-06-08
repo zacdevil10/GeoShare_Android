@@ -175,7 +175,31 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
-            //System.out.println(data.getExtras().get("data"));
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+
+                File imageFile = new File(this.getCacheDir(), "picture");
+                try {
+                    imageFile.createNewFile();
+
+                    FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                    if (bitmap != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    }
+
+                    fileOutputStream.close();
+
+                    new ImageUpload(imageFile, this).execute();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
