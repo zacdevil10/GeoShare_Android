@@ -58,4 +58,11 @@ public class ReturnData {
         db.clearAllUserData();
         db.close();
     }
+
+    public void clearSession(Context context) {
+        db = new DatabaseHelper(context);
+
+        db.clearUserSession();
+        db.close();
+    }
 }

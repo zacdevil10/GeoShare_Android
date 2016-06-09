@@ -1,6 +1,5 @@
 package uk.co.appsbystudio.geoshare;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,14 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private SettingsFragment settingsFragment;
     View header;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        String username = new ReturnData().getUsername(this);
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -136,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + username + "/img/");
+        refreshPicture();
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,61 +139,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        usernameTextView.setText(getString(R.string.user_message) + username);
+        usernameTextView.setText(getString(R.string.user_message) + new ReturnData().getUsername(this));
     }
 
     public void refreshPicture() {
         new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
     }
 
+    Bitmap bitmap;
+    File imageFile;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            bitmap = (Bitmap) data.getExtras().get("data");
 
-            File imageFile = new File(this.getCacheDir(), "picture");
-            try {
-                imageFile.createNewFile();
-
-                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                if (bitmap != null) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
-                }
-
-                fileOutputStream.close();
-
-                new ImageUpload(imageFile, this).execute();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            imageFile = new File(this.getCacheDir(), "picture");
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
 
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-                File imageFile = new File(this.getCacheDir(), "picture");
-                try {
-                    imageFile.createNewFile();
-
-                    FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                    if (bitmap != null) {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                    }
-
-                    fileOutputStream.close();
-
-                    new ImageUpload(imageFile, this).execute();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                imageFile = new File(this.getCacheDir(), "picture");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            System.out.println(bitmap);
+
+            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 80, fileOutputStream);
+            }
+
+            fileOutputStream.close();
+
+            new ImageUpload(imageFile, this).execute();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -226,18 +207,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rememberLogout() {
-        Integer remember = new ReturnData().getRemember(this);
-        String pID = new ReturnData().getpID(this);
-
-        if (remember != 1) {
+        if (new ReturnData().getRemember(this) != 1) {
             new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
         }
+
+        new ReturnData().clearSession(this);
     }
 
     private void logout() {
-        String pID = new ReturnData().getpID(this);
-        String username = new ReturnData().getUsername(this);
-
         new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
 
         new ReturnData().clearData(this);

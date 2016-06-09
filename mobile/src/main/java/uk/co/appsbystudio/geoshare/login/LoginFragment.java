@@ -128,6 +128,7 @@ public class LoginFragment extends Fragment {
 
         String username = usernameEntry.getText().toString();
         String password = passwordEntry.getText().toString();
+        Integer remember = rememberInt;
 
 
         boolean cancel = false;
@@ -148,7 +149,7 @@ public class LoginFragment extends Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            mAuthTask = new UserLoginTask(username, password, rememberInt);
+            mAuthTask = new UserLoginTask(username, password, remember);
             mAuthTask.execute((Void) null);
         }
     }
@@ -194,7 +195,7 @@ public class LoginFragment extends Fragment {
                         success = true;
                         UserModel userModel = null;
                         try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, rememberInt);
+                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

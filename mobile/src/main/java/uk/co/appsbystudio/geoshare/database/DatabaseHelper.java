@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(_pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(id INTEGER PRIMARY KEY, _pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER)");
             db.execSQL("CREATE TABLE IF NOT EXISTS SEARCH_HISTORY(_id TEXT PRIMARY KEY, term TEXT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
             db.setTransactionSuccessful();
         } finally {
@@ -101,8 +101,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void clearUserSession() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("");
+        db.execSQL("UPDATE USER_DETAILS SET _pID='' ");
     }
+
 
     //Search History
     public long addSearchHistory(RecentSearchModel recentSearchModel) {

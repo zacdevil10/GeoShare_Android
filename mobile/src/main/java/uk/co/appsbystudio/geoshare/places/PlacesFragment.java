@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.places;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -27,8 +26,6 @@ public class PlacesFragment extends Fragment {
         final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_places, container, false);
-
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.places_coordinator);
 
         /* SET UP TOOLBAR */
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);

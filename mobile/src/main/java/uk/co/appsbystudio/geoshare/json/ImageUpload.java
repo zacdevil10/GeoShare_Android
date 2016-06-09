@@ -3,9 +3,7 @@ package uk.co.appsbystudio.geoshare.json;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -19,7 +17,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +24,7 @@ import java.io.IOException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 
-public class ImageUpload extends AsyncTask {
+public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
 
     private DefaultHttpClient httpClient;
     private File image;
@@ -39,7 +36,7 @@ public class ImageUpload extends AsyncTask {
     }
 
     @Override
-    protected Bitmap doInBackground(Object[] params) {
+    protected Void doInBackground(Bitmap... params) {
         try {
             HttpParams httpParams = new BasicHttpParams();
             httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);

@@ -2,7 +2,6 @@ package uk.co.appsbystudio.geoshare.json;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -10,20 +9,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
-import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 
 public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
 

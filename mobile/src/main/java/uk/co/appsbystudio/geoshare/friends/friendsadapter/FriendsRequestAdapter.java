@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
-import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.friends.pages.FriendConfirmationDialog;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 import uk.co.appsbystudio.geoshare.json.JSONObjectRequest;
 

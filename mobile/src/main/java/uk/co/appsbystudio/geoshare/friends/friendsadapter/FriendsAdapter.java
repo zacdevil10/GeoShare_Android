@@ -36,6 +36,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
         new DownloadImageTask(holder.friends_pictures, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
     }
 
+    public void refresh() {
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return namesArray.size();

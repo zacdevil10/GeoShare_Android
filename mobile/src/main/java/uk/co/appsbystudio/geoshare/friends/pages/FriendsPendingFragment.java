@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -66,11 +67,11 @@ public class FriendsPendingFragment extends Fragment {
         new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
 
-    private void refreshRequestFriends() {
+    public void refreshRequestFriends() {
         new JSONStringRequestFriendsList(getActivity(), friendsRequestList, swipeRefresh, noRequests, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
     }
 
-    private void refreshPendingFriends() {
+    public void refreshPendingFriends() {
         new JSONStringRequestFriendsList(getActivity(), friendsPendingList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
 }

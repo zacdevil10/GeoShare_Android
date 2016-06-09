@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             mUsernameDatabase = id.getUsername().replace(" ", "%20");
         }
 
-        if (pIDDatabase != null && isConnection_status()) {
+        if (pIDDatabase.length() != 0 && isConnection_status()) {
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
                 @Override
