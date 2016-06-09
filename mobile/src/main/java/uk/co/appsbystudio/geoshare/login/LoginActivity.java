@@ -79,55 +79,58 @@ public class LoginActivity extends AppCompatActivity {
             mUsernameDatabase = id.getUsername().replace(" ", "%20");
         }
 
-        if (pIDDatabase.length() != 0 && isConnection_status()) {
+        if (pIDDatabase != null && isConnection_status()) {
 
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String s) {
-                    try {
-                        JSONArray pIDLive = new JSONArray(s);
+            if (pIDDatabase.length() != 0) {
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        try {
+                            JSONArray pIDLive = new JSONArray(s);
 
-                        JSONObject inner = (JSONObject) pIDLive.get(0);
+                            JSONObject inner = (JSONObject) pIDLive.get(0);
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            if (Objects.equals(inner.getString("token"), pIDDatabase)) {
-                                loginFragment.login();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                if (Objects.equals(inner.getString("token"), pIDDatabase)) {
+                                    loginFragment.login();
+                                }
                             }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
 
+                    }
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("REST_API_TOKEN", pIDDatabase);
+                        headers.put("Content-Type", "application/json; charset=utf-8");
+                        headers.put("User-agent", System.getProperty("http.agent"));
+                        return headers;
+                    }
+                };
+
+                requestQueue.add(stringRequest);
+
+            } else {
+                if (!isConnection_status()) {
+                    System.out.println("No network");
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-
+                if (pIDDatabase == null) {
+                    System.out.println("Session gone");
                 }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<>();
-                    headers.put("REST_API_TOKEN", pIDDatabase);
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-                    headers.put("User-agent", System.getProperty("http.agent"));
-                    return headers;
-                }
-            };
-
-            requestQueue.add(stringRequest);
-
-        } else {
-            if (!isConnection_status()) {
-                System.out.println("No network");
             }
-            if (pIDDatabase == null) {
-                System.out.println("Session gone");
-            }
-        }
 
-        db.close();
+            db.close();
+            }
+
     }
 
     private boolean connection_status = false;
