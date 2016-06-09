@@ -130,7 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
             db.close();
             }
-
     }
 
     private boolean connection_status = false;
