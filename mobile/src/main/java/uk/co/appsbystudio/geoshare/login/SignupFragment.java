@@ -2,7 +2,9 @@ package uk.co.appsbystudio.geoshare.login;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +14,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
@@ -28,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.settings.ConfirmationDialog;
 
 public class SignupFragment extends Fragment {
 
@@ -38,8 +43,6 @@ public class SignupFragment extends Fragment {
     private EditTextPassword passwordEntry;
 
     private RequestQueue requestQueue;
-
-    private boolean success = false;
 
     public SignupFragment() {
     }
@@ -126,6 +129,9 @@ public class SignupFragment extends Fragment {
             mPassword = password;
         }
 
+        Boolean success;
+        Integer responseCode = null;
+
         @Override
         protected Boolean doInBackground(Void... params) {
 
@@ -134,11 +140,9 @@ public class SignupFragment extends Fragment {
             hashMap.put("email", mEmail);
             hashMap.put("password", mPassword);
 
-
-
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), future, future) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), null, null) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<>();
@@ -146,29 +150,30 @@ public class SignupFragment extends Fragment {
                     headers.put("User-agent", System.getProperty("http.agent"));
                     return headers;
                 }
+
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    responseCode = response.statusCode;
+                    return super.parseNetworkResponse(response);
+                }
             };
 
             requestQueue.add(request);
 
-            try {
-                JSONObject response = null;
+            long time = System.currentTimeMillis();
 
-                while (response == null) {
-                    try {
-                        response = future.get(30, TimeUnit.SECONDS);
-                        success = true;
-                    } catch (InterruptedException e) {
-                        success = false;
-                        Thread.currentThread().interrupt();
-                    }
-                }
+            while (responseCode == null && (System.currentTimeMillis()-time) < 5000) {
+                System.out.println(responseCode);
+                //TODO: show loading bar
+            }
 
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            if (responseCode == null) {
                 success = false;
-            } catch (TimeoutException e) {
+            } else if (responseCode == 201){
+                System.out.println(responseCode);
+                success = true;
+            } else {
                 success = false;
-                Toast.makeText(getContext(), "Timeout", Toast.LENGTH_LONG).show();
             }
 
             return success;
@@ -179,11 +184,11 @@ public class SignupFragment extends Fragment {
             mAuthTask = null;
 
             if (success) {
-                Toast.makeText(getActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
                 usernameEntry.setText("");
                 emailEntry.setText("");
                 passwordEntry.setText("");
                 getFragmentManager().popBackStack();
+                confirmationDialog();
             } else {
                 passwordEntry.setText("");
                 passwordEntry.setError(null);
@@ -194,6 +199,12 @@ public class SignupFragment extends Fragment {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
+        }
+
+        private void confirmationDialog() {
+            FragmentManager fragmentManager = getFragmentManager();
+            DialogFragment profileDialog = new ConfirmationDialog();
+            profileDialog.show(fragmentManager, "");
         }
 
     }
