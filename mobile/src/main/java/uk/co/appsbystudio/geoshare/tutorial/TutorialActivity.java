@@ -36,13 +36,13 @@ public class TutorialActivity extends Activity {
 
         PaperOnboardingPage scr1 = new PaperOnboardingPage("Find people",
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
-                Color.parseColor("#4CAF50"), R.drawable.ic_people_black_24dp, R.drawable.ic_add_white_24dp);
+                Color.parseColor("#4CAF50"), R.drawable.ic_people_black_48px, R.drawable.ic_add_white_48px);
         PaperOnboardingPage scr2 = new PaperOnboardingPage("Plan",
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
-                Color.parseColor("#2196F3"), R.drawable.ic_map_black_24dp, R.drawable.ic_map_black_24dp);
+                Color.parseColor("#2196F3"), R.drawable.ic_map_black_48px, R.drawable.ic_map_black_48px);
         PaperOnboardingPage scr3 = new PaperOnboardingPage("Something else",
                 "You can also do other stuff with the app (not yet)\nSwipe right to continue to the app ->",
-                Color.parseColor("#9E9E9E"), R.drawable.ic_lock_black_24dp, R.drawable.ic_keyboard_voice_black_24dp);
+                Color.parseColor("#9E9E9E"), R.drawable.ic_lock_black_48px, R.drawable.ic_lock_black_48px);
 
         ArrayList<PaperOnboardingPage> elements = new ArrayList<>();
         elements.add(scr1);

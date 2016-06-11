@@ -6,19 +6,19 @@
         <item
             android:id="@+id/maps"
             android:checked="false"
-            android:icon="@drawable/ic_map_black_24dp"
+            android:icon="@drawable/ic_map_black_48px"
             android:title="@string/maps" />
 
         <item
             android:id="@+id/places"
             android:checked="false"
-            android:icon="@drawable/ic_location_on_black_24dp"
+            android:icon="@drawable/ic_location_on_black_48px"
             android:title="@string/places" />
 
         <item
             android:id="@+id/friends"
             android:checked="false"
-            android:icon="@drawable/ic_people_black_24dp"
+            android:icon="@drawable/ic_people_black_48px"
             android:title="@string/friends" />
 
     </group>
@@ -28,19 +28,19 @@
         <item
             android:id="@+id/settings"
             android:checked="false"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/ic_settings_black_48px"
             android:title="@string/settings"/>
 
         <item
             android:id="@+id/feedback"
             android:checkable="false"
-            android:icon="@drawable/ic_message_black_24dp"
+            android:icon="@drawable/ic_feedback_black_48px"
             android:title="@string/send_feedback"/>
 
         <item
             android:id="@+id/logout"
             android:checkable="false"
-            android:icon="@drawable/ic_lock_black_24dp"
+            android:icon="@drawable/ic_lock_black_48px"
             android:title="@string/logout"/>
 
     </group>

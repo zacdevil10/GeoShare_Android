@@ -35,7 +35,7 @@
                             android:paddingStart="16dp"
                             android:layout_width="wrap_content"
                             android:layout_height="?attr/actionBarSize"
-                            android:src="@drawable/ic_menu_black_24dp"/>
+                            android:src="@drawable/ic_menu_black_48px"/>
 
                         <fragment
                             android:id="@+id/place_autocomplete_fragment"

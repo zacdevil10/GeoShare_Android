@@ -27,7 +27,7 @@ public class SettingsFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_48px);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

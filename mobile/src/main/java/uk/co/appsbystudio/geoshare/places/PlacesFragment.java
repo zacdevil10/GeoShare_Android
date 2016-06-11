@@ -32,7 +32,7 @@ public class PlacesFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_48px);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,9 +43,9 @@ public class PlacesFragment extends Fragment {
 
         AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
-        AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recents", R.drawable.ic_history_black_24dp);
-        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_24dp);
-        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Nearby", R.drawable.ic_location_on_black_24dp);
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recents", R.drawable.ic_history_black_48px);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_48px);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Nearby", R.drawable.ic_location_on_black_48px);
 
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
