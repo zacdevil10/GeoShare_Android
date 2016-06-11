@@ -43,11 +43,11 @@ public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
             httpClient = new DefaultHttpClient(httpParams);
             HttpPost httpPost = new HttpPost("https://geoshare.appsbystudio.co.uk/api/user/img/");
 
-            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+            MultipartEntity multipartEntity = new MultipartEntity();
 
             multipartEntity.addPart("username", new StringBody(new ReturnData().getUsername(context)));
             multipartEntity.addPart("REST_API_TOKEN", new StringBody(new ReturnData().getpID(context)));
-            multipartEntity.addPart("image", new FileBody(image));
+            multipartEntity.addPart("image", new FileBody(image, "image.png" ,"image/png", null));
             httpPost.setEntity(multipartEntity);
 
             httpClient.execute(httpPost, new PhotoResponseHandler());
@@ -66,6 +66,8 @@ public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
             if (code == 204) {
                 ((MainActivity) context).refreshPicture();
             }
+
+            System.out.println(code);
 
             return null;
         }
