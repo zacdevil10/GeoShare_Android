@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.login;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -44,6 +45,8 @@ public class SignupFragment extends Fragment {
 
     private RequestQueue requestQueue;
 
+    ProgressDialog progressDialog;
+
     public SignupFragment() {
     }
 
@@ -59,9 +62,14 @@ public class SignupFragment extends Fragment {
 
         requestQueue = Volley.newRequestQueue(getContext());
 
+        progressDialog = new ProgressDialog(getContext(), R.style.DialogTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Creating account...");
+
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
                 attemptSignUp();
             }
         });
@@ -187,10 +195,12 @@ public class SignupFragment extends Fragment {
                 usernameEntry.setText("");
                 emailEntry.setText("");
                 passwordEntry.setText("");
+                progressDialog.dismiss();
                 getFragmentManager().popBackStack();
                 confirmationDialog();
             } else {
                 passwordEntry.setText("");
+                progressDialog.dismiss();
                 passwordEntry.setError(null);
                 passwordEntry.requestFocus();
             }

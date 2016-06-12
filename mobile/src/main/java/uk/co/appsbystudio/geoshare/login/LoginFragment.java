@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.login;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -56,6 +57,8 @@ public class LoginFragment extends Fragment {
 
     private DatabaseHelper db;
 
+    ProgressDialog progressDialog;
+
     public LoginFragment() {
     }
 
@@ -72,6 +75,10 @@ public class LoginFragment extends Fragment {
         Button loginButton = (Button) view.findViewById(R.id.log_in);
         rememberMe = (CheckBox) view.findViewById(R.id.remember);
 
+        progressDialog = new ProgressDialog(getContext(), R.style.DialogTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             mUsernameDatabase = id.getUsername();
@@ -86,6 +93,8 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isConnection_status()) {
+                    progressDialog.show();
+
                     attemptLogin();
                 } else {
                     System.out.println("No network");
@@ -221,8 +230,10 @@ public class LoginFragment extends Fragment {
             mAuthTask = null;
 
             if (success) {
+                progressDialog.dismiss();
                 login();
             } else {
+                progressDialog.dismiss();
                 passwordEntry.setError(getString(R.string.error_incorrect_password_username));
                 passwordEntry.requestFocus();
             }
