@@ -2,6 +2,7 @@ package uk.co.appsbystudio.geoshare.login;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -51,7 +52,7 @@ public class LoginFragment extends Fragment {
 
     private RequestQueue requestQueue;
 
-    private boolean success = false;
+    private Integer success = 0;
     private boolean connection_status = false;
     private String mUsernameDatabase;
 
@@ -93,8 +94,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isConnection_status()) {
-                    progressDialog.show();
-
                     attemptLogin();
                 } else {
                     System.out.println("No network");
@@ -163,7 +162,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
         private String mUsername;
         private final String mPassword;
@@ -176,7 +175,20 @@ public class LoginFragment extends Fragment {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected void onPreExecute() {
+            progressDialog.show();
+
+            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mAuthTask.cancel(true);
+                }
+            });
+
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
@@ -192,7 +204,6 @@ public class LoginFragment extends Fragment {
                     return headers;
                 }
             };
-
             requestQueue.add(request);
 
             try {
@@ -201,7 +212,7 @@ public class LoginFragment extends Fragment {
                 while (response == null) {
                     try {
                         response = future.get(30, TimeUnit.SECONDS);
-                        success = true;
+                        success = 2;
                         UserModel userModel = null;
                         try {
                             userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember);
@@ -211,31 +222,33 @@ public class LoginFragment extends Fragment {
                         db.addUsers(userModel);
                         db.close();
                     } catch (InterruptedException e) {
-                        success = false;
+                        success = 1;
                         Thread.currentThread().interrupt();
                     }
                 }
-
             } catch (ExecutionException e) {
+                success = 0;
                 e.printStackTrace();
             } catch (TimeoutException e) {
                 Toast.makeText(getContext(), "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
             }
-
             return success;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer success) {
             mAuthTask = null;
 
-            if (success) {
+            if (success == 2) {
                 progressDialog.dismiss();
                 login();
-            } else {
+            } else if (success == 1){
                 progressDialog.dismiss();
                 passwordEntry.setError(getString(R.string.error_incorrect_password_username));
                 passwordEntry.requestFocus();
+            } else if (success == 0) {
+                Toast.makeText(getContext(), "Could not connect to the login server.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
             db.close();
         }

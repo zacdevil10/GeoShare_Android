@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -69,7 +70,6 @@ public class SignupFragment extends Fragment {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
                 attemptSignUp();
             }
         });
@@ -139,6 +139,19 @@ public class SignupFragment extends Fragment {
 
         Boolean success;
         Integer responseCode = null;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.show();
+
+            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mAuthTask.cancel(true);
+                }
+            });
+
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
