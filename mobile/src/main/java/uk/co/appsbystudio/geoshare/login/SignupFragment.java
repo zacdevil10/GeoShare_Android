@@ -118,15 +118,15 @@ public class SignupFragment extends Fragment {
     }
 
     private boolean isUsernameValid(String username) {
-        return username.length() > 5;
+        return username.length() > 0;
     }
 
     private boolean isEmailValid(String email) {
-        return email.length() > 5;
+        return email.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 5;
+        return password.length() > 0;
     }
 
     public class UserSignUpTask extends AsyncTask<Void, Void, Integer> {
@@ -187,9 +187,7 @@ public class SignupFragment extends Fragment {
                                 if (responseString != null) {
                                     System.out.println(responseString);
                                     if ("username".equals(responseString)) {
-                                        System.out.println("Here");
                                         success = 1;
-                                        System.out.println(success);
                                     } else if (Objects.equals(responseString, "email")) {
                                         success = 2;
                                     }
@@ -229,7 +227,11 @@ public class SignupFragment extends Fragment {
 
             System.out.println(success);
 
-            while (success == null && (System.currentTimeMillis()-time) < 30000) {}
+            while (success == null && (System.currentTimeMillis()-time) < 10000) {}
+
+            if (success == null) {
+                success = 0;
+            }
 
             System.out.println(success);
 
