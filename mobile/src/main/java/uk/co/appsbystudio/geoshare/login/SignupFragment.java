@@ -20,15 +20,19 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -125,7 +129,7 @@ public class SignupFragment extends Fragment {
         return password.length() > 5;
     }
 
-    public class UserSignUpTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserSignUpTask extends AsyncTask<Void, Void, Integer> {
 
         private final String mUsername;
         private final String mEmail;
@@ -137,24 +141,19 @@ public class SignupFragment extends Fragment {
             mPassword = password;
         }
 
-        Boolean success;
         Integer responseCode = null;
+        Integer success = null;
 
         @Override
         protected void onPreExecute() {
             progressDialog.show();
 
-            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    mAuthTask.cancel(true);
-                }
-            });
+            progressDialog.setCancelable(false);
 
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Integer doInBackground(Void... params) {
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("username", mUsername);
@@ -163,7 +162,51 @@ public class SignupFragment extends Fragment {
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), null, null) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    success = 201;
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    NetworkResponse response = error.networkResponse;
+                    String responseString = null;
+
+                    if (response != null && response.data != null){
+                        switch (response.statusCode) {
+                            case 409:
+                                try {
+                                    responseString = new String(response.data);
+                                    JSONObject responseObject = new JSONObject(responseString);
+                                    responseString = responseObject.getString("duplicate");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (responseString != null) {
+                                    System.out.println(responseString);
+                                    if ("username".equals(responseString)) {
+                                        System.out.println("Here");
+                                        success = 1;
+                                        System.out.println(success);
+                                    } else if (Objects.equals(responseString, "email")) {
+                                        success = 2;
+                                    }
+                                } else {
+                                    success = 409;
+                                }
+                                break;
+                            case 500:
+                                success = 500;
+                                break;
+                            case 400:
+                                success = 400;
+                                break;
+                        }
+                    }
+                }
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<>();
@@ -174,6 +217,7 @@ public class SignupFragment extends Fragment {
 
                 @Override
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    System.out.println(response.statusCode);
                     responseCode = response.statusCode;
                     return super.parseNetworkResponse(response);
                 }
@@ -183,39 +227,45 @@ public class SignupFragment extends Fragment {
 
             long time = System.currentTimeMillis();
 
-            while (responseCode == null && (System.currentTimeMillis()-time) < 5000) {
-                System.out.println(responseCode);
-                //TODO: show loading bar
-            }
+            System.out.println(success);
 
-            if (responseCode == null) {
-                success = false;
-            } else if (responseCode == 201){
-                System.out.println(responseCode);
-                success = true;
-            } else {
-                success = false;
-            }
+            while (success == null && (System.currentTimeMillis()-time) < 30000) {}
+
+            System.out.println(success);
 
             return success;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer success) {
             mAuthTask = null;
 
-            if (success) {
+            if (success == 201) {
                 usernameEntry.setText("");
                 emailEntry.setText("");
                 passwordEntry.setText("");
                 progressDialog.dismiss();
                 getFragmentManager().popBackStack();
                 confirmationDialog();
-            } else {
-                passwordEntry.setText("");
+            } else if (success == 1) {
                 progressDialog.dismiss();
-                passwordEntry.setError(null);
-                passwordEntry.requestFocus();
+                passwordEntry.setText("");
+                usernameEntry.setError("This username is already in use.");
+                usernameEntry.requestFocus();
+            } else if (success == 2) {
+                progressDialog.dismiss();
+                passwordEntry.setText("");
+                emailEntry.setError("An account is associated with this email.");
+                emailEntry.requestFocus();
+            } else if (success == 0) {
+                Toast.makeText(getContext(), "Could not connect to the registration server.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
+            } else if (success == 400) {
+                System.out.println("The server response is useless");
+                progressDialog.dismiss();
+            } else {
+                Toast.makeText(getContext(), success + " code response.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
         }
 

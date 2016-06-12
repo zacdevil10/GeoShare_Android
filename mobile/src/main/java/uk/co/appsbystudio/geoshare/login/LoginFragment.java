@@ -240,8 +240,8 @@ public class LoginFragment extends Fragment {
             mAuthTask = null;
 
             if (success == 2) {
-                progressDialog.dismiss();
                 login();
+                progressDialog.dismiss();
             } else if (success == 1){
                 progressDialog.dismiss();
                 passwordEntry.setError(getString(R.string.error_incorrect_password_username));
