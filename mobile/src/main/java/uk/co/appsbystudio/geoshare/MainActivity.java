@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private FriendsManagerFragment friendsManagerFragment;
     private PlacesFragment placesFragment;
     private SettingsFragment settingsFragment;
-    View header;
+    private View header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
         new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
     }
 
-    Bitmap bitmap;
-    File imageFile;
+    private Bitmap bitmap;
+    private File imageFile;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

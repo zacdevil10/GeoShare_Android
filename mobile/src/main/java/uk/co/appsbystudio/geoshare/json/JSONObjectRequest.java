@@ -16,13 +16,11 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
-
 public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
 
-    private String URL;
-    private String status;
-    private String pID;
+    private final String URL;
+    private final String status;
+    private final String pID;
     private boolean success = true;
 
     private final Context context;
@@ -56,11 +54,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 System.out.println(response.statusCode);
 
-                if (response.statusCode == 200) {
-                    success = true;
-                } else {
-                    success = false;
-                }
+                success = response.statusCode == 200;
 
                 return super.parseNetworkResponse(response);
             }

@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -26,16 +25,12 @@ import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.settings.ConfirmationDialog;
@@ -50,7 +45,7 @@ public class SignupFragment extends Fragment {
 
     private RequestQueue requestQueue;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     public SignupFragment() {
     }

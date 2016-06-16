@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:text="Or"
+                android:text="@string/login_or"
                 android:textColor="@color/text"
                 android:textSize="16sp"/>
 

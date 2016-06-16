@@ -4,16 +4,16 @@
     <item
         android:id="@+id/recent"
         android:icon="@drawable/ic_history_black_48px"
-        android:title="Recents" />
+        android:title="@string/places_recent" />
 
     <item
         android:id="@+id/favourites"
         android:icon="@drawable/ic_favorite_black_48px"
-        android:title="Favourites" />
+        android:title="@string/places_favourite" />
 
     <item
         android:id="@+id/nearby"
         android:icon="@drawable/ic_location_on_black_48px"
-        android:title="Nearby" />
+        android:title="@string/places_nearby" />
 
 </menu>

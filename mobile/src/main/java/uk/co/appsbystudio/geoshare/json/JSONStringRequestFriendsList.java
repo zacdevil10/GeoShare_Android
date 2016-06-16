@@ -37,7 +37,7 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
     private final TextView noRequest;
 
     private final String pID;
-    private String URL;
+    private final String URL;
     private final Integer arrayMethod;
 
     private final Context context;

@@ -28,9 +28,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_pending_list_item, viewGroup, false);
-        final ViewHolder viewHolder = new ViewHolder(view);
-
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override

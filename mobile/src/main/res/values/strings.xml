@@ -5,10 +5,11 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!-- Strings login -->
+    <!-- LOGIN -->
     <string name="login_header">GeoShare</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
+    <string name="login_or">Or</string>
     <string name="error_invalid_email">This username is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password_username">Username and password do not match!</string>
@@ -16,7 +17,7 @@
     <string name="login_remember">REMEMBER ME</string>
     <string name="login_submit">LOG IN</string>
     <string name="login_sign_up">SIGN UP</string>
-    <string name="title_activity_main">GeoSharer</string>
+    <string name="title_activity_main">GeoShare</string>
 
     <!-- SIGNUP FRAGMENT STRINGS -->
     <string name="signup_header">SIGN UP</string>
@@ -24,7 +25,7 @@
     <string name="signup_hint_username">Username</string>
     <string name="prompt_email">Email</string>
 
-    <!-- main activity -->
+    <!-- MAIN ACTIVITY -->
     <string name="maps">GeoMaps</string>
     <string name="friends">Friends Manager</string>
     <string name="settings">Settings</string>
@@ -38,6 +39,11 @@
     <string name="friends_reject_request">Reject request</string>
     <string name="friends_no_pending">You have no outgoing friend requests</string>
     <string name="friends_no_requests">You have no incoming friend requests</string>
+
+    <!-- PLACES BOTTOM BAR -->
+    <string name="places_recent">Recent</string>
+    <string name="places_favourite">Favourites</string>
+    <string name="places_nearby">Nearby</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

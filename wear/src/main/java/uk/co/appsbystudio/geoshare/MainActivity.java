@@ -1,14 +1,11 @@
 package uk.co.appsbystudio.geoshare;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.DismissOverlayView;
-import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,8 +20,6 @@ public class MainActivity extends WearableActivity implements OnMapReadyCallback
     private static final LatLng SYDNEY = new LatLng(-33.85704, 151.21522);
 
     private DismissOverlayView mDismissOverlay;
-
-    private GoogleMap mMap;
 
     private MapFragment mMapFragment;
 
@@ -91,7 +86,7 @@ public class MainActivity extends WearableActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        mMap = googleMap;
+        GoogleMap mMap = googleMap;
 
         // Set the long click listener as a way to exit the map.
         mMap.setOnMapLongClickListener(this);

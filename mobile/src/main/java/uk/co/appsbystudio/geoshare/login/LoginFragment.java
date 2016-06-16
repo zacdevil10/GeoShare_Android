@@ -48,7 +48,6 @@ public class LoginFragment extends Fragment {
     private EditText usernameEntry;
     private EditTextPassword passwordEntry;
     private CheckBox rememberMe;
-    private Integer rememberInt;
 
     private RequestQueue requestQueue;
 
@@ -58,7 +57,7 @@ public class LoginFragment extends Fragment {
 
     private DatabaseHelper db;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     public LoginFragment() {
     }
@@ -128,6 +127,7 @@ public class LoginFragment extends Fragment {
             return;
         }
 
+        Integer rememberInt;
         if (rememberMe.isChecked()) {
             rememberInt = 1;
         } else {
@@ -164,7 +164,7 @@ public class LoginFragment extends Fragment {
 
     public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
-        private String mUsername;
+        private final String mUsername;
         private final String mPassword;
         private final Integer mRemember;
 
