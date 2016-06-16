@@ -185,7 +185,6 @@ public class SignupFragment extends Fragment {
                                 }
 
                                 if (responseString != null) {
-                                    System.out.println(responseString);
                                     if ("username".equals(responseString)) {
                                         success = 1;
                                     } else if (Objects.equals(responseString, "email")) {
@@ -200,6 +199,27 @@ public class SignupFragment extends Fragment {
                                 break;
                             case 400:
                                 success = 400;
+
+                                try {
+                                    responseString = new String(response.data);
+                                    JSONObject responseObject = new JSONObject(responseString);
+                                    responseString = responseObject.getString("invalid");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (responseString != null) {
+                                    System.out.println(responseString);
+                                    if ("username".equals(responseString)) {
+                                        success = 3;
+                                    } else if ("email".equals(responseString)) {
+                                        success = 4;
+                                    } else if ("password".equals(responseString)) {
+                                        success = 5;
+                                    }
+                                } else {
+                                    success = 409;
+                                }
                                 break;
                         }
                     }
@@ -259,6 +279,21 @@ public class SignupFragment extends Fragment {
                 passwordEntry.setText("");
                 emailEntry.setError("An account is associated with this email.");
                 emailEntry.requestFocus();
+            } else if (success == 3) {
+                progressDialog.dismiss();
+                passwordEntry.setText("");
+                usernameEntry.setError("This username is invalid.");
+                usernameEntry.requestFocus();
+            } else if (success == 4) {
+                progressDialog.dismiss();
+                passwordEntry.setText("");
+                emailEntry.setError("This email address is invalid.");
+                emailEntry.requestFocus();
+            } else if (success == 5) {
+                progressDialog.dismiss();
+                passwordEntry.setText("");
+                passwordEntry.setError("This password is invalid.\nMust be X characters long.\nMust contain an uppercase letter.\nMust conatin a lowercase letter.\nMust contain a number or special character.");
+                passwordEntry.requestFocus();
             } else if (success == 0) {
                 Toast.makeText(getContext(), "Could not connect to the registration server.", Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
