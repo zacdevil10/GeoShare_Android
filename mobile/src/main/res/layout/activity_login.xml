@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
+    android:background="@color/colorPrimary"
     tools:context="uk.co.appsbystudio.geoshare.login.LoginActivity">
 
-    <ImageView
+    <!--ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@mipmap/login_screen_background"
         android:scaleType="centerCrop"
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription"/!-->
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -34,7 +35,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="32dp"
                 android:gravity="center_horizontal"
                 android:text="@string/login_header"
                 android:textSize="45sp"
@@ -45,11 +46,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="45dp"
-                android:layout_marginLeft="70dp"
-                android:layout_marginRight="70dp"
-                android:layout_marginBottom="70dp" />
+                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 

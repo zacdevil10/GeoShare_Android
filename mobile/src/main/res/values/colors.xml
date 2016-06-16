@@ -6,6 +6,6 @@
 
     <color name="recent_color">#E0E0E0</color>
 
-    <color name="text">#757575</color>
-    <color name="signUpText">#757575</color>
+    <color name="text">#FFF</color>
+    <color name="signUpText">#FFF</color>
 </resources>
