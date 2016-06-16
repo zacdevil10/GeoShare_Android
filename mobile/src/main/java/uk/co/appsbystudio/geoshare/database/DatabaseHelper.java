@@ -75,25 +75,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userModelList;
     }
 
-    public List<UserModel> getUsername() {
-        List<UserModel> userModelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT username FROM USER_DETAILS", null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                UserModel userModel = new UserModel();
-                userModel.setUsername(cursor.getString(cursor.getColumnIndex("username")));
-                userModelList.add(userModel);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        return userModelList;
-    }
-
     public void clearAllUserData() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM USER_DETAILS");

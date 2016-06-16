@@ -86,17 +86,15 @@ public class MainActivity extends WearableActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        GoogleMap mMap = googleMap;
-
         // Set the long click listener as a way to exit the map.
-        mMap.setOnMapLongClickListener(this);
+        googleMap.setOnMapLongClickListener(this);
 
         // Add a marker with a title that is shown in its info window.
-        mMap.addMarker(new MarkerOptions().position(SYDNEY)
+        googleMap.addMarker(new MarkerOptions().position(SYDNEY)
                 .title("Sydney Opera House"));
 
         // Move the camera to show the marker.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 10));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 10));
 
     }
 
