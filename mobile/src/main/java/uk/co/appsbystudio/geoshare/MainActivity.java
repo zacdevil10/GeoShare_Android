@@ -209,9 +209,8 @@ public class MainActivity extends AppCompatActivity {
     private void rememberLogout() {
         if (new ReturnData().getRemember(this) != 1) {
             new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
+            new ReturnData().clearSession(this);
         }
-
-        new ReturnData().clearSession(this);
     }
 
     private void logout() {
