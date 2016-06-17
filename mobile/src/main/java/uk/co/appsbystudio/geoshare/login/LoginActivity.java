@@ -1,10 +1,12 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,6 +18,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,17 +38,23 @@ import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.json.AutoLogin;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private LoginFragment loginFragment;
     private SignupFragment signupFragment;
+    private static final int RC_SIGN_IN = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
 
         //CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainCoordinator);
 
@@ -51,16 +67,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void buttonCallback(View button) {
+        //TODO: use switch
         if(button.getId() == R.id.sign_up) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                    .replace(loginFragment.getId(), signupFragment).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(loginFragment.getId(), signupFragment).addToBackStack(null).commit();
         }
         if (button.getId() == R.id.sign_up_sign_up) {
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                    .replace(signupFragment.getId(), loginFragment).commit();
+            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(signupFragment.getId(), loginFragment).commit();
         }
     }
 
@@ -71,8 +84,6 @@ public class LoginActivity extends AppCompatActivity {
 
         DatabaseHelper db = new DatabaseHelper(this);
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
         List<UserModel> userModelList = db.getAllUsers();
         for (UserModel id: userModelList) {
             pIDDatabase = id.getpID();
@@ -82,42 +93,8 @@ public class LoginActivity extends AppCompatActivity {
         if (pIDDatabase != null && isConnection_status()) {
 
             if (pIDDatabase.length() != 0) {
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-                        try {
-                            JSONArray pIDLive = new JSONArray(s);
 
-                            JSONObject inner = (JSONObject) pIDLive.get(0);
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                if (Objects.equals(inner.getString("token"), pIDDatabase)) {
-                                    loginFragment.login();
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        HashMap<String, String> headers = new HashMap<>();
-                        headers.put("REST_API_TOKEN", pIDDatabase);
-                        headers.put("Content-Type", "application/json; charset=utf-8");
-                        headers.put("User-agent", System.getProperty("http.agent"));
-                        return headers;
-                    }
-                };
-
-                requestQueue.add(stringRequest);
+                new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
 
             } else {
                 if (!isConnection_status()) {
@@ -151,5 +128,26 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
         return connection_status;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleGoogleSigninResult(result);
+        }
+    }
+
+    public void handleGoogleSigninResult (GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            System.out.println("Success");
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

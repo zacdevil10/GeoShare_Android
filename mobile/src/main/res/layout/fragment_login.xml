@@ -129,21 +129,20 @@
         </LinearLayout>
 
         <com.google.android.gms.common.SignInButton
-            android:id="@+id/google"
+            android:id="@+id/google_signin"
             android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/facebook"
-            android:layout_marginBottom="8dp"
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebook_signin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/twitter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"/>
 
     </LinearLayout>
 

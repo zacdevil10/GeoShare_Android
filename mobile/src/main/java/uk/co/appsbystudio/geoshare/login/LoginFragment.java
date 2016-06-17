@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -24,6 +25,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.marlonmafra.android.widget.EditTextPassword;
 
 import org.json.JSONException;
@@ -41,7 +48,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment{
 
     private UserLoginTask mAuthTask = null;
 
@@ -59,12 +66,37 @@ public class LoginFragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleApiClient mGoogleApiClient;
+
     public LoginFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+        LoginButton facebook_login = (LoginButton) view.findViewById(R.id.facebook_signin);
+        facebook_login.setReadPermissions("email");
+        facebook_login.setFragment(this);
+
+        view.findViewById(R.id.google_signin).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Google");
+                googleSignIn();
+            }
+        });
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .enableAutoManage(getActivity(), (GoogleApiClient.OnConnectionFailedListener) getActivity())
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
 
         db = new DatabaseHelper(getActivity());
 
@@ -100,7 +132,15 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        SignInButton signInButton = (SignInButton) view.findViewById(R.id.google_signin);
+        signInButton.setScopes(gso.getScopeArray());
+
         return view;
+    }
+
+    private void googleSignIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     private boolean isConnection_status() {
