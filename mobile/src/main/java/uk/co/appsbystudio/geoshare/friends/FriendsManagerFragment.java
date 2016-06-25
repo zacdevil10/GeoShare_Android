@@ -1,7 +1,10 @@
 package uk.co.appsbystudio.geoshare.friends;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,11 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
 
@@ -45,6 +53,15 @@ public class FriendsManagerFragment extends Fragment {
             }
         });
         toolbar.setTitle(R.string.friends);
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.searchFriends);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, FriendSearchActivity.class);
+                startActivity(intent);
+            }
+        });
 
         /* TOOLBAR TABS FRAGMENT SWAPPING */
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
