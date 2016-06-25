@@ -12,6 +12,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
@@ -28,19 +31,19 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     @Override
     protected Bitmap doInBackground(String... params) {
-        String urlString = params[0].replace(" ", "%20");
+        String url = params[0].replace(" ", "%20");
         Bitmap image_bitmap = null;
 
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(urlString);
-        httpGet.addHeader("If-Modified-Since", "Mon, 30 May 2016 00:15:25 GMT");
         try {
-            HttpResponse response = httpClient.execute(httpGet);
-            int statusCode = response.getStatusLine().getStatusCode();
+            URL urlString = new URL(url);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) urlString.openConnection();
+            httpURLConnection.setRequestProperty("If-Modified-Since", "Mon, 30 May 2016 00:15:25 GMT");
+
+            int statusCode = httpURLConnection.getResponseCode();
 
             if (statusCode == 200) {
                 try {
-                    InputStream inputStream = response.getEntity().getContent();
+                    InputStream inputStream = httpURLConnection.getInputStream();
                     image_bitmap = BitmapFactory.decodeStream(inputStream);
                 } catch (IOException e) {
                     e.printStackTrace();
