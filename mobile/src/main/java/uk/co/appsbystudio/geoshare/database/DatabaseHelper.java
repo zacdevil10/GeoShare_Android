@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.RecentSearchModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
@@ -25,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(id INTEGER PRIMARY KEY, _pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(id INTEGER PRIMARY KEY, _pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER DEFAULT 0)");
             db.execSQL("CREATE TABLE IF NOT EXISTS SEARCH_HISTORY(_id TEXT PRIMARY KEY, term TEXT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
             db.setTransactionSuccessful();
         } finally {
@@ -41,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // LOGIN_DETAILS
-    public long addUsers(UserModel userItem) {
+    public void addUsers(UserModel userItem) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -50,7 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("email", userItem.getEmail());
         values.put("remember", userItem.getRemember());
 
-        return db.insert("USER_DETAILS", null, values);
+        db.insert("USER_DETAILS", null, values);
     }
 
     public List<UserModel> getAllUsers() {
@@ -92,6 +93,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return userModelList;
+    }
+
+    public void seenTutorial(FirstRunModel firstRunModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("seenTutorial", firstRunModel.getSeenTutorial());
+
+        db.insert("USER_DETAILS", null, values);
+    }
+
+    public Integer getSeenTutorial() {
+        Integer seenTutorial = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT seenTutorial FROM USER_DETAILS", null);
+
+        FirstRunModel firstRunModel = new FirstRunModel();
+        firstRunModel.setSeenTutorial(cursor.getInt(cursor.getColumnIndex("seenTutorial")));
+
+        cursor.close();
+
+        return seenTutorial;
     }
 
     public void clearAllUserData() {

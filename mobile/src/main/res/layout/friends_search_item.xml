@@ -29,4 +29,14 @@
         android:textSize="16sp"
         android:text="" />
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addFriend"
+        android:src="@drawable/ic_favorite_black_48px"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

@@ -4,42 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 import uk.co.appsbystudio.geoshare.json.AutoLogin;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
@@ -77,41 +56,31 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    private String pIDDatabase;
-    private String mUsernameDatabase;
-
     private void getSession() {
 
-        DatabaseHelper db = new DatabaseHelper(this);
+        String pIDDatabase = new ReturnData().getpID(this);
 
-        List<UserModel> userModelList = db.getAllUsers();
-        for (UserModel id: userModelList) {
-            pIDDatabase = id.getpID();
-            mUsernameDatabase = id.getUsername().replace(" ", "%20");
-        }
 
-        if (pIDDatabase != null && isConnection_status()) {
+        if (pIDDatabase != null && isConnected()) {
 
             if (pIDDatabase.length() != 0) {
 
                 new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
 
             } else {
-                if (!isConnection_status()) {
+                if (!isConnected()) {
                     System.out.println("No network");
                 }
                 if (pIDDatabase == null) {
                     System.out.println("Session gone");
                 }
             }
-
-            db.close();
-            }
+        }
     }
 
     private boolean connection_status = false;
 
-    private boolean isConnection_status() {
+    private boolean isConnected() {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
@@ -140,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    public void handleGoogleSigninResult (GoogleSignInResult result) {
+    private void handleGoogleSigninResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
             System.out.println("Success");
         }

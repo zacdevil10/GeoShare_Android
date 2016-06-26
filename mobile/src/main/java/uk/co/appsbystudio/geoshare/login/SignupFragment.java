@@ -21,7 +21,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
 
@@ -88,8 +87,8 @@ public class SignupFragment extends Fragment {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            passwordEntry.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            passwordEntry.setError(getString(R.string.error_field_required));
             focusView = passwordEntry;
             cancel = true;
         }
@@ -98,9 +97,11 @@ public class SignupFragment extends Fragment {
             usernameEntry.setError(getString(R.string.error_field_required));
             focusView = usernameEntry;
             cancel = true;
-        } else if (!isUsernameValid(username)) {
-            usernameEntry.setError(getString(R.string.error_invalid_email));
-            focusView = usernameEntry;
+        }
+
+        if (TextUtils.isEmpty(email)) {
+            emailEntry.setError(getString(R.string.error_field_required));
+            focusView = emailEntry;
             cancel = true;
         }
 
@@ -110,18 +111,6 @@ public class SignupFragment extends Fragment {
             mAuthTask = new UserSignUpTask(username, email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isUsernameValid(String username) {
-        return username.length() > 0;
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.length() > 0;
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 0;
     }
 
     public class UserSignUpTask extends AsyncTask<Void, Void, Integer> {
@@ -136,7 +125,6 @@ public class SignupFragment extends Fragment {
             mPassword = password;
         }
 
-        Integer responseCode = null;
         Integer success = null;
 
         @Override
@@ -154,8 +142,6 @@ public class SignupFragment extends Fragment {
             hashMap.put("username", mUsername);
             hashMap.put("email", mEmail);
             hashMap.put("password", mPassword);
-
-            RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/", new JSONObject(hashMap), new Response.Listener<JSONObject>() {
                 @Override
@@ -230,8 +216,6 @@ public class SignupFragment extends Fragment {
 
                 @Override
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    System.out.println(response.statusCode);
-                    responseCode = response.statusCode;
                     return super.parseNetworkResponse(response);
                 }
             };

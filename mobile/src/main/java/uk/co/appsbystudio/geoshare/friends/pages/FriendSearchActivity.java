@@ -11,14 +11,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.SearchFriends;
 
 public class FriendSearchActivity extends AppCompatActivity {
 
-    final Context context = this;
+    private final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +59,7 @@ public class FriendSearchActivity extends AppCompatActivity {
 
     }
 
-    public void refresh(RecyclerView searchResults, CharSequence name) {
+    private void refresh(RecyclerView searchResults, CharSequence name) {
         new SearchFriends(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name).execute();
     }
 }

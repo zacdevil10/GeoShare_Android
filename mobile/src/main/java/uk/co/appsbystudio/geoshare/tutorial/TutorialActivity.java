@@ -14,6 +14,7 @@ import com.ramotion.paperonboarding.listeners.PaperOnboardingOnRightOutListener;
 
 import java.util.ArrayList;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
@@ -58,13 +59,13 @@ public class TutorialActivity extends Activity {
         onBoardingFragment.setOnRightOutListener(new PaperOnboardingOnRightOutListener() {
             @Override
             public void onRightOut() {
-                login();
+                finish();
             }
         });
     }
 
-    private void login() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+    public void finish() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         this.finish();
     }

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
-import uk.co.appsbystudio.geoshare.login.LoginFragment;
 
 public class AutoLogin extends AsyncTask<Void, Void, Void> {
 
@@ -77,7 +76,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public void login() {
+    private void login() {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
     }

@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import com.android.volley.toolbox.Volley;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.marlonmafra.android.widget.EditTextPassword;
@@ -46,7 +44,10 @@ import java.util.concurrent.TimeoutException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
+import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
 public class LoginFragment extends Fragment{
 
@@ -299,9 +300,19 @@ public class LoginFragment extends Fragment{
         }
     }
 
-    public void login() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
-        getActivity().finish();
+    private void login() {
+        Integer seenTutorial = new ReturnData().seenTutorial(getContext());
+
+        System.out.println(seenTutorial);
+
+        if (seenTutorial == 0) {
+            Intent intent = new Intent(getActivity(), TutorialActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        } else {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 }
