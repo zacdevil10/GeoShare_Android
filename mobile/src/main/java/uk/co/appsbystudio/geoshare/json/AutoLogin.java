@@ -64,7 +64,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", pID);
+                headers.put("REST-API-TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;

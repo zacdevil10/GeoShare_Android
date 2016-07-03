@@ -18,6 +18,9 @@ import org.apache.http.params.HttpParams;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
@@ -51,6 +54,23 @@ public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        /*
+        try {
+            URL url = new URL("https://geoshare.appsbystudio.co.uk/api/user/img/");
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.setRequestProperty("username", new ReturnData().getUsername(context));
+            httpURLConnection.setRequestProperty("REST-API-TOKEN", new ReturnData().getpID(context));
+            httpURLConnection.setRequestProperty("content/type", "multipart/form-data");
+            httpURLConnection.setRequestProperty("image", context.getCacheDir() + "picture");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //*/
+
+
         return null;
     }
 

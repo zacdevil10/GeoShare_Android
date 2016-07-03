@@ -53,7 +53,7 @@ public class SearchFriends extends AsyncTask<Void, Void, ArrayList>{
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", new ReturnData().getpID(context));
+                headers.put("REST-API-TOKEN", new ReturnData().getpID(context));
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;

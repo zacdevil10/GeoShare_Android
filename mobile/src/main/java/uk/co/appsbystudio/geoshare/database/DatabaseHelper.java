@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
-import uk.co.appsbystudio.geoshare.database.databaseModel.RecentSearchModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -27,7 +26,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(id INTEGER PRIMARY KEY, _pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER DEFAULT 0)");
-            db.execSQL("CREATE TABLE IF NOT EXISTS SEARCH_HISTORY(_id TEXT PRIMARY KEY, term TEXT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -37,7 +35,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS USER_DETAILS");
-        db.execSQL("DROP TABLE IF EXISTS SEARCH_HISTORY");
         onCreate(db);
     }
 
@@ -76,25 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userModelList;
     }
 
-    public List<UserModel> getUsername() {
-        List<UserModel> userModelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT username FROM USER_DETAILS", null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                UserModel userModel = new UserModel();
-                userModel.setUsername(cursor.getString(cursor.getColumnIndex("username")));
-                userModelList.add(userModel);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        return userModelList;
-    }
-
     public void seenTutorial(FirstRunModel firstRunModel) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -105,13 +83,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Integer getSeenTutorial() {
-        Integer seenTutorial = null;
+        Integer seenTutorial;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT seenTutorial FROM USER_DETAILS", null);
+        cursor.moveToFirst();
 
         FirstRunModel firstRunModel = new FirstRunModel();
         firstRunModel.setSeenTutorial(cursor.getInt(cursor.getColumnIndex("seenTutorial")));
+
+        seenTutorial = firstRunModel.getSeenTutorial();
 
         cursor.close();
 
@@ -126,38 +107,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void clearUserSession() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE USER_DETAILS SET _pID='' ");
-    }
-
-
-    //Search History
-    public long addSearchHistory(RecentSearchModel recentSearchModel) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("_id", recentSearchModel.getId());
-        values.put("term", recentSearchModel.getTerm());
-        values.put("Timestamp", recentSearchModel.getDateTime());
-
-        return db.insert("SEARCH_HISTORY", null, values);
-    }
-
-    public List<RecentSearchModel> getSearchHistory() {
-        List<RecentSearchModel> recentSearchModelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM SEARCH_HISTORY ORDER BY Timestamp DESC", null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                RecentSearchModel recentSearchModel = new RecentSearchModel();
-                recentSearchModel.setTerm(cursor.getString(cursor.getColumnIndex("term")));
-                recentSearchModelList.add(recentSearchModel);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        return recentSearchModelList;
     }
 
     public void close() {

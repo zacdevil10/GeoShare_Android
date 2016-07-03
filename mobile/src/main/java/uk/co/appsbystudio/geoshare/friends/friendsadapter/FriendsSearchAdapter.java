@@ -1,6 +1,9 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
+import android.app.DialogFragment;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +16,10 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
+import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 import uk.co.appsbystudio.geoshare.json.JSONRequests;
+import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 
 public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
     private final Context context;
@@ -42,13 +47,14 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        new DownloadImageTask(holder.friends_pictures, null, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
 
         holder.addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Click");
-                new JSONRequests().onPostRequest("https://geoshare.appsbystudio.co.uk/api/user/" + holder.friend_name.getText() + "/friends/request/", new ReturnData().getpID(context), context);
+                //new JSONRequests().onPostRequest("https://geoshare.appsbystudio.co.uk/api/user/" + holder.friend_name.getText() + "/friends/request/", new ReturnData().getpID(context), context);
+                ((FriendSearchActivity) context).friendsDialog((String) holder.friend_name.getText());
             }
         });
     }

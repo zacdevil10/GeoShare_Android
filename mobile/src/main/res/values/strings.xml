@@ -59,5 +59,11 @@
 
     <string name="facebook_app_id">1751664078387348</string>
     <string name="server_client_id">133096329229-eruk901l7jj83k2odv1kc0pvmt9tj2a6.apps.googleusercontent.com</string>
+    <string name="return_desc">return</string>
+    <string name="search_for_friends">Search for friends…</string>
+    <string name="cancel_desc">Cancel</string>
+    <string name="menu_desc">menu</string>
+    <string name="add_friend_desc">Add friend</string>
+    <string name="more_login_options_coming_soon">More login options coming soon!</string>
 
 </resources>

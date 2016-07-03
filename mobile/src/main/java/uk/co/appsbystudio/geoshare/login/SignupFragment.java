@@ -34,7 +34,7 @@ import java.util.Objects;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.settings.ConfirmationDialog;
 
-public class SignupFragment extends Fragment {
+public class SignUpFragment extends Fragment {
 
     private UserSignUpTask mAuthTask = null;
 
@@ -46,7 +46,7 @@ public class SignupFragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
-    public SignupFragment() {
+    public SignUpFragment() {
     }
 
     @Override
@@ -93,15 +93,15 @@ public class SignupFragment extends Fragment {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(username)) {
-            usernameEntry.setError(getString(R.string.error_field_required));
-            focusView = usernameEntry;
-            cancel = true;
-        }
-
         if (TextUtils.isEmpty(email)) {
             emailEntry.setError(getString(R.string.error_field_required));
             focusView = emailEntry;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(username)) {
+            usernameEntry.setError(getString(R.string.error_field_required));
+            focusView = usernameEntry;
             cancel = true;
         }
 
@@ -214,10 +214,6 @@ public class SignupFragment extends Fragment {
                     return headers;
                 }
 
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    return super.parseNetworkResponse(response);
-                }
             };
 
             requestQueue.add(request);
@@ -226,7 +222,7 @@ public class SignupFragment extends Fragment {
 
             System.out.println(success);
 
-            while (success == null && (System.currentTimeMillis()-time) < 10000) {}
+            while (success == null && (System.currentTimeMillis()-time) < 10000)
 
             if (success == null) {
                 success = 0;

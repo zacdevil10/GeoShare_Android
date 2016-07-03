@@ -1,11 +1,7 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,11 +20,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.marlonmafra.android.widget.EditTextPassword;
 
 import org.json.JSONException;
@@ -45,7 +36,6 @@ import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
@@ -60,15 +50,11 @@ public class LoginFragment extends Fragment{
     private RequestQueue requestQueue;
 
     private Integer success = 0;
-    private boolean connection_status = false;
     private String mUsernameDatabase;
 
     private DatabaseHelper db;
 
     private ProgressDialog progressDialog;
-
-    private static final int RC_SIGN_IN = 9001;
-    private GoogleApiClient mGoogleApiClient;
 
     public LoginFragment() {
     }
@@ -76,28 +62,6 @@ public class LoginFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-
-        LoginButton facebook_login = (LoginButton) view.findViewById(R.id.facebook_signin);
-        facebook_login.setReadPermissions("email");
-        facebook_login.setFragment(this);
-
-        view.findViewById(R.id.google_signin).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("Google");
-                googleSignIn();
-            }
-        });
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                .enableAutoManage(getActivity(), (GoogleApiClient.OnConnectionFailedListener) getActivity())
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
 
         db = new DatabaseHelper(getActivity());
 
@@ -125,42 +89,11 @@ public class LoginFragment extends Fragment{
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnection_status()) {
-                    attemptLogin();
-                } else {
-                    System.out.println("No network");
-                }
+                attemptLogin();
             }
         });
 
-        SignInButton signInButton = (SignInButton) view.findViewById(R.id.google_signin);
-        signInButton.setScopes(gso.getScopeArray());
-
         return view;
-    }
-
-    private void googleSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private boolean isConnection_status() {
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
-            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                connection_status = true;
-            } else {
-                networkInfo = connectivityManager.getNetworkInfo(1);
-                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                    connection_status = true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return connection_status;
     }
 
     private void attemptLogin() {
@@ -168,16 +101,10 @@ public class LoginFragment extends Fragment{
             return;
         }
 
-        Integer rememberInt;
-        if (rememberMe.isChecked()) {
-            rememberInt = 1;
-        } else {
-            rememberInt = 0;
-        }
+        Integer rememberInt = rememberMe.isChecked() ? 1 : 0;
 
         String username = usernameEntry.getText().toString();
         String password = passwordEntry.getText().toString();
-        Integer remember = rememberInt;
 
 
         boolean cancel = false;
@@ -198,7 +125,7 @@ public class LoginFragment extends Fragment{
         if (cancel) {
             focusView.requestFocus();
         } else {
-            mAuthTask = new UserLoginTask(username, password, remember);
+            mAuthTask = new UserLoginTask(username, password, rememberInt);
             mAuthTask.execute((Void) null);
         }
     }
@@ -219,12 +146,7 @@ public class LoginFragment extends Fragment{
         protected void onPreExecute() {
             progressDialog.show();
 
-            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    mAuthTask.cancel(true);
-                }
-            });
+            progressDialog.setCancelable(false);
 
         }
 
@@ -233,6 +155,7 @@ public class LoginFragment extends Fragment{
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
+            hashMap.put("expiry", "P5Y1DT1H1M");
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
@@ -303,9 +226,7 @@ public class LoginFragment extends Fragment{
     private void login() {
         Integer seenTutorial = new ReturnData().seenTutorial(getContext());
 
-        System.out.println(seenTutorial);
-
-        if (seenTutorial == 0) {
+        if (seenTutorial == 2) {
             Intent intent = new Intent(getActivity(), TutorialActivity.class);
             startActivity(intent);
             getActivity().finish();

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* RECENT APPS COLOR */
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.recent_color));
+        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
         this.setTaskDescription(taskDesc);
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshPicture() {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
     }
 
     private Bitmap bitmap;
@@ -158,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
+            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
+            Uri uri = activityResult.getUri();
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
@@ -167,21 +175,31 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        try {
-            System.out.println(bitmap);
+        if (requestCode == 1 || requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                if (bitmap != null) {
+                    bitmap = scaleImage(bitmap, 512, true);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
+                }
 
-            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-            if (bitmap != null) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, fileOutputStream);
+                fileOutputStream.close();
+
+                new ImageUpload(imageFile, this).execute();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            fileOutputStream.close();
-
-            new ImageUpload(imageFile, this).execute();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    public static Bitmap scaleImage(Bitmap image, int maximumSize, boolean filter) {
+        float aspectratio = Math.min((float) maximumSize / image.getWidth(), (float) maximumSize / image.getHeight());
+
+        int width = Math.round(aspectratio * image.getWidth());
+        int height = Math.round(aspectratio * image.getHeight());
+
+        return Bitmap.createScaledBitmap(image, width, height, filter);
     }
 
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */

@@ -32,6 +32,7 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/add_friend_desc"
         android:id="@+id/addFriend"
         android:src="@drawable/ic_favorite_black_48px"
         android:background="@android:color/transparent"

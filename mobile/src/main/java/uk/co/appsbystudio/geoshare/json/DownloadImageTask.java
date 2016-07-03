@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +17,12 @@ import uk.co.appsbystudio.geoshare.R;
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     private final CircleImageView viewById;
+    private final ImageView imageViewById;
     private final Context context;
 
-    public DownloadImageTask(CircleImageView viewById, Context context) {
+    public DownloadImageTask(CircleImageView viewById, ImageView imageViewById, Context context) {
         this.viewById = viewById;
+        this.imageViewById = imageViewById;
         this.context = context;
     }
 
@@ -54,10 +57,19 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
     protected void onPostExecute(Bitmap bitmap) {
         Bitmap default_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_profile_picture);
 
-        if (bitmap != null) {
-            viewById.setImageBitmap(bitmap);
+        if (viewById != null) {
+            if (bitmap != null) {
+                viewById.setImageBitmap(bitmap);
+            } else {
+                viewById.setImageBitmap(default_image);
+            }
         } else {
-            viewById.setImageBitmap(default_image);
+            if (bitmap != null) {
+                imageViewById.setImageBitmap(bitmap);
+            } else {
+                imageViewById.setImageBitmap(default_image);
+            }
         }
+
     }
 }

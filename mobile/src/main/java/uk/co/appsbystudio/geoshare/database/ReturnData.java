@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.util.List;
 
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class ReturnData {
@@ -13,7 +12,6 @@ public class ReturnData {
     private String username;
     private String pID;
     private Integer remember;
-    private Integer seenTutorial;
 
     public String getpID(Context context) {
         db = new DatabaseHelper(context);
@@ -57,9 +55,7 @@ public class ReturnData {
     public Integer seenTutorial(Context context) {
         db = new DatabaseHelper(context);
 
-        seenTutorial = db.getSeenTutorial();
-
-        return seenTutorial;
+        return db.getSeenTutorial();
     }
 
     public void clearData(Context context) {

@@ -48,16 +48,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/MainTheme" />
 
-        <receiver android:name=".services.NetworkStateChange">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait"
             android:theme="@style/TutorialTheme" />
+
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Theme.AppCompat"/>
     </application>
 
 </manifest>

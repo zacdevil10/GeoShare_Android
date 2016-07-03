@@ -20,8 +20,6 @@ public class JSONRequests {
     private RequestQueue requestQueue;
     private JsonObjectRequest request;
 
-    private boolean result;
-
     public void onPostRequest(String URL, final String pID, Context mContext) {
         System.out.println(URL.replace(" ", "%20"));
         requestQueue = Volley.newRequestQueue(mContext);
@@ -41,7 +39,7 @@ public class JSONRequests {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", pID);
+                headers.put("REST-API-TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;
@@ -58,7 +56,7 @@ public class JSONRequests {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", pID);
+                headers.put("REST-API-TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;

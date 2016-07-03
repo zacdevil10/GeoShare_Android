@@ -65,12 +65,4 @@ public class FriendsPendingFragment extends Fragment {
     private void pendingFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noPending) {
         new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
-
-    public void refreshRequestFriends() {
-        new JSONStringRequestFriendsList(getActivity(), friendsRequestList, swipeRefresh, noRequests, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
-    }
-
-    public void refreshPendingFriends() {
-        new JSONStringRequestFriendsList(getActivity(), friendsPendingList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
-    }
 }
