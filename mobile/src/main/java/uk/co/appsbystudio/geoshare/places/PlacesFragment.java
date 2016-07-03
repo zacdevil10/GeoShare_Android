@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
@@ -51,7 +52,7 @@ public class PlacesFragment extends Fragment {
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
 
-        bottomNavigation.setAccentColor(getResources().getColor(R.color.colorPrimary));
+        bottomNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
 
         return view;

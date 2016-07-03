@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
-import uk.co.appsbystudio.geoshare.login.LoginFragment;
 
 public class AutoLogin extends AsyncTask<Void, Void, Void> {
 
@@ -65,7 +64,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", pID);
+                headers.put("REST-API-TOKEN", pID);
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;
@@ -77,7 +76,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public void login() {
+    private void login() {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
     }

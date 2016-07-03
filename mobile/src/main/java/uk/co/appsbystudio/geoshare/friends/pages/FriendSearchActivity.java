@@ -1,6 +1,8 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,14 +13,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.SearchFriends;
+import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 
 public class FriendSearchActivity extends AppCompatActivity {
 
-    final Context context = this;
+    private final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,17 @@ public class FriendSearchActivity extends AppCompatActivity {
 
     }
 
-    public void refresh(RecyclerView searchResults, CharSequence name) {
-        new SearchFriends(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name).execute();
+    public void friendsDialog(String name) {
+        Bundle arguments = new Bundle();
+        arguments.putString("name", name);
+
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.DialogFragment friendDialog = new FriendDialog();
+        friendDialog.setArguments(arguments);
+        friendDialog.show(fragmentManager, "");
+    }
+
+    private void refresh(RecyclerView searchResults, CharSequence name) {
+        new SearchFriends(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name + "?showFriends=false").execute();
     }
 }

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
@@ -14,7 +15,7 @@ public class ProfilePictureOptions extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
         optionsMenu.setTitle("Upload profile picture").setItems(R.array.profilePictureOptions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -30,7 +31,7 @@ public class ProfilePictureOptions extends DialogFragment {
                     }
                 }
             }
-        });
+        }).setNeutralButton("Cancel", null);
 
         return optionsMenu.create();
     }

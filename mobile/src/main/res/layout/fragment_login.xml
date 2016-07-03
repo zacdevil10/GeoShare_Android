@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
-    android:background="@color/colorPrimary"
     android:elevation="4dp">
 
     <LinearLayout
@@ -92,9 +91,9 @@
             android:id="@+id/remember"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/login_remember"
-            android:textColor="@color/text"
-            android:gravity="center"/>
+            android:textColor="@color/text"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,7 +127,15 @@
 
         </LinearLayout>
 
-        <com.google.android.gms.common.SignInButton
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/more_login_options_coming_soon"
+            android:textColor="@color/text"
+            android:textSize="16sp"/>
+
+        <!--com.google.android.gms.common.SignInButton
             android:id="@+id/google_signin"
             android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
@@ -142,7 +149,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"/>
+            android:layout_marginRight="4dp"/!-->
 
     </LinearLayout>
 

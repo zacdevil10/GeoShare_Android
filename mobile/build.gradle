@@ -44,7 +44,7 @@ dependencies {
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.android.support:multidex:1.0.1'
 
-    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.2.+'
 
     compile 'com.aurelhubert:ahbottomnavigation:1.2.3'
 }
