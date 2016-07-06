@@ -30,7 +30,6 @@
                 android:paddingStart="@dimen/search_key_line">
 
                 <ImageView
-                    android:id="@+id/imageView_arrow_back"
                     android:contentDescription="@string/return_desc"
                     android:layout_width="@dimen/search_icon"
                     android:layout_height="match_parent"

@@ -6,14 +6,16 @@ public class UserModel {
     private String username;
     private String email;
     private Integer remember;
+    private Integer seenTutorial;
 
     public UserModel() {}
 
-    public UserModel(String pID, String username, String email, Integer remember) {
+    public UserModel(String pID, String username, String email, Integer remember, Integer seenTutorial) {
         this.pID = pID != null? pID : this.pID;
         this.username = username != null? username : this.username;
         this.email = email != null? email : this.email;
         this.remember = remember != null? remember : this.remember;
+        this.seenTutorial = seenTutorial != null? seenTutorial : this.seenTutorial;
     }
 
     public String getpID() {
@@ -32,6 +34,10 @@ public class UserModel {
         return remember;
     }
 
+    public Integer getSeenTutorial() {
+        return seenTutorial;
+    }
+
     public void setpID(String pID) {
         this.pID = pID;
     }
@@ -46,5 +52,9 @@ public class UserModel {
 
     public void setRemember(Integer remember) {
         this.remember = remember;
+    }
+
+    public void setSeenTutorial(Integer seenTutorial) {
+        this.seenTutorial = seenTutorial;
     }
 }

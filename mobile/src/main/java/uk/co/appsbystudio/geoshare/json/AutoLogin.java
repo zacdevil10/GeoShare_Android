@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.json;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -21,17 +22,26 @@ import java.util.Map;
 import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
 public class AutoLogin extends AsyncTask<Void, Void, Void> {
 
     private final Context context;
     private final String pID;
     private final String username;
+    private final ProgressDialog progressDialog;
 
-    public AutoLogin(Context context, String pID, String username) {
+    public AutoLogin(Context context, String pID, String username, ProgressDialog progressDialog) {
         this.context = context;
         this.pID = pID;
         this.username = username;
+        this.progressDialog = progressDialog;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        progressDialog.show();
+        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -76,8 +86,15 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        progressDialog.dismiss();
+    }
+
     private void login() {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
+        LoginActivity loginActivity = (LoginActivity) context;
+        loginActivity.finish();
     }
 }

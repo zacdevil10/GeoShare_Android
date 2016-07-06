@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.appsbystudio.geoshare.database.databaseModel.FirstRunModel;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -47,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("username", userItem.getUsername());
         values.put("email", userItem.getEmail());
         values.put("remember", userItem.getRemember());
+        values.put("seenTutorial", userItem.getSeenTutorial());
 
         db.insert("USER_DETAILS", null, values);
     }
@@ -73,15 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userModelList;
     }
 
-    public void seenTutorial(FirstRunModel firstRunModel) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("seenTutorial", firstRunModel.getSeenTutorial());
-
-        db.insert("USER_DETAILS", null, values);
-    }
-
     public Integer getSeenTutorial() {
         Integer seenTutorial;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -89,10 +80,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT seenTutorial FROM USER_DETAILS", null);
         cursor.moveToFirst();
 
-        FirstRunModel firstRunModel = new FirstRunModel();
-        firstRunModel.setSeenTutorial(cursor.getInt(cursor.getColumnIndex("seenTutorial")));
+        UserModel userModel = new UserModel();
+        userModel.setSeenTutorial(cursor.getInt(cursor.getColumnIndex("seenTutorial")));
 
-        seenTutorial = firstRunModel.getSeenTutorial();
+        seenTutorial = userModel.getSeenTutorial();
 
         cursor.close();
 

@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.login;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -24,9 +25,19 @@ public class LoginActivity extends AppCompatActivity {
 
         String pIDDatabase = new ReturnData().getpID(this);
 
+        ProgressDialog progressDialog = new ProgressDialog(this, R.style.DialogTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+
+
+
         if (pIDDatabase != null) {
+
+            progressDialog.show();
+
             if (pIDDatabase.length() != 0) {
-                new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
+
+                new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this), progressDialog).execute();
             }
         }
 

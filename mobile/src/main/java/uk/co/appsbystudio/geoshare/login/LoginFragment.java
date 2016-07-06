@@ -145,9 +145,7 @@ public class LoginFragment extends Fragment{
         @Override
         protected void onPreExecute() {
             progressDialog.show();
-
             progressDialog.setCancelable(false);
-
         }
 
         @Override
@@ -179,7 +177,8 @@ public class LoginFragment extends Fragment{
                         success = 2;
                         UserModel userModel = null;
                         try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember);
+                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember, 0);
+                            System.out.println("Here");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

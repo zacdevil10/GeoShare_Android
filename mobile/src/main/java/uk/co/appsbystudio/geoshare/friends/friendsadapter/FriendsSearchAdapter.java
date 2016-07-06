@@ -1,9 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
-import android.app.DialogFragment;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +12,8 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.JSONRequests;
-import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 
 public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
     private final Context context;

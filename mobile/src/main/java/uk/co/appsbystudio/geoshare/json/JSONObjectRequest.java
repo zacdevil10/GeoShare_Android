@@ -68,6 +68,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
     protected void onPostExecute(final Boolean success) {
         if (success) {
             //TODO: refresh list
+            System.out.println("Refreshing friends list.");
         }
     }
 }

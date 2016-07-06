@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kennyc.bottomsheet.BottomSheet;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -78,9 +79,13 @@ public class MainActivity extends AppCompatActivity {
         settingsFragment = new SettingsFragment();
 
         /* RECENT APPS COLOR */
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
-        this.setTaskDescription(taskDesc);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            ActivityManager.TaskDescription taskDesc;
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
+            this.setTaskDescription(taskDesc);
+        }
+
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
@@ -143,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        usernameTextView.setText(getString(R.string.user_message) + new ReturnData().getUsername(this));
+        String welcome = String.format(getResources().getString(R.string.welcome_user_header), new ReturnData().getUsername(this));
+        usernameTextView.setText(welcome);
+
     }
 
     public void refreshPicture() {
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
-                    bitmap = scaleImage(bitmap, 512, true);
+                    bitmap = scaleImage(bitmap);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
                 }
 
@@ -193,13 +200,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static Bitmap scaleImage(Bitmap image, int maximumSize, boolean filter) {
-        float aspectratio = Math.min((float) maximumSize / image.getWidth(), (float) maximumSize / image.getHeight());
+    private static Bitmap scaleImage(Bitmap image) {
+        float aspectratio = Math.min((float) 512 / image.getWidth(), (float) 512 / image.getHeight());
 
         int width = Math.round(aspectratio * image.getWidth());
         int height = Math.round(aspectratio * image.getHeight());
 
-        return Bitmap.createScaledBitmap(image, width, height, filter);
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
@@ -243,5 +250,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();
+    }
+
+    public void showMore() {
+        new BottomSheet.Builder(this).setTitle("More options!").setMessage("Much stuff be here.").setPositiveButton("Ok").setNegativeButton("Cancel").show();
     }
 }

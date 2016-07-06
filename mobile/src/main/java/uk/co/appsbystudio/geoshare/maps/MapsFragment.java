@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.maps;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,6 +25,7 @@ import uk.co.appsbystudio.geoshare.R;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private PlaceAutocompleteFragment placeAutocompleteFragment;
+    private MapFragment mapFragment;
 
     public MapsFragment() {
     }
@@ -36,8 +36,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         /* HANDLES FOR VARIOUS VIEWS */
-        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
-        placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        if (mapFragment == null) {
+            mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
+        if (placeAutocompleteFragment == null) placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         view.findViewById(R.id.drawer_open).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,9 +49,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mapFragment.getMapAsync(this);
-
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
+        //CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
 
         //View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
         //BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);

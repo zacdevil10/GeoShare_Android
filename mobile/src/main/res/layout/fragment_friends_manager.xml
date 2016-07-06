@@ -6,7 +6,6 @@
     tools:context=".friends.FriendsManagerFragment">
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/friends_manager_coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">

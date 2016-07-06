@@ -4,24 +4,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 
@@ -37,56 +30,34 @@ public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
 
     @Override
     protected Void doInBackground(Bitmap... params) {
-        try {
-            HttpParams httpParams = new BasicHttpParams();
-            httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-            DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
-            HttpPost httpPost = new HttpPost("https://geoshare.appsbystudio.co.uk/api/user/img/");
 
-            MultipartEntity multipartEntity = new MultipartEntity();
+        OkHttpClient okHttpClient = new OkHttpClient();
 
-            multipartEntity.addPart("username", new StringBody(new ReturnData().getUsername(context)));
-            multipartEntity.addPart("REST_API_TOKEN", new StringBody(new ReturnData().getpID(context)));
-            multipartEntity.addPart("image", new FileBody(image, "image.png" ,"image/png", null));
-            httpPost.setEntity(multipartEntity);
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("username", new ReturnData().getUsername(context))
+                .addFormDataPart("REST_API_TOKEN", new ReturnData().getpID(context))
+                .addFormDataPart("image", "image.png", RequestBody.create(MediaType.parse("image/png"), image))
+                .build();
 
-            httpClient.execute(httpPost, new PhotoResponseHandler());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Request request = new Request.Builder()
+                .url("https://geoshare.appsbystudio.co.uk/api/user/img/")
+                .post(requestBody)
+                .build();
 
-        /*
-        try {
-            URL url = new URL("https://geoshare.appsbystudio.co.uk/api/user/img/");
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setDoOutput(true);
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setRequestProperty("username", new ReturnData().getUsername(context));
-            httpURLConnection.setRequestProperty("REST-API-TOKEN", new ReturnData().getpID(context));
-            httpURLConnection.setRequestProperty("content/type", "multipart/form-data");
-            httpURLConnection.setRequestProperty("image", context.getCacheDir() + "picture");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //*/
-
-
-        return null;
-    }
-
-    private class PhotoResponseHandler implements ResponseHandler<Object> {
-        @Override
-        public Object handleResponse(HttpResponse httpResponse) throws IOException {
-
-            int code = httpResponse.getStatusLine().getStatusCode();
-
-            if (code == 204) {
-                ((MainActivity) context).refreshPicture();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
             }
 
-            System.out.println(code);
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println(response.code());
+                ((MainActivity) context).refreshPicture();
+                response.close();
+            }
+        });
 
-            return null;
-        }
+        return null;
     }
 }

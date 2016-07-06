@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/listClick"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="56dp"
@@ -21,12 +20,23 @@
 
     <TextView
         android:id="@+id/friend_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/friend_profile_image"
+        android:layout_toStartOf="@+id/more"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:textSize="16sp"
         android:text="" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/more"
+        android:src="@drawable/ic_more_vert_black_48px"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:padding="16dp"
+        android:contentDescription="@string/menu_desc"/>
 
 </RelativeLayout>

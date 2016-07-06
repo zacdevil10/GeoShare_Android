@@ -21,8 +21,9 @@
 
     <TextView
         android:id="@+id/friend_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/friend_accept"
         android:layout_toEndOf="@id/friend_profile_image"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"

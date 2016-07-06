@@ -1,11 +1,9 @@
 package uk.co.appsbystudio.geoshare.tutorial;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class TutorialActivity extends Activity {
@@ -23,11 +21,5 @@ public class TutorialActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-    }
-
-    public void finish() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        this.finish();
     }
 }

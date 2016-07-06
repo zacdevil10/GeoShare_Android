@@ -6,7 +6,6 @@
     tools:context="uk.co.appsbystudio.geoshare.places.PlacesFragment">
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/places_coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -31,11 +30,13 @@
             </android.support.design.widget.AppBarLayout>
 
             <LinearLayout
-                android:id="@+id/places_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <android.support.v4.view.ViewPager
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
 
 
             </LinearLayout>
