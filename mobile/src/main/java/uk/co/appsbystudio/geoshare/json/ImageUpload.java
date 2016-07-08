@@ -53,7 +53,7 @@ public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println(response.code());
-                ((MainActivity) context).refreshPicture();
+                ((MainActivity) context).refreshPicture(new ReturnData().getUsername(context));
                 response.close();
             }
         });

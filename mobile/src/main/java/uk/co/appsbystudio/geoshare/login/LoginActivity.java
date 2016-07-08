@@ -33,8 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 
         if (pIDDatabase != null) {
 
-            progressDialog.show();
-
             if (pIDDatabase.length() != 0) {
 
                 new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this), progressDialog).execute();

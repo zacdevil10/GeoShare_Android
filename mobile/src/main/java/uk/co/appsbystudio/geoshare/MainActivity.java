@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        refreshPicture();
+        refreshPicture(new ReturnData().getUsername(this));
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void refreshPicture() {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
+    public void refreshPicture(String name) {
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
     }
 
     private Bitmap bitmap;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
-            imageFile = new File(this.getCacheDir(), "picture");
+            imageFile = new File(this.getCacheDir(), "profile");
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageFile = new File(this.getCacheDir(), "picture");
+                imageFile = new File(this.getCacheDir(), "profile");
             } catch (IOException e) {
                 e.printStackTrace();
             }
