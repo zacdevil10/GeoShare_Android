@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +27,8 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
     private final Context context;
     private final String name;
 
+    private Bitmap image_bitmap = null;
+
     public DownloadImageTask(CircleImageView viewById, ImageView imageViewById, Context context, String name) {
         this.viewById = viewById;
         this.imageViewById = imageViewById;
@@ -39,14 +39,8 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
     @Override
     protected Bitmap doInBackground(String... params) {
         String url = params[0].replace(" ", "%20");
-        Bitmap image_bitmap = null;
 
         File file = new File(String.valueOf(context.getCacheDir()), name + ".png");
-        try {
-            image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         Date lastModified = new Date(file.lastModified());
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss", Locale.UK);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -67,6 +61,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
             if (statusCode == 200) {
                 try {
                     InputStream inputStream = httpURLConnection.getInputStream();
+
                     image_bitmap = BitmapFactory.decodeStream(inputStream);
 
                     File image = new File(context.getCacheDir(), name + ".png");
