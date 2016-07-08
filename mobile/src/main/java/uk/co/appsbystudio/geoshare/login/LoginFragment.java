@@ -153,7 +153,7 @@ public class LoginFragment extends Fragment{
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
-            hashMap.put("expiry", "P5Y1DT1H1M");
+            hashMap.put("expiry", "P1Y");
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
