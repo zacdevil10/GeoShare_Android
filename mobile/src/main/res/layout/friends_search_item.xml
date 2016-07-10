@@ -22,21 +22,22 @@
         android:id="@+id/friend_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/addFriend"
         android:layout_toEndOf="@id/friend_profile_image"
-        android:layout_toStartOf="@+id/more"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:textSize="16sp"
         android:text="" />
 
-    <ImageView
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/more"
-        android:src="@drawable/ic_more_vert_black_48px"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/add_friend_desc"
+        android:id="@+id/addFriend"
+        android:src="@drawable/ic_favorite_black_48px"
+        android:background="@android:color/transparent"
         android:padding="16dp"
-        android:contentDescription="@string/menu_desc"/>
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

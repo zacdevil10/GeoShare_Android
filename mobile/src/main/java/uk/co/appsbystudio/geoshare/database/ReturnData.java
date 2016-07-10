@@ -52,6 +52,12 @@ public class ReturnData {
         return remember;
     }
 
+    public Integer seenTutorial(Context context) {
+        db = new DatabaseHelper(context);
+
+        return db.getSeenTutorial();
+    }
+
     public void clearData(Context context) {
         db = new DatabaseHelper(context);
 

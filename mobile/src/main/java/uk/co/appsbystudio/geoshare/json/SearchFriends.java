@@ -2,10 +2,7 @@ package uk.co.appsbystudio.geoshare.json;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -17,7 +14,6 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,34 +22,29 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
 
-public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayList> {
+public class SearchFriends extends AsyncTask<Void, Void, ArrayList>{
 
     private final RecyclerView friendsList;
-    private final SwipeRefreshLayout refreshList;
-    private final TextView noRequest;
 
-    private final String pID;
     private final String URL;
-    private final Integer arrayMethod;
 
     private final Context context;
 
-    public JSONStringRequestFriendsList(Context context, RecyclerView friendsList, SwipeRefreshLayout refreshList, TextView noRequest,String URL, String pID, Integer arrayMethod) {
+
+    public SearchFriends(Context context, RecyclerView friendsList, String URL) {
         this.context = context;
         this.friendsList = friendsList;
-        this.refreshList = refreshList;
-        this.noRequest = noRequest;
-        this.pID = pID;
         this.URL = URL;
-        this.arrayMethod = arrayMethod;
     }
 
     @Override
     protected ArrayList doInBackground(Void... params) {
+
+        System.out.println("HEY!");
+
         RequestFuture<String> future = RequestFuture.newFuture();
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         ArrayList<String> friends_username = new ArrayList<>();
@@ -62,7 +53,7 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST-API-TOKEN", pID);
+                headers.put("REST-API-TOKEN", new ReturnData().getpID(context));
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
                 return headers;
@@ -83,8 +74,9 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
 
                         for (int i=0;i<friends.length();i++) {
                             try {
-                                JSONObject inner = (JSONObject) friends.get(i);
-                                friends_username.add((String) inner.get("username"));
+                                friends_username.add((String) friends.get(i));
+                                //JSONObject inner = (JSONObject) friends.get(i);
+                                //friends_username.add((String) inner.get("username"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -108,23 +100,9 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
 
     @Override
     protected void onPostExecute(ArrayList arrayList) {
-        if (arrayMethod == 0) {
-            FriendsAdapter friendsAdapter = new FriendsAdapter(context, arrayList);
-            friendsList.setAdapter(friendsAdapter);
-        } else if (arrayMethod == 1) {
-            FriendsRequestAdapter friendsRequestAdapter = new FriendsRequestAdapter(context, arrayList);
-            friendsList.setAdapter(friendsRequestAdapter);
-            noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
-        } else if (arrayMethod == 2) {
-            FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
-            friendsList.setAdapter(friendsPendingAdapter);
-            noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
-        }
+        super.onPostExecute(arrayList);
 
-        if (refreshList != null) {
-            if (refreshList.isRefreshing()) {
-                refreshList.setRefreshing(false);
-            }
-        }
+        FriendsSearchAdapter friendsSearchAdapter = new FriendsSearchAdapter(context, arrayList);
+        friendsList.setAdapter(friendsSearchAdapter);
     }
 }

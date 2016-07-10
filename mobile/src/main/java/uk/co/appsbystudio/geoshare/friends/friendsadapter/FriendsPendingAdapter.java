@@ -28,20 +28,18 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_pending_list_item, viewGroup, false);
-        final ViewHolder viewHolder = new ViewHolder(view);
-
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, context).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString()).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONObjectRequest(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/pending/" + namesArray.get(position).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                new JSONObjectRequest(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/pending/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

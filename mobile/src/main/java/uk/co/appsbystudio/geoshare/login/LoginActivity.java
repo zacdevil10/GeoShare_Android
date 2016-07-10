@@ -1,155 +1,72 @@
 package uk.co.appsbystudio.geoshare.login;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
+import uk.co.appsbystudio.geoshare.json.AutoLogin;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginFragment loginFragment;
-    private SignupFragment signupFragment;
+    private SignUpFragment signupFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainCoordinator);
-
         loginFragment = new LoginFragment();
-        signupFragment = new SignupFragment();
+        signupFragment = new SignUpFragment();
 
-        getSession();
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, loginFragment).commit();
+        new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
     }
 
     public void buttonCallback(View button) {
-        if(button.getId() == R.id.sign_up) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                    .replace(loginFragment.getId(), signupFragment).addToBackStack(null).commit();
-        }
-        if (button.getId() == R.id.sign_up_sign_up) {
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right)
-                    .replace(signupFragment.getId(), loginFragment).commit();
+        switch (button.getId()) {
+            case R.id.sign_up:
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(loginFragment.getId(), signupFragment).addToBackStack(null).commit();
+                break;
+            case R.id.sign_up_sign_up:
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(signupFragment.getId(), loginFragment).commit();
         }
     }
 
-    private String pIDDatabase;
-    private String mUsernameDatabase;
+    public void doAnimation() {
+        final ImageView logo = (ImageView) findViewById(R.id.startup_logo);
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.logo_slide);
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.fragment_container);
 
-    private void getSession() {
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                layoutParams.gravity = Gravity.TOP;
+                linearLayout.setLayoutParams(layoutParams);
 
-        DatabaseHelper db = new DatabaseHelper(this);
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        List<UserModel> userModelList = db.getAllUsers();
-        for (UserModel id: userModelList) {
-            pIDDatabase = id.getpID();
-            mUsernameDatabase = id.getUsername().replace(" ", "%20");
-        }
-
-        if (pIDDatabase != null && isConnection_status()) {
-
-            if (pIDDatabase.length() != 0) {
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsernameDatabase + "/session/" + pIDDatabase, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-                        try {
-                            JSONArray pIDLive = new JSONArray(s);
-
-                            JSONObject inner = (JSONObject) pIDLive.get(0);
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                if (Objects.equals(inner.getString("token"), pIDDatabase)) {
-                                    loginFragment.login();
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        HashMap<String, String> headers = new HashMap<>();
-                        headers.put("REST_API_TOKEN", pIDDatabase);
-                        headers.put("Content-Type", "application/json; charset=utf-8");
-                        headers.put("User-agent", System.getProperty("http.agent"));
-                        return headers;
-                    }
-                };
-
-                requestQueue.add(stringRequest);
-
-            } else {
-                if (!isConnection_status()) {
-                    System.out.println("No network");
-                }
-                if (pIDDatabase == null) {
-                    System.out.println("Session gone");
-                }
+                logo.setVisibility(View.GONE);
             }
 
-            db.close();
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, loginFragment).commit();
             }
-    }
 
-    private boolean connection_status = false;
+            @Override
+            public void onAnimationRepeat(Animation animation) {
 
-    private boolean isConnection_status() {
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
-            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                connection_status = true;
-            } else {
-                networkInfo = connectivityManager.getNetworkInfo(1);
-                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                    connection_status = true;
-                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return connection_status;
+        });
+        logo.startAnimation(anim);
+        //startText.startAnimation(translate);
     }
 }

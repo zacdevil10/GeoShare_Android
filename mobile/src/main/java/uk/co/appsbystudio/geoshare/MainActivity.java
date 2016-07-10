@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.kennyc.bottomsheet.BottomSheet;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private FriendsManagerFragment friendsManagerFragment;
     private PlacesFragment placesFragment;
     private SettingsFragment settingsFragment;
-    View header;
+    private View header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +79,13 @@ public class MainActivity extends AppCompatActivity {
         settingsFragment = new SettingsFragment();
 
         /* RECENT APPS COLOR */
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.recent_color));
-        this.setTaskDescription(taskDesc);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            ActivityManager.TaskDescription taskDesc;
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
+            this.setTaskDescription(taskDesc);
+        }
+
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
@@ -130,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        refreshPicture();
+        refreshPicture(new ReturnData().getUsername(this));
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,49 +148,65 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        usernameTextView.setText(getString(R.string.user_message) + new ReturnData().getUsername(this));
+        String welcome = String.format(getResources().getString(R.string.welcome_user_header), new ReturnData().getUsername(this));
+        usernameTextView.setText(welcome);
+
     }
 
-    public void refreshPicture() {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), this).execute("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/img/");
+    public void refreshPicture(String name) {
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
     }
 
-    Bitmap bitmap;
-    File imageFile;
+    private Bitmap bitmap;
+    private File imageFile;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
-            imageFile = new File(this.getCacheDir(), "picture");
+            imageFile = new File(this.getCacheDir(), "profile");
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
+            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
+            Uri uri = activityResult.getUri();
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageFile = new File(this.getCacheDir(), "picture");
+                imageFile = new File(this.getCacheDir(), "profile");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        try {
-            System.out.println(bitmap);
+        if (requestCode == 1 || requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                if (bitmap != null) {
+                    bitmap = scaleImage(bitmap);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
+                }
 
-            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-            if (bitmap != null) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 80, fileOutputStream);
+                fileOutputStream.close();
+
+                new ImageUpload(imageFile, this).execute();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            fileOutputStream.close();
-
-            new ImageUpload(imageFile, this).execute();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    private static Bitmap scaleImage(Bitmap image) {
+        float aspectratio = Math.min((float) 512 / image.getWidth(), (float) 512 / image.getHeight());
+
+        int width = Math.round(aspectratio * image.getWidth());
+        int height = Math.round(aspectratio * image.getHeight());
+
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
@@ -209,9 +234,8 @@ public class MainActivity extends AppCompatActivity {
     private void rememberLogout() {
         if (new ReturnData().getRemember(this) != 1) {
             new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
+            new ReturnData().clearSession(this);
         }
-
-        new ReturnData().clearSession(this);
     }
 
     private void logout() {
@@ -226,5 +250,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();
+    }
+
+    public void showMore() {
+        new BottomSheet.Builder(this).setTitle("More options!").setMessage("Much stuff be here.").setPositiveButton("Ok").setNegativeButton("Cancel").show();
     }
 }

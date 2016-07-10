@@ -16,13 +16,11 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
-
 public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
 
-    private String URL;
-    private String status;
-    private String pID;
+    private final String URL;
+    private final String status;
+    private final String pID;
     private boolean success = true;
 
     private final Context context;
@@ -45,7 +43,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("REST_API_TOKEN", pID);
+                headers.put("REST-API-TOKEN", pID);
                 headers.put("X-HTTP-Method-Override", "PATCH");
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("User-agent", System.getProperty("http.agent"));
@@ -56,11 +54,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 System.out.println(response.statusCode);
 
-                if (response.statusCode == 200) {
-                    success = true;
-                } else {
-                    success = false;
-                }
+                success = response.statusCode == 200;
 
                 return super.parseNetworkResponse(response);
             }
@@ -74,6 +68,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
     protected void onPostExecute(final Boolean success) {
         if (success) {
             //TODO: refresh list
+            System.out.println("Refreshing friends list.");
         }
     }
 }

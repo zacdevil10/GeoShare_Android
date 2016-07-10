@@ -1,58 +1,54 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
-public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHolder>{
+public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
     private final Context context;
     private final ArrayList namesArray;
 
-    public FriendsAdapter(Context context, ArrayList namesArray) {
+    public FriendsSearchAdapter(Context context, ArrayList namesArray) {
         this.context = context;
         this.namesArray = namesArray;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
-        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_list_item, viewGroup, false);
+    public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, final int viewType) {
+        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_search_item, viewGroup, false);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-
-        File file = new File(String.valueOf(context.getCacheDir()), namesArray.get(position).toString() + ".png");
-        try {
-            Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            holder.friends_pictures.setImageBitmap(image_bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
         new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString()).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
 
-        holder.more.setOnClickListener(new View.OnClickListener() {
+        holder.addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) context).showMore();
+                System.out.println("Click");
+                //new JSONRequests().onPostRequest("https://geoshare.appsbystudio.co.uk/api/user/" + holder.friend_name.getText() + "/friends/request/", new ReturnData().getpID(context), context);
+                ((FriendSearchActivity) context).friendsDialog((String) holder.friend_name.getText());
             }
         });
     }
@@ -66,13 +62,13 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
 
         final TextView friend_name;
         final CircleImageView friends_pictures;
-        final ImageView more;
+        final ImageButton addFriend;
 
         public ViewHolder(View itemView) {
             super(itemView);
             friend_name = (TextView) itemView.findViewById(R.id.friend_name);
             friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            more = (ImageView) itemView.findViewById(R.id.more);
+            addFriend = (ImageButton) itemView.findViewById(R.id.addFriend);
         }
     }
 }

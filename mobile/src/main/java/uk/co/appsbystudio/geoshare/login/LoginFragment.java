@@ -1,11 +1,7 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,26 +35,26 @@ import java.util.concurrent.TimeoutException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
+import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment{
 
     private UserLoginTask mAuthTask = null;
 
     private EditText usernameEntry;
     private EditTextPassword passwordEntry;
     private CheckBox rememberMe;
-    private Integer rememberInt;
 
     private RequestQueue requestQueue;
 
     private Integer success = 0;
-    private boolean connection_status = false;
     private String mUsernameDatabase;
 
     private DatabaseHelper db;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     public LoginFragment() {
     }
@@ -93,34 +89,11 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnection_status()) {
-                    attemptLogin();
-                } else {
-                    System.out.println("No network");
-                }
+                attemptLogin();
             }
         });
 
         return view;
-    }
-
-    private boolean isConnection_status() {
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(0);
-            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                connection_status = true;
-            } else {
-                networkInfo = connectivityManager.getNetworkInfo(1);
-                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                    connection_status = true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return connection_status;
     }
 
     private void attemptLogin() {
@@ -128,15 +101,10 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-        if (rememberMe.isChecked()) {
-            rememberInt = 1;
-        } else {
-            rememberInt = 0;
-        }
+        Integer rememberInt = rememberMe.isChecked() ? 1 : 0;
 
         String username = usernameEntry.getText().toString();
         String password = passwordEntry.getText().toString();
-        Integer remember = rememberInt;
 
 
         boolean cancel = false;
@@ -157,14 +125,14 @@ public class LoginFragment extends Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            mAuthTask = new UserLoginTask(username, password, remember);
+            mAuthTask = new UserLoginTask(username, password, rememberInt);
             mAuthTask.execute((Void) null);
         }
     }
 
     public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
-        private String mUsername;
+        private final String mUsername;
         private final String mPassword;
         private final Integer mRemember;
 
@@ -177,14 +145,7 @@ public class LoginFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             progressDialog.show();
-
-            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    mAuthTask.cancel(true);
-                }
-            });
-
+            progressDialog.setCancelable(false);
         }
 
         @Override
@@ -192,6 +153,7 @@ public class LoginFragment extends Fragment {
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("password", mPassword);
+            hashMap.put("expiry", "P1Y");
 
             RequestFuture<JSONObject> future = RequestFuture.newFuture();
 
@@ -215,7 +177,8 @@ public class LoginFragment extends Fragment {
                         success = 2;
                         UserModel userModel = null;
                         try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember);
+                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember, 0);
+                            System.out.println("Here");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -259,9 +222,17 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    public void login() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
-        getActivity().finish();
+    private void login() {
+        Integer seenTutorial = new ReturnData().seenTutorial(getContext());
+
+        if (seenTutorial == 2) {
+            Intent intent = new Intent(getActivity(), TutorialActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        } else {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 }
