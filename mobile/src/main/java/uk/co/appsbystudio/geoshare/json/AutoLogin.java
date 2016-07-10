@@ -1,6 +1,5 @@
 package uk.co.appsbystudio.geoshare.json;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -29,19 +28,11 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
     private final Context context;
     private final String pID;
     private final String username;
-    private final ProgressDialog progressDialog;
 
-    public AutoLogin(Context context, String pID, String username, ProgressDialog progressDialog) {
+    public AutoLogin(Context context, String pID, String username) {
         this.context = context;
         this.pID = pID;
         this.username = username;
-        this.progressDialog = progressDialog;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        progressDialog.show();
-        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -56,9 +47,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
 
                     JSONObject inner = (JSONObject) pIDLive.get(0);
 
-                    if (Objects.equals(inner.getString("token"), pID)) {
-                        login();
-                    }
+                    handleResult(Objects.equals(inner.getString("token"), pID));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -68,7 +57,7 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                handleResult(false);
             }
         }) {
             @Override
@@ -86,15 +75,16 @@ public class AutoLogin extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        progressDialog.dismiss();
-    }
-
-    private void login() {
-        Intent intent = new Intent(context, MainActivity.class);
-        context.startActivity(intent);
+    private void handleResult(boolean isValid) {
         LoginActivity loginActivity = (LoginActivity) context;
-        loginActivity.finish();
+
+        if(isValid) {
+            Intent intent = new Intent(context, MainActivity.class);
+            context.startActivity(intent);
+
+            loginActivity.finish();
+        } else {
+            loginActivity.doAnimation();
+        }
     }
 }

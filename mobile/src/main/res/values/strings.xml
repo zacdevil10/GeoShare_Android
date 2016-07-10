@@ -39,6 +39,7 @@
         <item>Take photo</item>
     </array>
 
+    <string name="logo">Logo</string>
     <string name="facebook_app_id">1751664078387348</string>
     <string name="return_desc">return</string>
     <string name="search_for_friends">Search for friends…</string>
