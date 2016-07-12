@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/add_friend_desc"
         android:id="@+id/addFriend"
-        android:src="@drawable/ic_favorite_black_48px"
+        android:src="@drawable/ic_more_vert_black_48px"
         android:background="@android:color/transparent"
         android:padding="16dp"
         android:layout_centerVertical="true"

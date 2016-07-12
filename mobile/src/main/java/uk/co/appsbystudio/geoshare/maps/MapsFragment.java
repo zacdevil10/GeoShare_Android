@@ -40,7 +40,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
-        if (placeAutocompleteFragment == null) placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         view.findViewById(R.id.drawer_open).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +36,29 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
         this.imageViewById = imageViewById;
         this.context = context;
         this.name = name;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        File file = new File(String.valueOf(context.getCacheDir()), name + ".png");
+        try {
+            Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+
+
+            if (viewById != null) {
+                if (image_bitmap != null) {
+                    viewById.setImageBitmap(image_bitmap);
+                }
+            } else {
+                if (image_bitmap != null) {
+                    imageViewById.setImageBitmap(image_bitmap);
+                }
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
