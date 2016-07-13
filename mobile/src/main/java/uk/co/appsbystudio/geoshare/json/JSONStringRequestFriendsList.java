@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 
@@ -119,6 +120,9 @@ public class JSONStringRequestFriendsList extends AsyncTask<Void, Void, ArrayLis
             FriendsPendingAdapter friendsPendingAdapter = new FriendsPendingAdapter(context, arrayList);
             friendsList.setAdapter(friendsPendingAdapter);
             noRequest.setVisibility(arrayList.isEmpty()? View.VISIBLE : View.GONE);
+        } else if (arrayMethod == 3) {
+            FriendsNavAdapter friendsNavAdapter = new FriendsNavAdapter(context, arrayList);
+            friendsList.setAdapter(friendsNavAdapter);
         }
 
         if (refreshList != null) {

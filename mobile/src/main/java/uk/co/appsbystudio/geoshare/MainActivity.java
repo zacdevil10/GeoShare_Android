@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             rightNavigationView.setLayoutManager(layoutManager);
         }
 
-        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 0).execute();
+        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
 
         assert navigationView != null;
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        refreshPicture(new ReturnData().getUsername(this));
+        refreshPicture(new ReturnData().getUsername(this), false);
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void refreshPicture(String name) {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
+    public void refreshPicture(String name, Boolean upload) {
+        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name, upload).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
     }
 
     private Bitmap bitmap;
@@ -166,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
             bitmap = (Bitmap) data.getExtras().get("data");
 
             imageFile = new File(this.getCacheDir(), "profile");
+
+            Uri uri = Uri.fromFile(imageFile);
+
+            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
 
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
@@ -182,12 +186,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (requestCode == 1 || requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
-                    bitmap = scaleImage(bitmap);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, fileOutputStream);
+                    //bitmap = scaleImage(bitmap);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 }
 
                 fileOutputStream.close();

@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.maps;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -9,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +44,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
-        placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        //placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         view.findViewById(R.id.drawer_open).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity) getActivity()).openDrawer();
+            }
+        });
+
+        view.findViewById(R.id.friend_drawer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(getActivity());
+                    startActivityForResult(intent, 9);
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -73,6 +89,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
 
+        /*
         placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -83,5 +100,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onError(Status status) { }
         });
+        //*/
     }
 }

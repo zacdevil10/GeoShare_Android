@@ -25,7 +25,7 @@ public class FriendDialog extends DialogFragment {
         TextView name = (TextView) view.findViewById(R.id.user_name);
         Bundle args = getArguments();
 
-        new DownloadImageTask(null, profile, getActivity(), args.getString("name")).execute("https://geoshare.appsbystudio.co.uk/api/user/" + args.getString("name") + "/img/");
+        new DownloadImageTask(null, profile, getActivity(), args.getString("name"), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + args.getString("name") + "/img/");
         name.setText(args.getString("name"));
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.addFriend);

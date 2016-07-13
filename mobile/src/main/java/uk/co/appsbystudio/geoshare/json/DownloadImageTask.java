@@ -28,36 +28,36 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
     private final ImageView imageViewById;
     private final Context context;
     private final String name;
+    private final Boolean upload;
 
     private Bitmap image_bitmap = null;
 
-    public DownloadImageTask(CircleImageView viewById, ImageView imageViewById, Context context, String name) {
+    public DownloadImageTask(CircleImageView viewById, ImageView imageViewById, Context context, String name, Boolean upload) {
         this.viewById = viewById;
         this.imageViewById = imageViewById;
         this.context = context;
         this.name = name;
+        this.upload = upload;
     }
 
     @Override
     protected void onPreExecute() {
-        File file = new File(String.valueOf(context.getCacheDir()), name + ".png");
-        try {
-            Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-
-
-            if (viewById != null) {
-                if (image_bitmap != null) {
-                    viewById.setImageBitmap(image_bitmap);
+        if (!upload) {
+            File file = new File(String.valueOf(context.getCacheDir()), name + ".png");
+            try {
+                Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                if (viewById != null) {
+                    if (image_bitmap != null) {
+                        viewById.setImageBitmap(image_bitmap);
+                    }
+                } else {
+                    if (image_bitmap != null) {
+                        imageViewById.setImageBitmap(image_bitmap);
+                    }
                 }
-            } else {
-                if (image_bitmap != null) {
-                    imageViewById.setImageBitmap(image_bitmap);
-                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
