@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,10 +39,12 @@ import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
+import uk.co.appsbystudio.geoshare.settings.ShareOptions;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         if (rightNavigationView != null) {
             rightNavigationView.setLayoutManager(layoutManager);
         }
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.cancel_desc, R.string.cancel_desc);
 
         new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
 
@@ -218,11 +222,25 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+    public void openFriendsDrawer() {
+        drawerLayout.openDrawer(GravityCompat.END);
+    }
+
     /* CLICK FUNCTIONALITY FOR PROFILE PIC */
     private void profilePictureSettings() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment profileDialog = new ProfilePictureOptions();
         profileDialog.show(fragmentManager, "");
+    }
+
+    public void sendLocationDialog(String name) {
+        Bundle arguments = new Bundle();
+        arguments.putString("name", name);
+
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.DialogFragment friendDialog = new ShareOptions();
+        friendDialog.setArguments(arguments);
+        friendDialog.show(fragmentManager, "");
     }
 
     @Override

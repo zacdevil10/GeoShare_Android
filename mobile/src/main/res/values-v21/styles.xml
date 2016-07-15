@@ -50,10 +50,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.AppCompat.Dialog">
+    <style name="LoadingTheme" parent="Theme.AppCompat.Dialog">
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">#FFF</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog"/>
 
 </resources>

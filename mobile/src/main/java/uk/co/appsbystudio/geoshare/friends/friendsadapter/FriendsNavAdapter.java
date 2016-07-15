@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
@@ -34,6 +35,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     @Override
     public FriendsNavAdapter.ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_nav_item, viewGroup, false);
+
         return new FriendsNavAdapter.ViewHolder(view);
     }
 
@@ -53,20 +55,31 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
         final Animation scaleOpen = AnimationUtils.loadAnimation(context, R.anim.scale_list_open);
         final Animation scaleClose = AnimationUtils.loadAnimation(context, R.anim.scale_list_close);
+        final Animation rotateUp = AnimationUtils.loadAnimation(context, R.anim.rotate_up);
+        final Animation rotateDown = AnimationUtils.loadAnimation(context, R.anim.rotate_down);
 
-        holder.more.setOnClickListener(new View.OnClickListener() {
+        holder.nameItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (holder.test.getVisibility() == View.GONE) {
                     holder.test.setVisibility(View.VISIBLE);
                     //holder.test.startAnimation(scaleOpen);
-                    holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
+                    //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
+                    holder.arrow.startAnimation(rotateUp);
                 } else {
                     //holder.test.startAnimation(scaleClose);
                     holder.test.setVisibility(View.GONE);
-                    holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
+                    //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
+                    holder.arrow.startAnimation(rotateDown);
                 }
 
+            }
+        });
+
+        holder.test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText());
             }
         });
     }
@@ -80,15 +93,17 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
         final TextView friend_name;
         final CircleImageView friends_pictures;
-        final ImageView more;
+        final ImageView arrow;
         final RelativeLayout test;
+        final RelativeLayout nameItem;
 
         ViewHolder(View itemView) {
             super(itemView);
             friend_name = (TextView) itemView.findViewById(R.id.friend_name);
             friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            more = (ImageView) itemView.findViewById(R.id.more);
+            arrow = (ImageView) itemView.findViewById(R.id.more);
             test = (RelativeLayout) itemView.findViewById(R.id.test);
+            nameItem = (RelativeLayout) itemView.findViewById(R.id.name_item);
         }
     }
 }

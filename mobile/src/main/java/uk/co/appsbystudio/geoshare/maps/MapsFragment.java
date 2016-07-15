@@ -12,16 +12,11 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
@@ -44,7 +39,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
-        //placeAutocompleteFragment = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         view.findViewById(R.id.drawer_open).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,12 +50,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         view.findViewById(R.id.friend_drawer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(getActivity());
-                    startActivityForResult(intent, 9);
-                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
+                ((MainActivity) getActivity()).openFriendsDrawer();
             }
         });
 

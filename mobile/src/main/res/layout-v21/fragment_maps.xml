@@ -27,46 +27,60 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:gravity="start|center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingEnd="@dimen/search_key_line"
-                        android:paddingLeft="@dimen/search_key_line"
-                        android:paddingRight="@dimen/search_key_line"
-                        android:paddingStart="@dimen/search_key_line">
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/drawer_open"
-                            android:contentDescription="@string/menu_desc"
-                            android:layout_width="@dimen/search_icon"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_menu_black_48px" />
-
-                        <EditText
-                            android:id="@+id/places_autocomplete"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="?attr/actionBarSize"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:gravity="start|center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingEnd="@dimen/search_key_line"
                             android:paddingLeft="@dimen/search_key_line"
                             android:paddingRight="@dimen/search_key_line"
-                            android:background="@android:color/transparent"
-                            android:layout_gravity="start|center_vertical"
-                            android:layout_weight="1"
-                            android:hint="@string/search_for_friends"
-                            android:ems="10"
-                            android:gravity="start|center_vertical"
-                            android:textSize="@dimen/search_text_medium">
-                        </EditText>
+                            android:paddingStart="@dimen/search_key_line">
 
-                        <ImageView
-                            android:id="@+id/friend_drawer"
-                            android:contentDescription="@string/menu_desc"
-                            android:layout_width="@dimen/search_icon"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_people_outline_black_48px" />
+                            <ImageView
+                                android:id="@+id/drawer_open"
+                                android:contentDescription="@string/menu_desc"
+                                android:layout_width="@dimen/search_icon"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_menu_black_48px" />
+
+                            <EditText
+                                android:id="@+id/places_autocomplete"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:paddingLeft="@dimen/search_key_line"
+                                android:paddingRight="@dimen/search_key_line"
+                                android:background="@android:color/transparent"
+                                android:layout_gravity="start|center_vertical"
+                                android:layout_weight="1"
+                                android:hint="@string/search"
+                                android:ems="10"
+                                android:gravity="start|center_vertical"
+                                android:textSize="@dimen/search_text_medium">
+                            </EditText>
+
+                            <ImageView
+                                android:id="@+id/friend_drawer"
+                                android:contentDescription="@string/menu_desc"
+                                android:layout_width="@dimen/search_icon"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_people_outline_black_48px" />
+
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/searchItems"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
+
+
 
                 </android.support.v7.widget.CardView>
             </LinearLayout>

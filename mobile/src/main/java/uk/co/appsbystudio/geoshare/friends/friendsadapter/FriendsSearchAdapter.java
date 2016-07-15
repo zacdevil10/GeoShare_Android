@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
         holder.friend_name.setText(namesArray.get(position).toString());
         new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString(), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
 
-        holder.addFriend.setOnClickListener(new View.OnClickListener() {
+        holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Click");
@@ -63,12 +64,14 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
         final TextView friend_name;
         final CircleImageView friends_pictures;
         final ImageButton addFriend;
+        final RelativeLayout item;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             friend_name = (TextView) itemView.findViewById(R.id.friend_name);
             friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
             addFriend = (ImageButton) itemView.findViewById(R.id.addFriend);
+            item = (RelativeLayout) itemView.findViewById(R.id.item);
         }
     }
 }

@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment{
         Button loginButton = (Button) view.findViewById(R.id.log_in);
         rememberMe = (CheckBox) view.findViewById(R.id.remember);
 
-        progressDialog = new ProgressDialog(getContext(), R.style.DialogTheme);
+        progressDialog = new ProgressDialog(getContext(), R.style.LoadingTheme);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
 
