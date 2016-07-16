@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.json.SingleShareLocationTask;
 
 public class ShareOptions extends DialogFragment {
 
@@ -14,7 +15,7 @@ public class ShareOptions extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Bundle args = getArguments();
-        String name = args.getString("name");
+        final String name = args.getString("name");
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
 
@@ -35,6 +36,7 @@ public class ShareOptions extends DialogFragment {
             public void onClick(DialogInterface dialog, int i) {
                 if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Send current location once
+                    new SingleShareLocationTask(getActivity(), name, -0.157581, 51.635189).execute();
                     System.out.println("Single share");
                 } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Call alarm timer to send location at regular time intervals

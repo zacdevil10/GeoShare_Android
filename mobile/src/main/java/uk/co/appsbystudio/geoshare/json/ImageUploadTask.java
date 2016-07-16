@@ -18,12 +18,12 @@ import okhttp3.Response;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 
-public class ImageUpload extends AsyncTask <Bitmap, Void, Void> {
+public class ImageUploadTask extends AsyncTask <Bitmap, Void, Void> {
 
     private final File image;
     private final Context context;
 
-    public ImageUpload(File image, Context context) {
+    public ImageUploadTask(File image, Context context) {
         this.image = image;
         this.context = context;
     }

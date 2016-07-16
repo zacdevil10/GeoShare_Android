@@ -11,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.kennyc.bottomsheet.BottomSheet;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -31,9 +29,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.ImageUpload;
-import uk.co.appsbystudio.geoshare.json.JSONRequests;
-import uk.co.appsbystudio.geoshare.json.JSONStringRequestFriendsList;
+import uk.co.appsbystudio.geoshare.json.ImageUploadTask;
+import uk.co.appsbystudio.geoshare.json.DeleteRequestTask;
+import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
@@ -44,13 +42,15 @@ import uk.co.appsbystudio.geoshare.settings.ShareOptions;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
+    private View header;
 
     private MapsFragment mapsFragment;
     private FriendsManagerFragment friendsManagerFragment;
     private PlacesFragment placesFragment;
     private SettingsFragment settingsFragment;
-    private View header;
+
+    private Bitmap bitmap;
+    private File imageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,22 +65,19 @@ public class MainActivity extends AppCompatActivity {
             rightNavigationView.setHasFixedSize(true);
         }
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        if (rightNavigationView != null) {
-            rightNavigationView.setLayoutManager(layoutManager);
-        }
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.cancel_desc, R.string.cancel_desc);
-
-        new JSONStringRequestFriendsList(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
-
-        assert navigationView != null;
-        navigationView.getMenu().getItem(0).setChecked(true);
-        header = navigationView.getHeaderView(0);
-        CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
+        if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
         mapsFragment = new MapsFragment();
         friendsManagerFragment = new FriendsManagerFragment();
         placesFragment = new PlacesFragment();
         settingsFragment = new SettingsFragment();
+
+        // Get friends for right nav drawer
+        new FriendsListTask(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
+
+        navigationView.getMenu().getItem(0).setChecked(true);
+        header = navigationView.getHeaderView(0);
+        CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
 
         /* RECENT APPS COLOR */
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -89,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
             taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
             this.setTaskDescription(taskDesc);
         }
-
 
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
@@ -161,9 +157,6 @@ public class MainActivity extends AppCompatActivity {
         new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name, upload).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
     }
 
-    private Bitmap bitmap;
-    private File imageFile;
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
@@ -200,21 +193,12 @@ public class MainActivity extends AppCompatActivity {
 
                 fileOutputStream.close();
 
-                new ImageUpload(imageFile, this).execute();
+                new ImageUploadTask(imageFile, this).execute();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static Bitmap scaleImage(Bitmap image) {
-        float aspectratio = Math.min((float) 512 / image.getWidth(), (float) 512 / image.getHeight());
-
-        int width = Math.round(aspectratio * image.getWidth());
-        int height = Math.round(aspectratio * image.getHeight());
-
-        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
@@ -255,16 +239,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void rememberLogout() {
         if (new ReturnData().getRemember(this) != 1) {
-            new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
+            new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
             new ReturnData().clearSession(this);
         }
     }
 
     private void logout() {
-        new JSONRequests().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
-
+        new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
         new ReturnData().clearData(this);
-
         loginReturn();
     }
 
@@ -272,9 +254,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();
-    }
-
-    public void showMore() {
-        new BottomSheet.Builder(this).setTitle("More options!").setMessage("Much stuff be here.").setPositiveButton("Ok").setNegativeButton("Cancel").show();
     }
 }

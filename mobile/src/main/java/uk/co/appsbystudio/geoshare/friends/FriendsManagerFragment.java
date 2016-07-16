@@ -47,7 +47,7 @@ public class FriendsManagerFragment extends Fragment {
                 ((MainActivity) getActivity()).openDrawer();
             }
         });
-        toolbar.setTitle(R.string.friends);
+        toolbar.setTitle(R.string.friends_manager);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.searchFriends);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {

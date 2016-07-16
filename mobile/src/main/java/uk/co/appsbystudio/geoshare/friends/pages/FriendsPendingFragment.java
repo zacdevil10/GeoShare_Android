@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.JSONStringRequestFriendsList;
+import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 
 public class FriendsPendingFragment extends Fragment {
 
@@ -59,10 +59,10 @@ public class FriendsPendingFragment extends Fragment {
     }
 
     private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noRequests) {
-        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noRequests, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
+        new FriendsListTask(getActivity(), friendsList, swipeRefresh, noRequests, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
     }
 
     private void pendingFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noPending) {
-        new JSONStringRequestFriendsList(getActivity(), friendsList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
+        new FriendsListTask(getActivity(), friendsList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
 }

@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
+public class AcceptDeclineFriendTask extends AsyncTask<Void, Void, Boolean> {
 
     private final String URL;
     private final String status;
@@ -25,7 +25,7 @@ public class JSONObjectRequest extends AsyncTask<Void, Void, Boolean> {
 
     private final Context context;
 
-    public JSONObjectRequest(Context context, String URL, String status, String pID) {
+    public AcceptDeclineFriendTask(Context context, String URL, String status, String pID) {
         this.URL = URL;
         this.context = context;
         this.status = status;

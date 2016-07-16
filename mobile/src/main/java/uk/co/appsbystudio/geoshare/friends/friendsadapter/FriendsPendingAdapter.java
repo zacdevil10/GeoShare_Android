@@ -14,7 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.JSONObjectRequest;
+import uk.co.appsbystudio.geoshare.json.AcceptDeclineFriendTask;
 
 public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
     private final Context context;
@@ -39,7 +39,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONObjectRequest(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/pending/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                new AcceptDeclineFriendTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/pending/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

@@ -48,7 +48,7 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
             @Override
             public void onClick(View view) {
                 System.out.println("Click");
-                //new JSONRequests().onPostRequest("https://geoshare.appsbystudio.co.uk/api/user/" + holder.friend_name.getText() + "/friends/request/", new ReturnData().getpID(context), context);
+                //new DeleteRequestTask().onPostRequest("https://geoshare.appsbystudio.co.uk/api/user/" + holder.friend_name.getText() + "/friends/request/", new ReturnData().getpID(context), context);
                 ((FriendSearchActivity) context).friendsDialog((String) holder.friend_name.getText());
             }
         });

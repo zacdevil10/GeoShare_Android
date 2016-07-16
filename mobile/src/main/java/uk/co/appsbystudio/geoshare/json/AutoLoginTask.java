@@ -23,13 +23,13 @@ import java.util.Objects;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
-public class AutoLogin extends AsyncTask<Void, Void, Void> {
+public class AutoLoginTask extends AsyncTask<Void, Void, Void> {
 
     private final Context context;
     private final String pID;
     private final String username;
 
-    public AutoLogin(Context context, String pID, String username) {
+    public AutoLoginTask(Context context, String pID, String username) {
         this.context = context;
         this.pID = pID;
         this.username = username;

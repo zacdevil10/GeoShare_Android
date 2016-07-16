@@ -11,7 +11,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSONRequests {
+public class DeleteRequestTask {
 
     public void onDeleteRequest(String URL, final String pID, Context mContext) {
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);

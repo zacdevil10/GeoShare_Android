@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.SearchFriends;
+import uk.co.appsbystudio.geoshare.json.SearchFriendsTask;
 import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 
 public class FriendSearchActivity extends AppCompatActivity {
@@ -71,6 +71,6 @@ public class FriendSearchActivity extends AppCompatActivity {
     }
 
     private void refresh(RecyclerView searchResults, CharSequence name) {
-        new SearchFriends(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name + "?showFriends=false").execute();
+        new SearchFriendsTask(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name + "?showFriends=false").execute();
     }
 }

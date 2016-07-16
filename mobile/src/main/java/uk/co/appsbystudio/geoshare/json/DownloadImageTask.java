@@ -96,6 +96,8 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                image_bitmap = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,19 +108,15 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        Bitmap default_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_profile_picture);
+        //Bitmap default_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_profile_picture);
 
         if (viewById != null) {
             if (bitmap != null) {
                 viewById.setImageBitmap(bitmap);
-            } else {
-                viewById.setImageBitmap(default_image);
             }
         } else {
             if (bitmap != null) {
                 imageViewById.setImageBitmap(bitmap);
-            } else {
-                imageViewById.setImageBitmap(default_image);
             }
         }
 

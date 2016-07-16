@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.AutoLogin;
+import uk.co.appsbystudio.geoshare.json.AutoLoginTask;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
         loginFragment = new LoginFragment();
         signupFragment = new SignUpFragment();
 
-        new AutoLogin(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
+        new AutoLoginTask(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
     }
 
     public void buttonCallback(View button) {
