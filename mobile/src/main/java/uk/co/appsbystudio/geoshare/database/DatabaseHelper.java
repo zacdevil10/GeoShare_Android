@@ -25,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             db.execSQL("CREATE TABLE IF NOT EXISTS USER_DETAILS(id INTEGER PRIMARY KEY, _pID TEXT, username TEXT, email TEXT, remember INTEGER, seenTutorial INTEGER DEFAULT 0)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS FRIENDS_LIST(username TEXT PRIMARY KEY, email TEXT)");
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -98,6 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void clearUserSession() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE USER_DETAILS SET _pID='' ");
+        db.execSQL("UPDATE USER_DETAILS SET remember='0' ");
     }
 
     public void close() {

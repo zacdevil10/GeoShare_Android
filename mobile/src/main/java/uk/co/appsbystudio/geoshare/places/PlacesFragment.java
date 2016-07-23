@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
@@ -26,6 +25,8 @@ import uk.co.appsbystudio.geoshare.places.pages.RecentFragment;
 public class PlacesFragment extends Fragment {
 
     public PlacesFragment() {}
+
+    private AHBottomNavigation bottomNavigation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        final AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
+        bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recent", R.drawable.ic_history_black_48px);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_48px);
@@ -60,7 +61,7 @@ public class PlacesFragment extends Fragment {
         bottomNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
 
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        final NoSwipeViewPager viewPager = (NoSwipeViewPager) view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -81,6 +82,9 @@ public class PlacesFragment extends Fragment {
                 return 3;
             }
         };
+
+        viewPager.setPagingEnabled(false);
+
         viewPager.setAdapter(fragmentPagerAdapter);
 
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
@@ -92,4 +96,5 @@ public class PlacesFragment extends Fragment {
 
         return view;
     }
+
 }

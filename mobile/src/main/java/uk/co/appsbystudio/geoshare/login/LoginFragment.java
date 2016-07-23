@@ -130,7 +130,7 @@ public class LoginFragment extends Fragment{
         }
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
         private final String mUsername;
         private final String mPassword;
@@ -225,7 +225,7 @@ public class LoginFragment extends Fragment{
     private void login() {
         Integer seenTutorial = new ReturnData().seenTutorial(getContext());
 
-        if (seenTutorial == 2) {
+        if (seenTutorial == 0) {
             Intent intent = new Intent(getActivity(), TutorialActivity.class);
             startActivity(intent);
             getActivity().finish();

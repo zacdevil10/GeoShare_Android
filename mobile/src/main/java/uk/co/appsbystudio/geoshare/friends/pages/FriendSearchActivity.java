@@ -26,6 +26,7 @@ public class FriendSearchActivity extends AppCompatActivity {
 
         final TextView searchBox = (TextView) findViewById(R.id.searchEditText_input);
         ImageView cancel = (ImageView) findViewById(R.id.search_cancel);
+        ImageView close = (ImageView) findViewById(R.id.close);
         final RecyclerView searchResults = (RecyclerView) findViewById(R.id.searchResults);
         searchResults.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -35,6 +36,13 @@ public class FriendSearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 searchBox.setText("");
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 
@@ -50,6 +58,7 @@ public class FriendSearchActivity extends AppCompatActivity {
                     refresh(searchResults, charSequence);
                 } else {
                     refresh(searchResults, "");
+
                 }
             }
 

@@ -61,14 +61,16 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.nameItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (holder.test.getVisibility() == View.GONE) {
-                    holder.test.setVisibility(View.VISIBLE);
+                if (holder.sendLocation.getVisibility() == View.GONE) {
+                    holder.sendLocation.setVisibility(View.VISIBLE);
+                    holder.requestLocation.setVisibility(View.VISIBLE);
                     //holder.test.startAnimation(scaleOpen);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
                     holder.arrow.startAnimation(rotateUp);
                 } else {
                     //holder.test.startAnimation(scaleClose);
-                    holder.test.setVisibility(View.GONE);
+                    holder.sendLocation.setVisibility(View.GONE);
+                    holder.requestLocation.setVisibility(View.GONE);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
                     holder.arrow.startAnimation(rotateDown);
                 }
@@ -76,7 +78,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             }
         });
 
-        holder.test.setOnClickListener(new View.OnClickListener() {
+        holder.sendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText());
@@ -94,7 +96,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final TextView friend_name;
         final CircleImageView friends_pictures;
         final ImageView arrow;
-        final RelativeLayout test;
+        final RelativeLayout sendLocation;
+        final RelativeLayout requestLocation;
         final RelativeLayout nameItem;
 
         ViewHolder(View itemView) {
@@ -102,7 +105,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             friend_name = (TextView) itemView.findViewById(R.id.friend_name);
             friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
             arrow = (ImageView) itemView.findViewById(R.id.more);
-            test = (RelativeLayout) itemView.findViewById(R.id.test);
+            sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
+            requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
             nameItem = (RelativeLayout) itemView.findViewById(R.id.name_item);
         }
     }

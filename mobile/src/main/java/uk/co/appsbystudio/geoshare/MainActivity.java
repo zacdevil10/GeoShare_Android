@@ -35,6 +35,7 @@ import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
+import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
@@ -157,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
         new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name, upload).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
     }
 
+    public void refreshFriendsList() {
+        new FriendsListTask(this, (RecyclerView) findViewById(R.id.right_friends_drawer), null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
@@ -223,6 +228,16 @@ public class MainActivity extends AppCompatActivity {
 
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment friendDialog = new ShareOptions();
+        friendDialog.setArguments(arguments);
+        friendDialog.show(fragmentManager, "");
+    }
+
+    public void friendsDialog(String name) {
+        Bundle arguments = new Bundle();
+        arguments.putString("name", name);
+
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.DialogFragment friendDialog = new FriendDialog();
         friendDialog.setArguments(arguments);
         friendDialog.show(fragmentManager, "");
     }

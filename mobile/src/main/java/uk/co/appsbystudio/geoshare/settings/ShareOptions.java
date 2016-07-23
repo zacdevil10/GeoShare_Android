@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.SingleShareLocationTask;
 
@@ -36,7 +37,7 @@ public class ShareOptions extends DialogFragment {
             public void onClick(DialogInterface dialog, int i) {
                 if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Send current location once
-                    new SingleShareLocationTask(getActivity(), name, -0.157581, 51.635189).execute();
+                    new SingleShareLocationTask(getActivity(), name, new GPSTracking(getActivity()).getLongitude(), new GPSTracking(getActivity()).getLatitude()).execute();
                     System.out.println("Single share");
                 } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Call alarm timer to send location at regular time intervals

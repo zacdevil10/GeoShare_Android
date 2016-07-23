@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import uk.co.appsbystudio.geoshare.R;
 
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{
 

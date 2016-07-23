@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity"
-    android:background="@color/colorPrimary"
     android:fitsSystemWindows="true">
 
     <android.support.v7.widget.CardView
@@ -34,6 +33,7 @@
                     android:contentDescription="@string/return_desc"
                     android:layout_width="@dimen/search_icon"
                     android:layout_height="match_parent"
+                    android:id="@+id/close"
                     android:src="@drawable/ic_arrow_back_black_48px" />
 
                 <EditText
@@ -76,7 +76,6 @@
         android:id="@+id/searchResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/cardView"
-        android:background="@android:color/white"/>
+        android:layout_below="@+id/cardView"/>
 
 </RelativeLayout>

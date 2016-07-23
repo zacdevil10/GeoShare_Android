@@ -14,7 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.AcceptDeclineFriendTask;
+import uk.co.appsbystudio.geoshare.json.AcceptDeclineFriendPatchTask;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
     private final Context context;
@@ -39,14 +39,14 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AcceptDeclineFriendTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
+                new AcceptDeclineFriendPatchTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
             }
         });
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AcceptDeclineFriendTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                new AcceptDeclineFriendPatchTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
             }
         });
     }

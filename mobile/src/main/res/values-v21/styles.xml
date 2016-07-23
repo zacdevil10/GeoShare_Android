@@ -35,13 +35,7 @@
         <item name="android:colorAccent">#FFF</item>
     </style>
 
-    <style name="TutorialTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent">#FFF</item>
-    </style>
+    <style name="TutorialTheme" parent="@style/Theme.AppCompat.Light.NoActionBar"/>
 
     <style name="fragment_theme" parent="@style/Theme.AppCompat.Light">
         <item name="android:statusBarColor">@android:color/transparent</item>

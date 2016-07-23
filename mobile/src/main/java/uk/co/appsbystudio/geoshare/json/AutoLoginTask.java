@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 
 public class AutoLoginTask extends AsyncTask<Void, Void, Void> {
@@ -47,7 +48,8 @@ public class AutoLoginTask extends AsyncTask<Void, Void, Void> {
 
                     JSONObject inner = (JSONObject) pIDLive.get(0);
 
-                    handleResult(Objects.equals(inner.getString("token"), pID));
+                    if (new ReturnData().getRemember(context) == 1) handleResult(Objects.equals(inner.getString("token"), pID));
+                    else handleResult(false);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
