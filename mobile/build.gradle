@@ -44,5 +44,7 @@ dependencies {
 
     compile 'com.github.paolorotolo:appintro:4.0.0'
 
+    compile 'com.github.renaudcerrato:static-maps-api:1.0.2'
+
     testCompile 'junit:junit:4.12'
 }

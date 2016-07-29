@@ -3,6 +3,8 @@ package uk.co.appsbystudio.geoshare.maps;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +15,9 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
@@ -21,6 +26,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private PlaceAutocompleteFragment placeAutocompleteFragment;
     private MapFragment mapFragment;
+    private Marker selectedLocation;
 
     public MapsFragment() {
     }
@@ -50,10 +56,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        //CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
 
-        //View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
-        //BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         return view;
     }
@@ -74,6 +80,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
         googleMap.getUiSettings().setCompassEnabled(false);
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (selectedLocation != null) selectedLocation.remove();
+                selectedLocation = googleMap.addMarker(new MarkerOptions().position(latLng));
+            }
+        });
 
         /*
         placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
