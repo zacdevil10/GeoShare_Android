@@ -13,20 +13,21 @@ import java.net.URL;
 public class MapDownloadTask extends AsyncTask<String, Void, Bitmap> {
 
     private final ImageView imageViewById;
-    private final URL url;
+    private final String url;
 
     private Bitmap image_bitmap = null;
 
-    public MapDownloadTask(ImageView imageViewById, URL url) {
+    public MapDownloadTask(ImageView imageViewById, String url) {
         this.imageViewById = imageViewById;
         this.url = url;
     }
 
     @Override
     protected Bitmap doInBackground(String... params) {
+        System.out.println("Getting map image");
 
         try {
-            URL urlString = url;
+            URL urlString = new URL(url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) urlString.openConnection();
                 try {
                     InputStream inputStream = httpURLConnection.getInputStream();

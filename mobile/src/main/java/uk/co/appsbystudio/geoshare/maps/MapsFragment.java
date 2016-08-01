@@ -1,17 +1,23 @@
 package uk.co.appsbystudio.geoshare.maps;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,6 +33,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private PlaceAutocompleteFragment placeAutocompleteFragment;
     private MapFragment mapFragment;
     private Marker selectedLocation;
+    private GoogleMap googleMap;
 
     public MapsFragment() {
     }
@@ -58,14 +65,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
 
-        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        //View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        //BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(onShowOnMapRequest, new IntentFilter("show.on.map"));
 
         return view;
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -102,4 +112,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         });
         //*/
     }
+
+    private void addMarker(Double longitude, Double latitude) {
+        if (this.googleMap != null) {
+            this.googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9));
+        }
+    }
+
+    private BroadcastReceiver onShowOnMapRequest = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String markerState = intent.getStringExtra("markerState");
+            Double longitude = intent.getDoubleExtra("long", 0);
+            Double latitude = intent.getDoubleExtra("lat", 0);
+
+            if (markerState.contentEquals("default")) addMarker(longitude, latitude);
+
+            ((MainActivity) getActivity()).showMapFragment();
+        }
+    };
+
 }

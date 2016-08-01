@@ -26,8 +26,6 @@ public class PlacesFragment extends Fragment {
 
     public PlacesFragment() {}
 
-    private AHBottomNavigation bottomNavigation;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
@@ -48,7 +46,7 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
+        AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recent", R.drawable.ic_history_black_48px);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_48px);

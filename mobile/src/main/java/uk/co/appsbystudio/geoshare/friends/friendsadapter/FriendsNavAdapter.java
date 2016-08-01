@@ -64,6 +64,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 if (holder.sendLocation.getVisibility() == View.GONE) {
                     holder.sendLocation.setVisibility(View.VISIBLE);
                     holder.requestLocation.setVisibility(View.VISIBLE);
+                    holder.showOnMapLayout.setVisibility(View.VISIBLE);
                     //holder.test.startAnimation(scaleOpen);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
                     holder.arrow.startAnimation(rotateUp);
@@ -71,6 +72,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                     //holder.test.startAnimation(scaleClose);
                     holder.sendLocation.setVisibility(View.GONE);
                     holder.requestLocation.setVisibility(View.GONE);
+                    holder.showOnMapLayout.setVisibility(View.GONE);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
                     holder.arrow.startAnimation(rotateDown);
                 }
@@ -99,6 +101,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final RelativeLayout sendLocation;
         final RelativeLayout requestLocation;
         final RelativeLayout nameItem;
+        final RelativeLayout showOnMapLayout;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -108,6 +111,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
             requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
             nameItem = (RelativeLayout) itemView.findViewById(R.id.name_item);
+            showOnMapLayout = (RelativeLayout) itemView.findViewById(R.id.showOnMapLayout);
         }
     }
 }

@@ -46,13 +46,6 @@
                 android:layout_below="@+id/location"
                 android:textColor="#FFF"/>
 
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/switch1"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true" />
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -75,7 +68,6 @@
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
             android:divider="@drawable/cardviewline"
-            android:showDividers="beginning"
             android:orientation="vertical"
             android:layout_below="@+id/dashCardHolder"
             android:id="@+id/showMore">

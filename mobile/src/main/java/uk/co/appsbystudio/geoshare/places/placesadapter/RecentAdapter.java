@@ -1,29 +1,37 @@
 package uk.co.appsbystudio.geoshare.places.placesadapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.mypopsy.maps.StaticMap;
+import com.google.android.gms.maps.model.LatLng;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.json.GeocodingFromAddressTask;
 import uk.co.appsbystudio.geoshare.json.MapDownloadTask;
 
-public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder> {
+public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder>{
 
     private final Context context;
-    private final ArrayList location;
+    private final ArrayList cityName;
+    private final ArrayList countryName;
+    private final ArrayList mapURL;
 
-    public RecentAdapter(Context context, ArrayList location) {
+    public RecentAdapter(Context context, ArrayList<String> cityName, ArrayList countryName, ArrayList mapURL) {
         this.context = context;
-        this.location = location;
+        this.cityName = cityName;
+        this.countryName = countryName;
+        this.mapURL = mapURL;
     }
 
     @Override
@@ -34,34 +42,50 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.location.setText(location.get(position).toString());
+        holder.city.setText(cityName.get(position).toString());
+        holder.country.setText(countryName.get(position).toString());
+        new MapDownloadTask(holder.mapImage, mapURL.get(position).toString()).execute();
 
-        StaticMap staticMap = new StaticMap().center(String.valueOf(location)).size(320, 200);
+        final Intent intent = new Intent("show.on.map");
 
-        try {
-            new MapDownloadTask(holder.mapImage, staticMap.toURL()).execute();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        holder.showOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LatLng latLng = null;
+                try {
+                    latLng = new GeocodingFromAddressTask(context, cityName.get(holder.getAdapterPosition()).toString()).execute().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
 
+                intent.putExtra("markerState", "default");
+                if (latLng != null) {
+                    intent.putExtra("lat", latLng.latitude);
+                    intent.putExtra("long", latLng.longitude);
+                }
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(intent));
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return location.size();
+        return cityName.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView location;
-        final TextView cityCountry;
+        final TextView city;
+        final TextView country;
         final ImageView mapImage;
+        final LinearLayout showOnMap;
 
         ViewHolder(View itemView) {
             super(itemView);
-            location = (TextView) itemView.findViewById(R.id.location);
-            cityCountry = (TextView) itemView.findViewById(R.id.city_country);
+            city = (TextView) itemView.findViewById(R.id.location);
+            country = (TextView) itemView.findViewById(R.id.city_country);
             mapImage = (ImageView) itemView.findViewById(R.id.mapImage);
+            showOnMap = (LinearLayout) itemView.findViewById(R.id.showMore);
         }
     }
 }

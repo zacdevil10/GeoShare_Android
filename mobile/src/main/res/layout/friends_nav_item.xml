@@ -18,8 +18,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/friend_profile_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_profile_picture"
@@ -74,7 +74,7 @@
             android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
             android:textSize="16sp"
-            android:text="Share location" />
+            android:text="Share current location" />
 
     </RelativeLayout>
 
@@ -97,6 +97,28 @@
             android:textSize="16sp"
             android:text="Request location" />
 
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/showOnMapLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="#EEEEEE">
+
+        <TextView
+            android:id="@+id/showOnMapText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"
+            android:textSize="16sp"
+            android:text="Show on map" />
+
         <ImageView
             android:layout_width="match_parent"
             android:scaleType="fitXY"
@@ -106,6 +128,13 @@
             android:layout_alignParentStart="true"
             android:id="@+id/imageView"
             android:contentDescription="Shadow bottom" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/checkBox"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>

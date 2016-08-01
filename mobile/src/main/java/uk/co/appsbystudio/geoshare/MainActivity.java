@@ -45,10 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private View header;
 
-    private MapsFragment mapsFragment;
-    private FriendsManagerFragment friendsManagerFragment;
-    private PlacesFragment placesFragment;
-    private SettingsFragment settingsFragment;
+    private MapsFragment mapsFragment = new MapsFragment();
+    private FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
+    private PlacesFragment placesFragment = new PlacesFragment();
+    private SettingsFragment settingsFragment = new SettingsFragment();
+
+    NavigationView navigationView;
 
     private Bitmap bitmap;
     private File imageFile;
@@ -60,18 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.left_nav_view);
+        navigationView = (NavigationView) findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
         if (rightNavigationView != null) {
             rightNavigationView.setHasFixedSize(true);
         }
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
-
-        mapsFragment = new MapsFragment();
-        friendsManagerFragment = new FriendsManagerFragment();
-        placesFragment = new PlacesFragment();
-        settingsFragment = new SettingsFragment();
 
         // Get friends for right nav drawer
         new FriendsListTask(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
@@ -100,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.maps:
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
+                        getSupportFragmentManager().beginTransaction().remove(placesFragment).commit();
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
@@ -152,6 +150,11 @@ public class MainActivity extends AppCompatActivity {
         String welcome = String.format(getResources().getString(R.string.welcome_user_header), new ReturnData().getUsername(this));
         usernameTextView.setText(welcome);
 
+    }
+
+    public void showMapFragment() {
+        getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     public void refreshPicture(String name, Boolean upload) {
