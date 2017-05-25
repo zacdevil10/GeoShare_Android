@@ -1,1 +1,1 @@
-# GeoSharer_Android
+# GeoShare_Android
