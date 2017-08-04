@@ -1,60 +1,21 @@
 package uk.co.appsbystudio.geoshare.login;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
-import com.android.volley.toolbox.Volley;
 import com.marlonmafra.android.widget.EditTextPassword;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.DatabaseHelper;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.database.databaseModel.UserModel;
-import uk.co.appsbystudio.geoshare.tutorial.TutorialActivity;
 
 public class LoginFragment extends Fragment{
-
-    private UserLoginTask mAuthTask = null;
-
-    private EditText usernameEntry;
-    private EditTextPassword passwordEntry;
-    private CheckBox rememberMe;
-
-    private RequestQueue requestQueue;
-
-    private Integer success = 0;
-    private String mUsernameDatabase;
-
-    private DatabaseHelper db;
-
-    private ProgressDialog progressDialog;
 
     public LoginFragment() {
     }
@@ -63,176 +24,24 @@ public class LoginFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        db = new DatabaseHelper(getActivity());
-
-        requestQueue = Volley.newRequestQueue(getContext());
-
-        usernameEntry = (EditText) view.findViewById(R.id.username);
-        passwordEntry = (EditTextPassword) view.findViewById(R.id.password);
-        Button loginButton = (Button) view.findViewById(R.id.log_in);
-        rememberMe = (CheckBox) view.findViewById(R.id.remember);
-
-        progressDialog = new ProgressDialog(getContext(), R.style.LoadingTheme);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
-
-        List<UserModel> userModelList = db.getAllUsers();
-        for (UserModel id: userModelList) {
-            mUsernameDatabase = id.getUsername();
-        }
-
-        if (mUsernameDatabase != null) {
-            usernameEntry.setText(mUsernameDatabase);
-            passwordEntry.requestFocus();
-        }
+        EditText usernameEntry = view.findViewById(R.id.username);
+        EditTextPassword passwordEntry = view.findViewById(R.id.password);
+        Button loginButton = view.findViewById(R.id.log_in);
+        CheckBox rememberMe = view.findViewById(R.id.remember);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptLogin();
+                login();
             }
         });
 
         return view;
     }
 
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
-        Integer rememberInt = rememberMe.isChecked() ? 1 : 0;
-
-        String username = usernameEntry.getText().toString();
-        String password = passwordEntry.getText().toString();
-
-
-        boolean cancel = false;
-        View focusView = null;
-
-        if (TextUtils.isEmpty(password)) {
-            passwordEntry.setError(getString(R.string.error_field_required));
-            focusView = passwordEntry;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(username)) {
-            usernameEntry.setError(getString(R.string.error_field_required));
-            focusView = usernameEntry;
-            cancel = true;
-        }
-
-        if (cancel) {
-            focusView.requestFocus();
-        } else {
-            mAuthTask = new UserLoginTask(username, password, rememberInt);
-            mAuthTask.execute((Void) null);
-        }
-    }
-
-    private class UserLoginTask extends AsyncTask<Void, Void, Integer> {
-
-        private final String mUsername;
-        private final String mPassword;
-        private final Integer mRemember;
-
-        UserLoginTask(String email, String password, Integer remember) {
-            mUsername = email;
-            mPassword = password;
-            mRemember = remember;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog.show();
-            progressDialog.setCancelable(false);
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put("password", mPassword);
-            hashMap.put("expiry", "P1Y");
-
-            RequestFuture<JSONObject> future = RequestFuture.newFuture();
-
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://geoshare.appsbystudio.co.uk/api/user/" + mUsername.replace(" ", "%20") + "/session/", new JSONObject(hashMap), future, future) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<>();
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-                    headers.put("User-agent", System.getProperty("http.agent"));
-                    return headers;
-                }
-            };
-            requestQueue.add(request);
-
-            try {
-                JSONObject response = null;
-
-                while (response == null) {
-                    try {
-                        response = future.get(30, TimeUnit.SECONDS);
-                        success = 2;
-                        UserModel userModel = null;
-                        try {
-                            userModel = new UserModel((String) response.get("pID"), mUsername.replace("%20", " "), null, mRemember, 0);
-                            System.out.println("Here");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        db.addUsers(userModel);
-                        db.close();
-                    } catch (InterruptedException e) {
-                        success = 1;
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            } catch (ExecutionException e) {
-                success = 0;
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                Toast.makeText(getContext(), "Timeout. Please check your internet connection.", Toast.LENGTH_LONG).show();
-            }
-            return success;
-        }
-
-        @Override
-        protected void onPostExecute(final Integer success) {
-            mAuthTask = null;
-
-            if (success == 2) {
-                login();
-                progressDialog.dismiss();
-            } else if (success == 1){
-                progressDialog.dismiss();
-                passwordEntry.setError(getString(R.string.error_incorrect_password_username));
-                passwordEntry.requestFocus();
-            } else if (success == 0) {
-                Toast.makeText(getContext(), "Could not connect to the login server.", Toast.LENGTH_LONG).show();
-                progressDialog.dismiss();
-            }
-            db.close();
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-    }
-
     private void login() {
-        Integer seenTutorial = new ReturnData().seenTutorial(getContext());
-
-        if (seenTutorial == 0) {
-            Intent intent = new Intent(getActivity(), TutorialActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-        } else {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-        }
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

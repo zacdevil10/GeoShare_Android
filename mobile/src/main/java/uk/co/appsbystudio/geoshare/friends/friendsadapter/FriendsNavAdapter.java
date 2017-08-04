@@ -1,8 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,15 +11,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
     private final Context context;
@@ -43,15 +37,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     public void onBindViewHolder(final FriendsNavAdapter.ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
 
-        File file = new File(String.valueOf(context.getCacheDir()), namesArray.get(position).toString() + ".png");
-        try {
-            Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            holder.friends_pictures.setImageBitmap(image_bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString(), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        //TODO: Set friends profile picture
 
         final Animation scaleOpen = AnimationUtils.loadAnimation(context, R.anim.scale_list_open);
         final Animation scaleClose = AnimationUtils.loadAnimation(context, R.anim.scale_list_close);
@@ -64,7 +50,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 if (holder.sendLocation.getVisibility() == View.GONE) {
                     holder.sendLocation.setVisibility(View.VISIBLE);
                     holder.requestLocation.setVisibility(View.VISIBLE);
-                    holder.showOnMapLayout.setVisibility(View.VISIBLE);
+                    //holder.showOnMapLayout.setVisibility(View.VISIBLE);
                     //holder.test.startAnimation(scaleOpen);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
                     holder.arrow.startAnimation(rotateUp);
@@ -72,7 +58,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                     //holder.test.startAnimation(scaleClose);
                     holder.sendLocation.setVisibility(View.GONE);
                     holder.requestLocation.setVisibility(View.GONE);
-                    holder.showOnMapLayout.setVisibility(View.GONE);
+                    //holder.showOnMapLayout.setVisibility(View.GONE);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
                     holder.arrow.startAnimation(rotateDown);
                 }
@@ -101,17 +87,17 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final RelativeLayout sendLocation;
         final RelativeLayout requestLocation;
         final RelativeLayout nameItem;
-        final RelativeLayout showOnMapLayout;
+        //final RelativeLayout showOnMapLayout;
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            arrow = (ImageView) itemView.findViewById(R.id.more);
-            sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
-            requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
-            nameItem = (RelativeLayout) itemView.findViewById(R.id.name_item);
-            showOnMapLayout = (RelativeLayout) itemView.findViewById(R.id.showOnMapLayout);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            arrow = itemView.findViewById(R.id.more);
+            sendLocation = itemView.findViewById(R.id.sendLocation);
+            requestLocation = itemView.findViewById(R.id.requestLocation);
+            nameItem = itemView.findViewById(R.id.name_item);
+            //showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
         }
     }
 }

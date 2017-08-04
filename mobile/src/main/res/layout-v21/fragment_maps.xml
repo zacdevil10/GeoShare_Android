@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".maps.MapsFragment">
 
         <fragment
@@ -51,7 +50,7 @@
                                 android:src="@drawable/ic_menu_black_48px" />
 
                             <EditText
-                                android:id="@+id/places_autocomplete"
+                                android:id="@+id/places_search"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:paddingLeft="@dimen/search_key_line"
@@ -60,10 +59,10 @@
                                 android:layout_gravity="start|center_vertical"
                                 android:layout_weight="1"
                                 android:hint="@string/search"
+                                android:maxLines="1"
                                 android:ems="10"
                                 android:gravity="start|center_vertical"
-                                android:textSize="@dimen/search_text_medium">
-                            </EditText>
+                                android:textSize="@dimen/search_text_medium"/>
 
                             <ImageView
                                 android:id="@+id/friend_drawer"
@@ -77,7 +76,7 @@
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/searchItems"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
 
@@ -85,6 +84,14 @@
 
                 </android.support.v7.widget.CardView>
             </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/searchLocationShare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/ic_search_white_48px" />
 
             <!--LinearLayout
                 android:layout_width="match_parent"

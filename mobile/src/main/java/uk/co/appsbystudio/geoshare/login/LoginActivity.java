@@ -11,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.AutoLoginTask;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         loginFragment = new LoginFragment();
         signupFragment = new SignUpFragment();
 
-        new AutoLoginTask(this, new ReturnData().getpID(this), new ReturnData().getUsername(this)).execute();
+        doAnimation();
     }
 
     public void buttonCallback(View button) {
@@ -67,6 +65,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         logo.startAnimation(anim);
-        //startText.startAnimation(translate);
     }
 }

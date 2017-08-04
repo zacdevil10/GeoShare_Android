@@ -47,11 +47,6 @@
             android:theme="@style/MainTheme" />
 
         <activity
-            android:name=".tutorial.TutorialActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/TutorialTheme" />
-
-        <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Theme.AppCompat"/>
     </application>

@@ -46,17 +46,18 @@
                     android:layout_gravity="start|center_vertical"
                     android:layout_weight="1"
                     android:hint="@string/search_for_friends"
+                    android:maxLines="1"
                     android:ems="10"
                     android:gravity="start|center_vertical"
-                    android:textSize="@dimen/search_text_medium">
-                </EditText>
+                    android:textSize="@dimen/search_text_medium"
+                    android:imeOptions="actionSearch" />
 
                 <ImageView
                     android:id="@+id/search_cancel"
                     android:contentDescription="@string/cancel_desc"
                     android:layout_width="@dimen/search_icon"
                     android:layout_height="match_parent"
-                    android:src="@drawable/places_ic_clear" />
+                    android:src="@drawable/ic_clear_black_24dp" />
 
             </LinearLayout>
 

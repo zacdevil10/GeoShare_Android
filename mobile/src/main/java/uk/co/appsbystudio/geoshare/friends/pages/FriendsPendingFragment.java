@@ -11,16 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 
 public class FriendsPendingFragment extends Fragment {
-
-    private RecyclerView friendsRequestList;
-    private RecyclerView friendsPendingList;
-    private SwipeRefreshLayout swipeRefresh;
-    private TextView noRequests;
-    private TextView noPending;
 
     public FriendsPendingFragment() {}
 
@@ -28,41 +20,28 @@ public class FriendsPendingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_pending, container, false);
 
-        friendsRequestList = (RecyclerView) view.findViewById(R.id.friend_request_list);
+        RecyclerView friendsRequestList = view.findViewById(R.id.friend_request_list);
         friendsRequestList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
         friendsRequestList.setLayoutManager(layoutManagerRequests);
 
-        friendsPendingList = (RecyclerView) view.findViewById(R.id.friend_pending_list);
+        RecyclerView friendsPendingList = view.findViewById(R.id.friend_pending_list);
         friendsPendingList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsPendingList.setLayoutManager(layoutManagerPending);
 
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        SwipeRefreshLayout swipeRefresh = view.findViewById(R.id.swipeContainer);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
-        noRequests = (TextView) view.findViewById(R.id.friends_no_requests);
-        noPending = (TextView) view.findViewById(R.id.friends_no_pending);
-
-        requestFriends(friendsRequestList, swipeRefresh, noRequests);
-        pendingFriends(friendsPendingList, swipeRefresh, noPending);
+        TextView noRequests = view.findViewById(R.id.friends_no_requests);
+        TextView noPending = view.findViewById(R.id.friends_no_pending);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestFriends(friendsRequestList, swipeRefresh, noRequests);
-                pendingFriends(friendsPendingList, swipeRefresh, noPending);
             }
         });
 
         return view;
-    }
-
-    private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noRequests) {
-        new FriendsListTask(getActivity(), friendsList, swipeRefresh, noRequests, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/request/", new ReturnData().getpID(getActivity()), 1).execute();
-    }
-
-    private void pendingFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh, TextView noPending) {
-        new FriendsListTask(getActivity(), friendsList, swipeRefresh, noPending, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/pending/", new ReturnData().getpID(getActivity()), 2).execute();
     }
 }

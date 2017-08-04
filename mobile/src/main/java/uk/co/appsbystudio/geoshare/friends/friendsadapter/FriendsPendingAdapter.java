@@ -12,9 +12,6 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.DeclineFriendDeleteTask;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
 public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
     private final Context context;
@@ -34,12 +31,13 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString(), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+
+        //TODO: Friends picture
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DeclineFriendDeleteTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20") + "/friends/request/" + new ReturnData().getUsername(context).replace(" ", "%20"), new ReturnData().getpID(context)).execute();
+
             }
         });
     }
@@ -57,9 +55,9 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            decline_request = (ImageView) itemView.findViewById(R.id.friend_reject);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            decline_request = itemView.findViewById(R.id.friend_reject);
         }
     }
 }

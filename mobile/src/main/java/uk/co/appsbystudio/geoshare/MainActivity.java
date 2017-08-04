@@ -22,22 +22,19 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
 import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.ImageUploadTask;
-import uk.co.appsbystudio.geoshare.json.DeleteRequestTask;
-import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
+import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private View header;
 
-    private MapsFragment mapsFragment = new MapsFragment();
-    private FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
-    private PlacesFragment placesFragment = new PlacesFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    private final MapsFragment mapsFragment = new MapsFragment();
+    private final FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
+    private final PlacesFragment placesFragment = new PlacesFragment();
+    private final SettingsFragment settingsFragment = new SettingsFragment();
 
     NavigationView navigationView;
 
@@ -70,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
-        // Get friends for right nav drawer
-        new FriendsListTask(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
+        //TODO: Get friends for right nav drawer
 
         navigationView.getMenu().getItem(0).setChecked(true);
         header = navigationView.getHeaderView(0);
@@ -138,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        refreshPicture(new ReturnData().getUsername(this), false);
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        String welcome = String.format(getResources().getString(R.string.welcome_user_header), new ReturnData().getUsername(this));
+        String welcome = String.format(getResources().getString(R.string.welcome_user_header), "Get user name here!");
         usernameTextView.setText(welcome);
 
     }
@@ -157,20 +152,19 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().getItem(0).setChecked(true);
     }
 
-    public void refreshPicture(String name, Boolean upload) {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name, upload).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
-    }
-
-    public void refreshFriendsList() {
-        new FriendsListTask(this, (RecyclerView) findViewById(R.id.right_friends_drawer), null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
             imageFile = new File(this.getCacheDir(), "profile");
+
+            try {
+                FileOutputStream stream = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
             Uri uri = Uri.fromFile(imageFile);
 
@@ -179,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
-        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
             CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
             Uri uri = activityResult.getUri();
 
@@ -191,17 +185,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
                     //bitmap = scaleImage(bitmap);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 50, fileOutputStream);
                 }
 
                 fileOutputStream.close();
 
-                new ImageUploadTask(imageFile, this).execute();
+                //TODO: Upload image
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -245,26 +239,23 @@ public class MainActivity extends AppCompatActivity {
         friendDialog.show(fragmentManager, "");
     }
 
+    public void shareALocation() {
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.DialogFragment shareALocationDialog = new ShareALocationDialog();
+        shareALocationDialog.show(fragmentManager, "");
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            rememberLogout();
             super.onBackPressed();
         }
     }
 
-    private void rememberLogout() {
-        if (new ReturnData().getRemember(this) != 1) {
-            new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
-            new ReturnData().clearSession(this);
-        }
-    }
-
     private void logout() {
-        new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
-        new ReturnData().clearData(this);
+        //TODO: logout
         loginReturn();
     }
 

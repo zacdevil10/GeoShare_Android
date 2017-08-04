@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.SingleShareLocationTask;
 
 public class ShareOptions extends DialogFragment {
 
@@ -20,6 +19,7 @@ public class ShareOptions extends DialogFragment {
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
 
+        /* Use this when tracking is implemented
         optionsMenu.setTitle("Share your location with " + name + "?").setMultiChoiceItems(R.array.shareLocationOptions, null, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
@@ -43,6 +43,14 @@ public class ShareOptions extends DialogFragment {
                     //TODO: Call alarm timer to send location at regular time intervals
                     System.out.println("Multi share");
                 }
+            }
+        }).setNegativeButton("Cancel", null);
+        //*/
+
+        optionsMenu.setTitle("Share your location with " + name + "?").setPositiveButton("Share", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                //Send the location once
             }
         }).setNegativeButton("Cancel", null);
 

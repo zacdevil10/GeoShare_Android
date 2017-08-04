@@ -10,13 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.FriendsListTask;
 
 public class FriendsFragment extends Fragment {
-
-    private RecyclerView friendsList;
-    private SwipeRefreshLayout swipeRefresh;
 
     public FriendsFragment() {}
 
@@ -24,27 +19,21 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        friendsList = (RecyclerView) view.findViewById(R.id.friend_list);
+        RecyclerView friendsList = view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         friendsList.setLayoutManager(layoutManager);
 
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        SwipeRefreshLayout swipeRefresh = view.findViewById(R.id.swipeContainer);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-
-        requestFriends(friendsList, swipeRefresh);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestFriends(friendsList, swipeRefresh);
+
             }
         });
 
         return view;
-    }
-
-    private void requestFriends(RecyclerView friendsList, SwipeRefreshLayout swipeRefresh) {
-        new FriendsListTask(getActivity(), friendsList, swipeRefresh, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(getActivity()) + "/friends/", new ReturnData().getpID(getActivity()), 0).execute();
     }
 }

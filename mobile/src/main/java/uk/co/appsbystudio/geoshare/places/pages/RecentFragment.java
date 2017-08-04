@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.places.pages;
 
 import android.os.Bundle;
-import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,9 +20,9 @@ public class RecentFragment extends Fragment {
 
     public RecentFragment() {}
 
-    private ArrayList<String> cityName = new ArrayList<>();
-    private ArrayList<String> countryName = new ArrayList<>();
-    private ArrayList<String> locationImageURL = new ArrayList<>();
+    private final ArrayList<String> cityName = new ArrayList<>();
+    private final ArrayList<String> countryName = new ArrayList<>();
+    private final ArrayList<String> locationImageURL = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

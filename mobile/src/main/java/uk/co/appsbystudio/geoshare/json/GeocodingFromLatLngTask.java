@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import java.io.IOException;
 import java.util.List;
 
-public class GeocodingFromLatLngTask extends AsyncTask<Void, Void, Address> {
+public class GeocodingFromLatLngTask extends AsyncTask<Object, Object, Address> {
 
     private final Context context;
     private final Double lat;
@@ -21,7 +21,7 @@ public class GeocodingFromLatLngTask extends AsyncTask<Void, Void, Address> {
     }
 
     @Override
-    protected Address doInBackground(Void... params) {
+    protected Address doInBackground(Object... params) {
 
         Geocoder gc = new Geocoder(context);
         Address finalAddress = null;

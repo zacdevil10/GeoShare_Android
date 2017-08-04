@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.DeleteRequestTask;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHolder>{
     private final Context context;
@@ -45,15 +42,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
 
-        File file = new File(String.valueOf(context.getCacheDir()), namesArray.get(position).toString() + ".png");
-        try {
-            Bitmap image_bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            holder.friends_pictures.setImageBitmap(image_bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString(), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+        //TODO: Set friends profile picture
 
         holder.more.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +53,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.removeFriend:
-                                new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + (new ReturnData().getUsername(context)).replace(" ", "%20") + "/friends/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), new ReturnData().getpID(context), context);
+                                //TODO: Remove friend
                                 return true;
                             case R.id.showProfile:
                                 ((MainActivity) context).friendsDialog((String) holder.friend_name.getText());
@@ -102,10 +91,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            more = (ImageView) itemView.findViewById(R.id.more);
-            item = (RelativeLayout) itemView.findViewById(R.id.item);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            more = itemView.findViewById(R.id.more);
+            item = itemView.findViewById(R.id.item);
         }
     }
 }

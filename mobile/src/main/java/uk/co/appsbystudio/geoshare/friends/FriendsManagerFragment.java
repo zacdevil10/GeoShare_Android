@@ -35,8 +35,8 @@ public class FriendsManagerFragment extends Fragment {
         View view = layoutInflater.inflate(R.layout.fragment_friends_manager, container, false);
 
         /* SET UP TOOLBAR */
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        TabLayout friendsTabs = (TabLayout) view.findViewById(R.id.friends_tabs);
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        TabLayout friendsTabs = view.findViewById(R.id.friends_tabs);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -49,7 +49,7 @@ public class FriendsManagerFragment extends Fragment {
         });
         toolbar.setTitle(R.string.friends_manager);
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.searchFriends);
+        FloatingActionButton floatingActionButton = view.findViewById(R.id.searchFriends);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,7 +59,7 @@ public class FriendsManagerFragment extends Fragment {
         });
 
         /* TOOLBAR TABS FRAGMENT SWAPPING */
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        ViewPager viewPager = view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {

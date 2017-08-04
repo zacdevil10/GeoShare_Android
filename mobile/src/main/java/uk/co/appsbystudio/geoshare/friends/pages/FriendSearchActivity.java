@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.SearchFriendsTask;
 import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 
 public class FriendSearchActivity extends AppCompatActivity {
@@ -53,11 +52,10 @@ public class FriendSearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                System.out.println(charSequence);
                 if (charSequence.length() > 0) {
-                    refresh(searchResults, charSequence);
+
                 } else {
-                    refresh(searchResults, "");
+
 
                 }
             }
@@ -77,9 +75,5 @@ public class FriendSearchActivity extends AppCompatActivity {
         android.app.DialogFragment friendDialog = new FriendDialog();
         friendDialog.setArguments(arguments);
         friendDialog.show(fragmentManager, "");
-    }
-
-    private void refresh(RecyclerView searchResults, CharSequence name) {
-        new SearchFriendsTask(context, searchResults, "https://geoshare.appsbystudio.co.uk/api/search/" + name + "?showFriends=false").execute();
     }
 }

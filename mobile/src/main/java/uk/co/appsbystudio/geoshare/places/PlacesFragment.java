@@ -19,7 +19,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.places.pages.FavouritesFragment;
-import uk.co.appsbystudio.geoshare.places.pages.NearbyFragment;
+import uk.co.appsbystudio.geoshare.places.pages.SharedFragment;
 import uk.co.appsbystudio.geoshare.places.pages.RecentFragment;
 
 public class PlacesFragment extends Fragment {
@@ -33,7 +33,7 @@ public class PlacesFragment extends Fragment {
         View view = layoutInflater.inflate(R.layout.fragment_places, container, false);
 
         /* SET UP TOOLBAR */
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -46,11 +46,11 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
+        AHBottomNavigation bottomNavigation = view.findViewById(R.id.bottom_bar);
 
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recent", R.drawable.ic_history_black_48px);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_48px);
-        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Nearby", R.drawable.ic_location_on_black_48px);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Shared", R.drawable.ic_share_black_48px);
 
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
@@ -59,7 +59,7 @@ public class PlacesFragment extends Fragment {
         bottomNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
 
-        final NoSwipeViewPager viewPager = (NoSwipeViewPager) view.findViewById(R.id.view_pager);
+        final NoSwipeViewPager viewPager = view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -69,7 +69,7 @@ public class PlacesFragment extends Fragment {
                     case 1:
                         return new FavouritesFragment();
                     case 2:
-                        return new NearbyFragment();
+                        return new SharedFragment();
                     default:
                         return null;
                 }

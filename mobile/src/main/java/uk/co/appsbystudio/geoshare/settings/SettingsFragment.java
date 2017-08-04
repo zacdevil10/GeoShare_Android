@@ -23,7 +23,7 @@ public class SettingsFragment extends Fragment {
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_settings, container, false);
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 

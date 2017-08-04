@@ -12,9 +12,6 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.AcceptDeclineFriendPatchTask;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
     private final Context context;
@@ -34,19 +31,21 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.friend_name.setText(namesArray.get(position).toString());
-        new DownloadImageTask(holder.friends_pictures, null, context, namesArray.get(position).toString(), false).execute("https://geoshare.appsbystudio.co.uk/api/user/" + namesArray.get(position).toString() + "/img/");
+
+
+        //TODO: Friends picture
 
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AcceptDeclineFriendPatchTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "accept", new ReturnData().getpID(context)).execute();
+                //TODO: accept friend request
             }
         });
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AcceptDeclineFriendPatchTask(context, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(context).replace(" ", "%20") + "/friends/request/" + namesArray.get(holder.getAdapterPosition()).toString().replace(" ", "%20"), "ignore", new ReturnData().getpID(context)).execute();
+                //TODO: decline friend request
             }
         });
     }
@@ -63,12 +62,12 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         final ImageView accept_request;
         final ImageView decline_request;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            accept_request = (ImageView) itemView.findViewById(R.id.friend_accept);
-            decline_request = (ImageView) itemView.findViewById(R.id.friend_reject);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            accept_request = itemView.findViewById(R.id.friend_accept);
+            decline_request = itemView.findViewById(R.id.friend_reject);
         }
     }
 }
