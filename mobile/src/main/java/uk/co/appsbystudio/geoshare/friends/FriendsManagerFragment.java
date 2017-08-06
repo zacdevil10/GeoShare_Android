@@ -30,13 +30,13 @@ public class FriendsManagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
-        LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = layoutInflater.inflate(R.layout.fragment_friends_manager, container, false);
+        //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
+        //LayoutInflater layoutInflater = inflater.cloneInContext(context);
+        View view = inflater.inflate(R.layout.fragment_friends_manager, container, false);
 
         /* SET UP TOOLBAR */
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        TabLayout friendsTabs = view.findViewById(R.id.friends_tabs);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        TabLayout friendsTabs = (TabLayout) view.findViewById(R.id.friends_tabs);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -49,17 +49,17 @@ public class FriendsManagerFragment extends Fragment {
         });
         toolbar.setTitle(R.string.friends_manager);
 
-        FloatingActionButton floatingActionButton = view.findViewById(R.id.searchFriends);
+        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.searchFriends);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, FriendSearchActivity.class);
+                Intent intent = new Intent(getContext(), FriendSearchActivity.class);
                 startActivity(intent);
             }
         });
 
         /* TOOLBAR TABS FRAGMENT SWAPPING */
-        ViewPager viewPager = view.findViewById(R.id.view_pager);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {

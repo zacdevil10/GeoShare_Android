@@ -94,10 +94,10 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = itemView.findViewById(R.id.friend_name);
-            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
-            menu = itemView.findViewById(R.id.menu);
-            item = itemView.findViewById(R.id.item);
+            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
+            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
+            menu = (ImageButton) itemView.findViewById(R.id.menu);
+            item = (RelativeLayout) itemView.findViewById(R.id.item);
         }
     }
 }

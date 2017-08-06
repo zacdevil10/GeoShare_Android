@@ -3,17 +3,16 @@
 
     <!-- LOGIN -->
     <string name="login_header">GeoShare</string>
-    <string name="prompt_username">Username</string>
+    <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="login_or">Or</string>
     <string name="error_incorrect_password_username">Username and password do not match!</string>
     <string name="error_field_required">This field is required</string>
-    <string name="login_remember">REMEMBER ME</string>
-    <string name="login_submit">LOG IN</string>
-    <string name="login_sign_up">SIGN UP</string>
+    <string name="login_submit">LOGIN</string>
+    <string name="login_sign_up">CREATE NEW ACCOUNT</string>
 
     <!-- SIGNUP FRAGMENT STRINGS -->
-    <string name="prompt_email">Email</string>
+    <string name="prompt_name">Name</string>
 
     <!-- MAIN ACTIVITY -->
     <string name="maps">GeoMaps</string>

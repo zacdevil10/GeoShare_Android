@@ -55,9 +55,9 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = itemView.findViewById(R.id.friend_name);
-            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
-            decline_request = itemView.findViewById(R.id.friend_reject);
+            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
+            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
+            decline_request = (ImageView) itemView.findViewById(R.id.friend_reject);
         }
     }
 }

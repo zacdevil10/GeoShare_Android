@@ -28,12 +28,12 @@ public class PlacesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
-        LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = layoutInflater.inflate(R.layout.fragment_places, container, false);
+        //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
+        //LayoutInflater layoutInflater = inflater.cloneInContext(context);
+        View view = inflater.inflate(R.layout.fragment_places, container, false);
 
         /* SET UP TOOLBAR */
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -46,7 +46,7 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        AHBottomNavigation bottomNavigation = view.findViewById(R.id.bottom_bar);
+        AHBottomNavigation bottomNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_bar);
 
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("Recent", R.drawable.ic_history_black_48px);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favourites", R.drawable.ic_favorite_black_48px);
@@ -59,7 +59,7 @@ public class PlacesFragment extends Fragment {
         bottomNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
 
-        final NoSwipeViewPager viewPager = view.findViewById(R.id.view_pager);
+        final NoSwipeViewPager viewPager = (NoSwipeViewPager) view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {

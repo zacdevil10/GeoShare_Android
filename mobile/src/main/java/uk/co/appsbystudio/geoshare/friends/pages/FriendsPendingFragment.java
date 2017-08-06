@@ -20,21 +20,21 @@ public class FriendsPendingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_pending, container, false);
 
-        RecyclerView friendsRequestList = view.findViewById(R.id.friend_request_list);
+        RecyclerView friendsRequestList = (RecyclerView) view.findViewById(R.id.friend_request_list);
         friendsRequestList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
         friendsRequestList.setLayoutManager(layoutManagerRequests);
 
-        RecyclerView friendsPendingList = view.findViewById(R.id.friend_pending_list);
+        RecyclerView friendsPendingList = (RecyclerView) view.findViewById(R.id.friend_pending_list);
         friendsPendingList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsPendingList.setLayoutManager(layoutManagerPending);
 
-        SwipeRefreshLayout swipeRefresh = view.findViewById(R.id.swipeContainer);
+        SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
-        TextView noRequests = view.findViewById(R.id.friends_no_requests);
-        TextView noPending = view.findViewById(R.id.friends_no_pending);
+        TextView noRequests = (TextView) view.findViewById(R.id.friends_no_requests);
+        TextView noPending = (TextView) view.findViewById(R.id.friends_no_pending);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

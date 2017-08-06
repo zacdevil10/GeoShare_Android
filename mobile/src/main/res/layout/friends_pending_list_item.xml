@@ -14,8 +14,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_profile_picture"
-        app:border_color="#FF000000" />
+        android:src="@drawable/ic_profile_picture"/>
 
     <TextView
         android:id="@+id/friend_name"

@@ -14,10 +14,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -38,6 +40,10 @@ import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private static final boolean LOCAL_LOGV = true;
+
+    private FirebaseAuth firebaseAuth;
 
     private DrawerLayout drawerLayout;
     private View header;
@@ -56,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -91,31 +99,37 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.maps:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add maps fragment");
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(placesFragment).commit();
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add friends fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, friendsManagerFragment).commit();
                         return true;
                     case R.id.places:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add places fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!placesFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, placesFragment).commit();
                         return true;
                     case R.id.settings:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add settings fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
                         return true;
                     case R.id.logout:
+                        if (LOCAL_LOGV) Log.v(TAG, "Calling logout()");
                         item.setChecked(false);
                         logout();
                         return true;
                     case R.id.feedback:
+                        if (LOCAL_LOGV) Log.v(TAG, "Sending feedback");
                         item.setChecked(false);
                         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                         emailIntent.setType("text/plain");
@@ -125,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(Intent.createChooser(emailIntent, "Send email via"));
                         } else {
                             //TODO: Make toast.
-                            System.out.println("No email applications found on this device!");
+                            if (LOCAL_LOGV) Log.v(TAG, "No email applications found on this device!");
                         }
                         return true;
                 }
@@ -137,17 +151,19 @@ public class MainActivity extends AppCompatActivity {
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (LOCAL_LOGV) Log.v(TAG, "Clicked on profile picture");
                 profilePictureSettings();
             }
         });
 
         TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        String welcome = String.format(getResources().getString(R.string.welcome_user_header), "Get user name here!");
+        String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseAuth.getCurrentUser().getEmail());
         usernameTextView.setText(welcome);
 
     }
 
     public void showMapFragment() {
+        if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
     }
@@ -174,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
             CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
+            if (LOCAL_LOGV) Log.v(TAG, "Oppening image crop tool");
             CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
             Uri uri = activityResult.getUri();
 
@@ -220,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendLocationDialog(String name) {
+        if (LOCAL_LOGV) Log.v(TAG, "Oppening send location dialog");
         Bundle arguments = new Bundle();
         arguments.putString("name", name);
 
@@ -248,18 +266,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
+            if (LOCAL_LOGV) Log.v(TAG, "Closing app");
             super.onBackPressed();
         }
     }
 
     private void logout() {
-        //TODO: logout
-        loginReturn();
+        if (FirebaseAuth.getInstance() != null) {
+            if (LOCAL_LOGV) Log.v(TAG, "Logging out");
+            FirebaseAuth.getInstance().signOut();
+            loginReturn();
+        } else {
+            if (LOCAL_LOGV) Log.v(TAG, "Could not log out");
+        }
     }
 
     private void loginReturn() {
+        if (LOCAL_LOGV) Log.v(TAG, "Returning to login activity");
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();

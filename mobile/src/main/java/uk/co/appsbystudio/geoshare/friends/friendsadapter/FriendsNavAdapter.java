@@ -91,12 +91,12 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = itemView.findViewById(R.id.friend_name);
-            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
-            arrow = itemView.findViewById(R.id.more);
-            sendLocation = itemView.findViewById(R.id.sendLocation);
-            requestLocation = itemView.findViewById(R.id.requestLocation);
-            nameItem = itemView.findViewById(R.id.name_item);
+            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
+            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
+            arrow = (ImageView) itemView.findViewById(R.id.more);
+            sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
+            requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
+            nameItem = (RelativeLayout) itemView.findViewById(R.id.name_item);
             //showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
         }
     }

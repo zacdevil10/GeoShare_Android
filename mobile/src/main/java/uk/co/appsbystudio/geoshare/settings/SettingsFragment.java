@@ -19,11 +19,11 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
-        LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = layoutInflater.inflate(R.layout.fragment_settings, container, false);
+        //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
+        //LayoutInflater layoutInflater = inflater.cloneInContext(context);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 

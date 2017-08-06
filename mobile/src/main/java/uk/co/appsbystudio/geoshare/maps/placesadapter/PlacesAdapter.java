@@ -43,7 +43,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
 
         ViewHolder(View itemView) {
             super(itemView);
-            locationName = itemView.findViewById(R.id.friend_name);
+            locationName = (TextView) itemView.findViewById(R.id.friend_name);
         }
     }
 }

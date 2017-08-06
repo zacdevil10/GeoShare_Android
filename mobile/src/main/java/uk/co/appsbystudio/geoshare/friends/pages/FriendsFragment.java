@@ -19,12 +19,12 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        RecyclerView friendsList = view.findViewById(R.id.friend_list);
+        RecyclerView friendsList = (RecyclerView) view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         friendsList.setLayoutManager(layoutManager);
 
-        SwipeRefreshLayout swipeRefresh = view.findViewById(R.id.swipeContainer);
+        SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
