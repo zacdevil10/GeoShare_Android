@@ -39,7 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
+import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
 
     private final MapsFragment mapsFragment = new MapsFragment();
-    private final FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
     private final PlacesFragment placesFragment = new PlacesFragment();
     private final SettingsFragment settingsFragment = new SettingsFragment();
 
@@ -122,15 +121,14 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.maps:
                         if (LOCAL_LOGV) Log.v(TAG, "Add maps fragment");
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
-                        getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(placesFragment).commit();
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
-                        if (LOCAL_LOGV) Log.v(TAG, "Add friends fragment");
-                        getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                        getFragmentManager().executePendingTransactions();
-                        if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, friendsManagerFragment).commit();
+                        if (LOCAL_LOGV) Log.v(TAG, "Opening friends manager");
+                        item.setChecked(false);
+                        Intent intent = new Intent(MainActivity.this, FriendsManager.class);
+                        startActivity(intent);
                         return true;
                     case R.id.places:
                         if (LOCAL_LOGV) Log.v(TAG, "Add places fragment");

@@ -44,7 +44,6 @@
     </array>
 
     <string name="logo">Logo</string>
-    <string name="facebook_app_id">1751664078387348</string>
     <string name="return_desc">return</string>
     <string name="search_for_friends">Search for friends…</string>
     <string name="cancel_desc">Cancel</string>
@@ -58,8 +57,9 @@
     <string name="friends">Friends</string>
     <string name="search">Search…</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_profile">View profile</string>
+    <string name="title_activity_friends_manager">Friends Manager</string>
+    <string name="tab_text_1">Current</string>
+    <string name="tab_text_2">Pending</string>
 
 </resources>
