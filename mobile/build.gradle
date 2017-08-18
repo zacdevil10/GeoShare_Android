@@ -10,7 +10,6 @@ android {
         targetSdkVersion 26
         versionCode 3
         versionName "1.1"
-        multiDexEnabled false
     }
     buildTypes {
         release {
@@ -25,7 +24,6 @@ android {
 dependencies {
     implementation 'com.google.firebase:firebase-database:11.2.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    wearApp project(':wear')
 
     compile 'com.android.support:appcompat-v7:26.0.1'
     compile 'com.google.android.gms:play-services-maps:11.2.0'
