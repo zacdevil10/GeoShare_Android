@@ -19,7 +19,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -38,15 +48,21 @@ import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
+import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final boolean LOCAL_LOGV = true;
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
     private View header;
+    private String userId;
 
     private final MapsFragment mapsFragment = new MapsFragment();
     private final FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
@@ -64,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userId = firebaseUser != null ? firebaseUser.getUid() : null;
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -156,10 +177,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseAuth.getCurrentUser().getEmail());
-        usernameTextView.setText(welcome);
+        File fileCheck = new File(getCacheDir() + "/" + userId + ".png");
 
+        if (fileCheck.exists()) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+        }
+
+        final TextView usernameTextView = (TextView) header.findViewById(R.id.username);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation = dataSnapshot.child("users").child(userId).getValue(UserInformation.class);
+                assert userInformation != null;
+                System.out.println(userInformation.getName());
+                String welcome = String.format(getResources().getString(R.string.welcome_user_header), userInformation.getName());
+                usernameTextView.setText(welcome);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void showMapFragment() {
@@ -173,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
-            imageFile = new File(this.getCacheDir(), "profile");
+            imageFile = new File(this.getCacheDir(), userId + ".png");
 
             try {
                 FileOutputStream stream = new FileOutputStream(imageFile);
@@ -196,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageFile = new File(this.getCacheDir(), "profile");
+                imageFile = new File(this.getCacheDir(), userId + ".png");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -206,14 +247,22 @@ public class MainActivity extends AppCompatActivity {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
-                    //bitmap = scaleImage(bitmap);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 50, fileOutputStream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                 }
 
                 fileOutputStream.close();
 
-                //TODO: Upload image
+                StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
+                profileRef.putFile(Uri.fromFile(imageFile))
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                if (LOCAL_LOGV) Log.v(TAG, "Picture has been uploaded");
+                                Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+                                ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
 
+                            }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }

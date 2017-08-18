@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,13 +31,13 @@ public class FriendsManagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /* INFLATE LAYOUT WITH PER-FRAGMENT THEME */
-        //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
-        //LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = inflater.inflate(R.layout.fragment_friends_manager, container, false);
+        @SuppressLint("RestrictedApi") final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
+        LayoutInflater layoutInflater = inflater.cloneInContext(context);
+        View view = layoutInflater.inflate(R.layout.fragment_friends_manager, container, false);
 
         /* SET UP TOOLBAR */
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        TabLayout friendsTabs = (TabLayout) view.findViewById(R.id.friends_tabs);
+        final TabLayout friendsTabs = (TabLayout) view.findViewById(R.id.friends_tabs);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 

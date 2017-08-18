@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mypopsy.maps.StaticMap;
-
 import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.R;
@@ -39,11 +37,6 @@ public class RecentFragment extends Fragment {
         countryName.add("France");
         cityName.add("New-York City");
         countryName.add("United States of America");
-
-        for (String city : cityName) {
-            StaticMap staticMap = new StaticMap().center(String.valueOf(city)).size(512, 512);
-            locationImageURL.add(staticMap.toString());
-        }
 
         final RecentAdapter recentAdapter = new RecentAdapter(getActivity(), cityName, countryName, locationImageURL);
 

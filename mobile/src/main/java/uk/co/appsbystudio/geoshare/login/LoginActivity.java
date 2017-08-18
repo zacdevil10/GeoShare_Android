@@ -3,54 +3,87 @@ package uk.co.appsbystudio.geoshare.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.marlonmafra.android.widget.EditTextPassword;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final boolean LOCAL_LOGV = true;
 
-    private LoginFragment loginFragment;
-    private SignUpFragment signupFragment;
+    TextInputLayout nameInput;
+    EditText nameEntry, emailEntry, passwordEntry;
+    Button login, signUp, signUpShow;
+    String name;
+    String email;
+    String password;
+
+    private boolean showingSignUp = false;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseUser user;
+    private FirebaseDatabase database;
+    private DatabaseReference ref;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginFragment = new LoginFragment();
-        signupFragment = new SignUpFragment();
+        nameInput = (TextInputLayout) findViewById(R.id.nameInput);
+        nameEntry = (EditText) findViewById(R.id.name);
+        emailEntry = (EditText) findViewById(R.id.email);
+        passwordEntry = (EditTextPassword) findViewById(R.id.password);
+        login = (Button) findViewById(R.id.log_in);
+        signUp = (Button) findViewById(R.id.sign_up);
+        signUpShow = (Button) findViewById(R.id.open_sign_up);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, loginFragment).commit();
+        signUpShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nameInput.setVisibility(View.VISIBLE);
+                nameInput.requestFocus();
+                login.setVisibility(View.GONE);
+                signUpShow.setVisibility(View.GONE);
+                signUp.setVisibility(View.VISIBLE);
+                showingSignUp = true;
+            }
+        });
 
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate(false);
+            }
+        });
+
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate(true);
+            }
+        });
+
+        database = FirebaseDatabase.getInstance();
+        ref = database.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -64,6 +97,86 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void validate(boolean signUp) {
+        if (LOCAL_LOGV) Log.v(TAG, "Validating");
+        name = nameEntry.getText().toString();
+        email = emailEntry.getText().toString();
+        password = passwordEntry.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        if (TextUtils.isEmpty(password)) {
+            passwordEntry.setError(getString(R.string.error_field_required));
+            focusView = passwordEntry;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(email)) {
+            emailEntry.setError(getString(R.string.error_field_required));
+            focusView = emailEntry;
+            cancel = true;
+        }
+
+        if (showingSignUp && TextUtils.isEmpty(name)) {
+            nameEntry.setError(getString(R.string.error_field_required));
+            focusView = nameEntry;
+            cancel = true;
+        }
+
+        if (cancel) {
+            focusView.requestFocus();
+        } else if (!signUp){
+            if (LOCAL_LOGV) Log.v(TAG, "Login?");
+            login();
+        } else {
+            if (LOCAL_LOGV) Log.v(TAG, "Signup?");
+            showingSignUp = false;
+            signUp();
+        }
+    }
+
+    private void login() {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        }
+                    }
+                });
+    }
+
+    private void signUp() {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (LOCAL_LOGV) Log.v(TAG, "Updating profile");
+                            user = firebaseAuth.getCurrentUser();
+                            UserInformation userInformation = new UserInformation(name, email);
+                            if (user != null) {
+                                String userId = user.getUid();
+                                ref.child("users").child(userId).setValue(userInformation);
+                                if (LOCAL_LOGV) Log.v(TAG, "Updating profile was successful");
+                            }
+
+                            nameInput.setVisibility(View.GONE);
+                            login.setVisibility(View.VISIBLE);
+                            signUpShow.setVisibility(View.VISIBLE);
+                            signUp.setVisibility(View.GONE);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -80,17 +193,16 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void buttonCallback(View button) {
-        switch (button.getId()) {
-            case R.id.open_sign_up:
-                if (LOCAL_LOGV) Log.v(TAG, "Showing signup fragment");
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(loginFragment.getId(), signupFragment).addToBackStack(null).commit();
-                break;
-            case R.id.sign_up:
-                if (LOCAL_LOGV) Log.v(TAG, "Sign up");
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_right, R.anim.exit_left, R.anim.enter_left, R.anim.exit_right).replace(signupFragment.getId(), loginFragment).commit();
-                break;
+    @Override
+    public void onBackPressed() {
+        if (showingSignUp) {
+            nameInput.setVisibility(View.GONE);
+            login.setVisibility(View.VISIBLE);
+            signUpShow.setVisibility(View.VISIBLE);
+            signUp.setVisibility(View.GONE);
+            showingSignUp = false;
+        } else {
+            super.onBackPressed();
         }
     }
 }
