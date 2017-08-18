@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -180,6 +181,16 @@ public class MainActivity extends AppCompatActivity {
         if (fileCheck.exists()) {
             Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
             ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+        } else {
+            StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
+            profileRef.getFile(Uri.fromFile(fileCheck))
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+                            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+                        }
+            });
         }
 
         final TextView usernameTextView = (TextView) header.findViewById(R.id.username);
