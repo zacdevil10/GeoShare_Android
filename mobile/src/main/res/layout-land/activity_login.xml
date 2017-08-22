@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/startup_llayout_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context="uk.co.appsbystudio.geoshare.login.LoginActivity">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/background_low"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/startup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:padding="48dp"
+        android:text="@string/login_header"
+        android:textColor="@android:color/white"
+        android:textSize="45sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/startup_title"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--  Name Label -->
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_person_white_24dp"
+            android:hint="@string/prompt_name"
+            android:inputType="text"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:textColor="@color/text"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--  Email Label -->
+        <EditText
+            android:id="@+id/emailInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_email_white_24dp"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:textColor="@color/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nameInput" />
+
+        <!--  Password Label -->
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_lock_white_24dp"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/emailInput"
+            app:layout_constraintTop_toBottomOf="@+id/emailInput" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/passwordInput"
+            app:layout_constraintTop_toBottomOf="@+id/passwordInput">
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/log_in"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_edge_green_background"
+                android:text="@string/login_submit"
+                android:textColor="@color/text"
+                android:layout_gravity="center_horizontal"
+                app:spinning_bar_color="@android:color/white"
+                app:spinning_bar_width="4dp"
+                app:spinning_bar_padding="6dp"
+                app:initialCornerAngle="50dp"
+                app:finalCornerAngle="50dp"/>
+
+            <Button
+                android:id="@+id/sign_up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_edge_green_background"
+                android:text="@string/login_sign_up"
+                android:textColor="@color/text"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/open_sign_up"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/login_sign_up"
+                android:textColor="@color/text" />
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

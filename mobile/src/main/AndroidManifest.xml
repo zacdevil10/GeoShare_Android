@@ -39,7 +39,7 @@
             android:theme="@style/MainTheme" />
         <activity
             android:name=".friends.pages.FriendSearchActivity"
-            android:theme="@style/MainTheme" />
+            android:theme="@style/FriendsTheme" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Theme.AppCompat" />
@@ -51,6 +51,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.MainActivity" />
+        </activity>
+        <activity
+            android:name=".friends.pages.FriendInfoActivity"
+            android:label="@string/title_activity_friend_info"
+            android:parentActivityName=".friends.FriendsManager"
+            android:theme="@style/FriendsTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
     </application>
 

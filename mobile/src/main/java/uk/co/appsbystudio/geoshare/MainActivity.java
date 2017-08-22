@@ -7,6 +7,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +21,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +50,6 @@ import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
-import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
@@ -73,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Bitmap bitmap;
     private File imageFile;
+
+    private FloatingActionButton searchShare;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,6 +218,71 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        searchShare = (FloatingActionButton) findViewById(R.id.searchLocationShare);
+
+        final Animation animHideFab = AnimationUtils.loadAnimation(this, R.anim.scale_down);
+        final Animation animShowFab = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+
+        animHideFab.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                searchShare.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        animShowFab.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                searchShare.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        searchShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchShare.startAnimation(animHideFab);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    searchShare.startAnimation(animShowFab);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
     }
 
     public void showMapFragment() {
@@ -305,16 +378,6 @@ public class MainActivity extends AppCompatActivity {
         friendDialog.show(fragmentManager, "");
     }
 
-    public void friendsDialog(String name) {
-        Bundle arguments = new Bundle();
-        arguments.putString("name", name);
-
-        android.app.FragmentManager fragmentManager = getFragmentManager();
-        android.app.DialogFragment friendDialog = new FriendDialog();
-        friendDialog.setArguments(arguments);
-        friendDialog.show(fragmentManager, "");
-    }
-
     public void shareALocation() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment shareALocationDialog = new ShareALocationDialog();
@@ -326,6 +389,8 @@ public class MainActivity extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Closing app");
             super.onBackPressed();

@@ -1,9 +1,15 @@
 package uk.co.appsbystudio.geoshare.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,9 +25,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.marlonmafra.android.widget.EditTextPassword;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.Manifest;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
@@ -29,12 +36,15 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final boolean LOCAL_LOGV = true;
 
-    TextInputLayout nameInput;
     EditText nameEntry, emailEntry, passwordEntry;
-    Button login, signUp, signUpShow;
+    Button signUp, signUpShow;
+    CircularProgressButton login;
     String name;
     String email;
     String password;
+    Bitmap error;
+
+    private static final int GET_PERMS = 1;
 
     private boolean showingSignUp = false;
 
@@ -48,19 +58,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        nameInput = (TextInputLayout) findViewById(R.id.nameInput);
-        nameEntry = (EditText) findViewById(R.id.name);
-        emailEntry = (EditText) findViewById(R.id.email);
-        passwordEntry = (EditTextPassword) findViewById(R.id.password);
-        login = (Button) findViewById(R.id.log_in);
+        getPermissions();
+
+        nameEntry = (EditText) findViewById(R.id.nameInput);
+        emailEntry = (EditText) findViewById(R.id.emailInput);
+        passwordEntry = (EditText) findViewById(R.id.passwordInput);
+        login = (CircularProgressButton) findViewById(R.id.log_in);
         signUp = (Button) findViewById(R.id.sign_up);
         signUpShow = (Button) findViewById(R.id.open_sign_up);
+
+        error = BitmapFactory.decodeResource(LoginActivity.this.getResources(), R.drawable.ic_close_white_48px);
 
         signUpShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nameInput.setVisibility(View.VISIBLE);
-                nameInput.requestFocus();
+                nameEntry.setVisibility(View.VISIBLE);
+                nameEntry.requestFocus();
                 login.setVisibility(View.GONE);
                 signUpShow.setVisibility(View.GONE);
                 signUp.setVisibility(View.VISIBLE);
@@ -130,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else if (!signUp){
             if (LOCAL_LOGV) Log.v(TAG, "Login?");
+            login.startAnimation();
             login();
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Signup?");
@@ -145,6 +159,10 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
                             if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            if (error != null) {
+                                login.doneLoadingAnimation(Color.WHITE, error);
+                            }
+                            login.revertAnimation();
                         } else {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
@@ -163,20 +181,38 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             if (LOCAL_LOGV) Log.v(TAG, "Updating profile");
                             user = firebaseAuth.getCurrentUser();
-                            UserInformation userInformation = new UserInformation(name, email);
+                            UserInformation userInformation = new UserInformation(name, name.toLowerCase(), email);
                             if (user != null) {
                                 String userId = user.getUid();
                                 ref.child("users").child(userId).setValue(userInformation);
                                 if (LOCAL_LOGV) Log.v(TAG, "Updating profile was successful");
                             }
 
-                            nameInput.setVisibility(View.GONE);
+                            nameEntry.setVisibility(View.GONE);
                             login.setVisibility(View.VISIBLE);
                             signUpShow.setVisibility(View.VISIBLE);
                             signUp.setVisibility(View.GONE);
                         }
                     }
                 });
+    }
+
+    private void getPermissions() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) + ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, GET_PERMS);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case GET_PERMS:
+                if (grantResults.length > 0 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("We have permission!");
+                }
+        }
     }
 
     @Override
@@ -194,9 +230,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        login.dispose();
+    }
+
+    @Override
     public void onBackPressed() {
         if (showingSignUp) {
-            nameInput.setVisibility(View.GONE);
+            nameEntry.setVisibility(View.GONE);
             login.setVisibility(View.VISIBLE);
             signUpShow.setVisibility(View.VISIBLE);
             signUp.setVisibility(View.GONE);
