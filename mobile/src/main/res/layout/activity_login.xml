@@ -120,7 +120,7 @@
             android:text="@string/login_submit"
             android:textColor="@color/text"
             android:layout_gravity="center_horizontal"
-            app:spinning_bar_color="@android:color/white"
+            app:spinning_bar_color="@color/colorAccent"
             app:spinning_bar_width="4dp"
             app:spinning_bar_padding="6dp"
             app:initialCornerAngle="50dp"

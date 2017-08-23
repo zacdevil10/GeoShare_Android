@@ -36,6 +36,7 @@
             android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="64dp"
             android:background="@android:color/white"
             app:behavior_peekHeight="0dp"
             android:clipToPadding="true"
@@ -54,8 +55,8 @@
                 android:background="@drawable/round_edge_green_outline"
                 android:hint="@string/search"
                 android:inputType="text"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
                 android:textColorHint="@color/colorAccent"
                 android:textColor="@color/colorPrimary"/>
 

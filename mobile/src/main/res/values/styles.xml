@@ -1,7 +1,7 @@
 <resources>>
 
     <style name="LoginActivity" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
 
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -38,6 +38,15 @@
     <style name="TutorialTheme" parent="@style/Theme.AppCompat.Light.NoActionBar" />
 
     <style name="FriendsTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="FriendsInfoTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

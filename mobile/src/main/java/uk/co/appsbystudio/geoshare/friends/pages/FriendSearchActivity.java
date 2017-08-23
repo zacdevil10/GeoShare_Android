@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.R;
@@ -29,7 +30,7 @@ import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
 import uk.co.appsbystudio.geoshare.utils.RecentSearches;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
-public class FriendSearchActivity extends AppCompatActivity {
+public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
 
     private FirebaseAuth auth;
     private FirebaseDatabase database;
@@ -41,7 +42,12 @@ public class FriendSearchActivity extends AppCompatActivity {
     RecyclerView searchResults;
     FriendsSearchAdapter searchAdapter;
 
+    SearchView searchView;
+
     private final ArrayList<String> names = new ArrayList<>();
+    private final ArrayList<String> userId = new ArrayList<>();
+    private final ArrayList<Boolean> isSearch = new ArrayList<>();
+    private final ArrayList<Boolean> isRecent = new ArrayList<>();
 
     private final Context context = this;
 
@@ -71,12 +77,12 @@ public class FriendSearchActivity extends AppCompatActivity {
 
         getRecentSearches();
 
-        searchAdapter = new FriendsSearchAdapter(FriendSearchActivity.this, names);
+        searchAdapter = new FriendsSearchAdapter(FriendSearchActivity.this, databaseReference, auth, names, isSearch, isRecent, userId, FriendSearchActivity.this);
         searchResults.setAdapter(searchAdapter);
 
-        //TODO: Show recent searches from firebase
+        searchView = (SearchView) findViewById(R.id.searchView);
 
-        ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (s.length() == 0) {
@@ -87,12 +93,19 @@ public class FriendSearchActivity extends AppCompatActivity {
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            searchAdapter.notifyItemRangeRemoved(0, names.size());
                             names.clear();
+                            userId.clear();
+                            isRecent.clear();
+                            isSearch.clear();
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                 UserInformation userInformation = dataSnapshot.child(ds.getKey()).getValue(UserInformation.class);
                                 assert userInformation != null;
-                                System.out.println(userInformation.getName());
+                                isSearch.add(false);
+                                isRecent.add(false);
                                 names.add(ds.child("name").getValue(String.class));
+                                userId.add(ds.getKey());
+
                                 searchAdapter.notifyDataSetChanged();
                             }
                         }
@@ -119,9 +132,16 @@ public class FriendSearchActivity extends AppCompatActivity {
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            searchAdapter.notifyItemRangeRemoved(0, names.size());
                             names.clear();
+                            userId.clear();
+                            isRecent.clear();
+                            isSearch.clear();
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                 names.add(ds.child("name").getValue(String.class));
+                                isSearch.add(false);
+                                userId.add(ds.getKey());
+                                isRecent.add(false);
                                 searchAdapter.notifyDataSetChanged();
                             }
                         }
@@ -142,9 +162,16 @@ public class FriendSearchActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                searchAdapter.notifyItemRangeRemoved(0, names.size());
                 names.clear();
+                userId.clear();
+                isRecent.clear();
+                isSearch.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     names.add(0, ds.child("entry").getValue(String.class));
+                    userId.add(0, ds.child("uid").getValue(String.class));
+                    isSearch.add(0, ds.child("search").getValue(Boolean.class));
+                    isRecent.add(true);
                     searchAdapter.notifyDataSetChanged();
                 }
 
@@ -155,5 +182,10 @@ public class FriendSearchActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onSearchItemClick(String searchEntry) {
+        searchView.setQuery(searchEntry, false);
     }
 }

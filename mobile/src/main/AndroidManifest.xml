@@ -56,7 +56,7 @@
             android:name=".friends.pages.FriendInfoActivity"
             android:label="@string/title_activity_friend_info"
             android:parentActivityName=".friends.FriendsManager"
-            android:theme="@style/FriendsTheme">
+            android:theme="@style/FriendsInfoTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
