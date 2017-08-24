@@ -14,6 +14,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -23,14 +27,17 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
     private final Context context;
     private final ArrayList userId;
+    private final DatabaseReference databaseReference;
 
-    public FriendsPendingAdapter(Context context, ArrayList userId) {
+    public FriendsPendingAdapter(Context context, ArrayList userId, DatabaseReference databaseReference) {
         this.context = context;
         this.userId = userId;
+        this.databaseReference = databaseReference;
     }
 
     @Override
@@ -41,7 +48,19 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.friend_name.setText(userId.get(position).toString());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation = dataSnapshot.child("users").child(userId.get(holder.getAdapterPosition()).toString()).getValue(UserInformation.class);
+                assert userInformation != null;
+                holder.friend_name.setText(userInformation.getName());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //TODO: Friends picture
         if (!userId.isEmpty()) {

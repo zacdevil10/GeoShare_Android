@@ -14,6 +14,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -23,15 +27,27 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
     private final Context context;
     private final ArrayList userId;
+    private final DatabaseReference databaseReference;
 
-    public FriendsRequestAdapter(Context context, ArrayList userId) {
+    public interface Callback {
+        void onAcceptReject(Boolean accept, String uid);
+    }
+
+    private Callback callback;
+
+    public FriendsRequestAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
         this.userId = userId;
+        this.callback = callback;
+        this.databaseReference = databaseReference;
     }
+
+
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
@@ -41,10 +57,20 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.friend_name.setText(userId.get(position).toString());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation = dataSnapshot.child("users").child(userId.get(holder.getAdapterPosition()).toString()).getValue(UserInformation.class);
+                assert userInformation != null;
+                holder.friend_name.setText(userInformation.getName());
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        //TODO: Friends picture
+            }
+        });
+
         if (!userId.isEmpty()) {
             File fileCheck = new File(context.getCacheDir() + "/" + userId.get(position) + ".png");
 
@@ -75,6 +101,7 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
             @Override
             public void onClick(View v) {
                 //TODO: accept friend request
+                callback.onAcceptReject(true, userId.get(holder.getAdapterPosition()).toString());
             }
         });
 
@@ -82,6 +109,7 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
             @Override
             public void onClick(View v) {
                 //TODO: decline friend request
+                callback.onAcceptReject(false, userId.get(holder.getAdapterPosition()).toString());
             }
         });
     }

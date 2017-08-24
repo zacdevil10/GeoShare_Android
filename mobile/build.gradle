@@ -22,8 +22,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-database:11.2.0'
-    implementation 'com.android.support:support-v4:26.0.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile 'com.android.support:appcompat-v7:26.0.1'

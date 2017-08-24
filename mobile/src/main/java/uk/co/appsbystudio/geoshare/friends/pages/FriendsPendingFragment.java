@@ -26,7 +26,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 
-public class FriendsPendingFragment extends Fragment {
+public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback {
 
     private FirebaseAuth auth;
     private FirebaseDatabase database;
@@ -54,13 +54,13 @@ public class FriendsPendingFragment extends Fragment {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         RecyclerView friendsIncomingList = (RecyclerView) view.findViewById(R.id.friend_incoming_list);
-        friendsIncomingList.setHasFixedSize(true);
+        friendsIncomingList.setHasFixedSize(false);
         friendsIncomingList.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
         friendsIncomingList.setLayoutManager(layoutManagerRequests);
 
         RecyclerView friendsOutgoingList = (RecyclerView) view.findViewById(R.id.friend_outgoing_list);
-        friendsOutgoingList.setHasFixedSize(true);
+        friendsOutgoingList.setHasFixedSize(false);
         friendsOutgoingList.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsOutgoingList.setLayoutManager(layoutManagerPending);
@@ -68,8 +68,8 @@ public class FriendsPendingFragment extends Fragment {
         getIncomingFriends();
         getOutgoingFriends();
 
-        friendsRequestAdapter = new FriendsRequestAdapter(getContext(), userIdRequests);
-        friendsPendingAdapter = new FriendsPendingAdapter(getContext(), userId);
+        friendsRequestAdapter = new FriendsRequestAdapter(getContext(), userIdRequests, databaseReference, FriendsPendingFragment.this);
+        friendsPendingAdapter = new FriendsPendingAdapter(getContext(), userId, databaseReference);
 
         friendsIncomingList.setAdapter(friendsRequestAdapter);
         friendsOutgoingList.setAdapter(friendsPendingAdapter);
@@ -131,5 +131,15 @@ public class FriendsPendingFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onAcceptReject(Boolean accept, String uid) {
+        if (accept) {
+            databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
+            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
+        } else {
+            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
+        }
     }
 }

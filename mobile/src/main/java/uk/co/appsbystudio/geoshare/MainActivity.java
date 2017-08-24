@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -44,9 +45,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
@@ -67,14 +70,19 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
+    DrawerLayout rightDrawer;
     private View header;
     private String userId;
+
+    private final ArrayList<String> uid = new ArrayList<>();
 
     private final MapsFragment mapsFragment = new MapsFragment();
     private final PlacesFragment placesFragment = new PlacesFragment();
     private final SettingsFragment settingsFragment = new SettingsFragment();
 
     NavigationView navigationView;
+
+    FriendsNavAdapter friendsNavAdapter;
 
     private Bitmap bitmap;
     private File imageFile;
@@ -96,15 +104,18 @@ public class MainActivity extends AppCompatActivity {
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        rightDrawer = (DrawerLayout) findViewById(R.id.right_nav_drawer);
         navigationView = (NavigationView) findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
-        if (rightNavigationView != null) {
-            rightNavigationView.setHasFixedSize(true);
-        }
+        if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
-        //TODO: Get friends for right nav drawer
+        getFriends();
+        friendsNavAdapter = new FriendsNavAdapter(this, uid, databaseReference);
+        if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
+
+        rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
 
         navigationView.getMenu().getItem(0).setChecked(true);
         header = navigationView.getHeaderView(0);
@@ -285,6 +296,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void getFriends() {
+        Query query = databaseReference.child("friends").child(userId).orderByKey();
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                friendsNavAdapter.notifyItemRangeRemoved(0, uid.size());
+                uid.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    uid.add(ds.getKey());
+                    friendsNavAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void showMapFragment() {
         if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
@@ -357,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openFriendsDrawer() {
-        drawerLayout.openDrawer(GravityCompat.END);
+        rightDrawer.openDrawer(GravityCompat.END);
     }
 
     /* CLICK FUNCTIONALITY FOR PROFILE PIC */
@@ -389,7 +420,11 @@ public class MainActivity extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (rightDrawer.isDrawerOpen(GravityCompat.END)) {
+            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
+            rightDrawer.closeDrawer(GravityCompat.END);
         } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            if (LOCAL_LOGV) Log.v(TAG, "Bottom sheet closed");
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Closing app");
