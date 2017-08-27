@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +30,7 @@ public class FriendsFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseFriendsRef;
     private StorageReference storageReference;
 
     FriendsAdapter friendsAdapter;
@@ -44,7 +46,9 @@ public class FriendsFragment extends Fragment {
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReferenceFromUrl("https://modular-decoder-118720.firebaseio.com/");
+        databaseReference = database.getReference();
+        databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
+        databaseFriendsRef.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
 
         RecyclerView friendsList = (RecyclerView) view.findViewById(R.id.friend_list);
@@ -57,31 +61,31 @@ public class FriendsFragment extends Fragment {
         friendsAdapter = new FriendsAdapter(getContext(),userId, databaseReference);
         friendsList.setAdapter(friendsAdapter);
 
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getFriends();
-            }
-        });
-
         return view;
     }
 
     private void getFriends() {
-        Query query = databaseReference.child("friends").child(auth.getCurrentUser().getUid()).orderByKey();
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseFriendsRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                friendsAdapter.notifyItemRangeRemoved(0, userId.size());
-                userId.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    userId.add(ds.getKey());
-                    friendsAdapter.notifyDataSetChanged();
-                }
-                if (swipeRefresh.isRefreshing()) swipeRefresh.setRefreshing(false);
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                userId.add(dataSnapshot.getKey());
+                friendsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                userId.remove(dataSnapshot.getKey());
+                friendsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override

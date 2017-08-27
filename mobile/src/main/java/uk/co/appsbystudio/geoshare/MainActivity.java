@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseFriendsRef;
     private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
@@ -100,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
+        databaseFriendsRef = database.getReference("friends/" + userId);
+        databaseFriendsRef.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
 
         /* HANDLES FOR VARIOUS VIEWS */
@@ -297,16 +301,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFriends() {
-        Query query = databaseReference.child("friends").child(userId).orderByKey();
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseFriendsRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                friendsNavAdapter.notifyItemRangeRemoved(0, uid.size());
-                uid.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    uid.add(ds.getKey());
-                    friendsNavAdapter.notifyDataSetChanged();
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                uid.add(dataSnapshot.getKey());
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                uid.remove(dataSnapshot.getKey());
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -314,6 +329,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     public void showMapFragment() {
@@ -398,10 +415,12 @@ public class MainActivity extends AppCompatActivity {
         profileDialog.show(fragmentManager, "");
     }
 
-    public void sendLocationDialog(String name) {
+    public void sendLocationDialog(String name, String friendId) {
         if (LOCAL_LOGV) Log.v(TAG, "Oppening send location dialog");
         Bundle arguments = new Bundle();
         arguments.putString("name", name);
+        arguments.putString("friendId", friendId);
+        arguments.putString("uid", userId);
 
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment friendDialog = new ShareOptions();

@@ -3,6 +3,7 @@ package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -101,14 +102,15 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             }
         }
 
-        final Animation scaleOpen = AnimationUtils.loadAnimation(context, R.anim.scale_list_open);
-        final Animation scaleClose = AnimationUtils.loadAnimation(context, R.anim.scale_list_close);
-        final Animation rotateUp = AnimationUtils.loadAnimation(context, R.anim.rotate_up);
-        final Animation rotateDown = AnimationUtils.loadAnimation(context, R.anim.rotate_down);
-
         final boolean isExpanded = position == expandedPosition;
         holder.expandedView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         holder.nameItem.setActivated(isExpanded);
+
+        if (isExpanded) {
+            holder.friend_name.setTextColor(context.getResources().getColor(R.color.colorAccent));
+        } else {
+            holder.friend_name.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        }
 
         holder.nameItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,51 +118,15 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 expandedPosition = isExpanded ? -1:position;
                 TransitionManager.beginDelayedTransition(recyclerView);
                 notifyDataSetChanged();
-                /*
-                if (expandedPosition >= 0 && holder.expandedView.getVisibility() == View.GONE) {
-                    int prev = expandedPosition;
-                    notifyItemChanged(prev);
-                }
-
-                expandedPosition = holder.getAdapterPosition();
-                notifyItemChanged(expandedPosition);
-                /*
-                if (holder.sendLocation.getVisibility() == View.GONE) {
-                    holder.sendLocation.setVisibility(View.VISIBLE);
-                    holder.requestLocation.setVisibility(View.VISIBLE);
-                    //holder.showOnMapLayout.setVisibility(View.VISIBLE);
-                    //holder.test.startAnimation(scaleOpen);
-                    //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
-                } else {
-                    //holder.test.startAnimation(scaleClose);
-                    holder.sendLocation.setVisibility(View.GONE);
-                    holder.requestLocation.setVisibility(View.GONE);
-                    //holder.showOnMapLayout.setVisibility(View.GONE);
-                    //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
-                }
-                */
-
             }
         });
 
         holder.sendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText());
+                ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText(), userId.get(holder.getAdapterPosition()).toString());
             }
         });
-
-        /*
-        if (position == expandedPosition) {
-            if (holder.expandedView.getVisibility() == View.GONE) {
-                holder.expandedView.setVisibility(View.VISIBLE);
-            } else {
-                holder.expandedView.setVisibility(View.GONE);
-            }
-        } else {
-            holder.expandedView.setVisibility(View.GONE);
-        }
-        */
     }
 
     @Override

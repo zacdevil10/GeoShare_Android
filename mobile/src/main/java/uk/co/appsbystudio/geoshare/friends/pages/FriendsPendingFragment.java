@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,12 +26,14 @@ import java.util.ArrayList;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
+import uk.co.appsbystudio.geoshare.utils.AddFriendsInfo;
 
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback {
 
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private DatabaseReference databasePendingReference;
     private StorageReference storageReference;
 
     FriendsRequestAdapter friendsRequestAdapter;
@@ -50,7 +53,9 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReferenceFromUrl("https://modular-decoder-118720.firebaseio.com/");
+        databaseReference = database.getReference();
+        databasePendingReference = database.getReference("pending/" + auth.getCurrentUser().getUid());
+        databasePendingReference.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
 
         RecyclerView friendsIncomingList = (RecyclerView) view.findViewById(R.id.friend_incoming_list);
@@ -65,8 +70,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsOutgoingList.setLayoutManager(layoutManagerPending);
 
-        getIncomingFriends();
-        getOutgoingFriends();
+        getRequests();
 
         friendsRequestAdapter = new FriendsRequestAdapter(getContext(), userIdRequests, databaseReference, FriendsPendingFragment.this);
         friendsPendingAdapter = new FriendsPendingAdapter(getContext(), userId, databaseReference);
@@ -74,56 +78,46 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         friendsIncomingList.setAdapter(friendsRequestAdapter);
         friendsOutgoingList.setAdapter(friendsPendingAdapter);
 
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-
         TextView noRequests = (TextView) view.findViewById(R.id.friends_no_requests);
         TextView noPending = (TextView) view.findViewById(R.id.friends_no_pending);
-
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getIncomingFriends();
-                getOutgoingFriends();
-            }
-        });
 
         return view;
     }
 
-    private void getIncomingFriends() {
-        Query query = databaseReference.child("pending").child(auth.getCurrentUser().getUid()).orderByChild("outgoing").startAt(false).endAt(false);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getRequests() {
+        databasePendingReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                friendsRequestAdapter.notifyItemRangeRemoved(0, userId.size());
-                userIdRequests.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    userIdRequests.add(ds.getKey());
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
+                if (!addFriendsInfo.isOutgoing()) {
+                    userIdRequests.add(dataSnapshot.getKey());
                     friendsRequestAdapter.notifyDataSetChanged();
-                }
-                if (swipeRefresh.isRefreshing()) swipeRefresh.setRefreshing(false);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void getOutgoingFriends() {
-        Query query = databaseReference.child("pending").child(auth.getCurrentUser().getUid()).orderByChild("outgoing").startAt(true).endAt(true);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                friendsPendingAdapter.notifyItemRangeRemoved(0, userId.size());
-                userId.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    userId.add(ds.getKey());
+                } else {
+                    userId.add(dataSnapshot.getKey());
                     friendsPendingAdapter.notifyDataSetChanged();
                 }
-                if (swipeRefresh.isRefreshing()) swipeRefresh.setRefreshing(false);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
+                if (!addFriendsInfo.isOutgoing()) {
+                    userIdRequests.remove(dataSnapshot.getKey());
+                    friendsRequestAdapter.notifyDataSetChanged();
+                } else {
+                    userId.remove(dataSnapshot.getKey());
+                    friendsPendingAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -137,11 +131,12 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     public void onAcceptReject(Boolean accept, String uid) {
         if (accept) {
             databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
+            databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid()).setValue(true);
             databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            getIncomingFriends();
+            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
         } else {
             databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            getIncomingFriends();
+            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
         }
     }
 }
