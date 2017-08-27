@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.transition.TransitionManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -36,11 +38,15 @@ import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
     private final Context context;
+    private final RecyclerView recyclerView;
     private final ArrayList userId;
     private final DatabaseReference databaseReference;
 
-    public FriendsNavAdapter(Context context, ArrayList userId, DatabaseReference databaseReference) {
+    private int expandedPosition = -1;
+
+    public FriendsNavAdapter(Context context, RecyclerView recyclerView, ArrayList userId, DatabaseReference databaseReference) {
         this.context = context;
+        this.recyclerView = recyclerView;
         this.userId = userId;
         this.databaseReference = databaseReference;
     }
@@ -53,7 +59,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(final FriendsNavAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final FriendsNavAdapter.ViewHolder holder, final int position) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -100,24 +106,39 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final Animation rotateUp = AnimationUtils.loadAnimation(context, R.anim.rotate_up);
         final Animation rotateDown = AnimationUtils.loadAnimation(context, R.anim.rotate_down);
 
+        final boolean isExpanded = position == expandedPosition;
+        holder.expandedView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        holder.nameItem.setActivated(isExpanded);
+
         holder.nameItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                expandedPosition = isExpanded ? -1:position;
+                TransitionManager.beginDelayedTransition(recyclerView);
+                notifyDataSetChanged();
+                /*
+                if (expandedPosition >= 0 && holder.expandedView.getVisibility() == View.GONE) {
+                    int prev = expandedPosition;
+                    notifyItemChanged(prev);
+                }
+
+                expandedPosition = holder.getAdapterPosition();
+                notifyItemChanged(expandedPosition);
+                /*
                 if (holder.sendLocation.getVisibility() == View.GONE) {
                     holder.sendLocation.setVisibility(View.VISIBLE);
                     holder.requestLocation.setVisibility(View.VISIBLE);
                     //holder.showOnMapLayout.setVisibility(View.VISIBLE);
                     //holder.test.startAnimation(scaleOpen);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_48px));
-                    holder.arrow.startAnimation(rotateUp);
                 } else {
                     //holder.test.startAnimation(scaleClose);
                     holder.sendLocation.setVisibility(View.GONE);
                     holder.requestLocation.setVisibility(View.GONE);
                     //holder.showOnMapLayout.setVisibility(View.GONE);
                     //holder.more.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_48px));
-                    holder.arrow.startAnimation(rotateDown);
                 }
+                */
 
             }
         });
@@ -128,6 +149,18 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText());
             }
         });
+
+        /*
+        if (position == expandedPosition) {
+            if (holder.expandedView.getVisibility() == View.GONE) {
+                holder.expandedView.setVisibility(View.VISIBLE);
+            } else {
+                holder.expandedView.setVisibility(View.GONE);
+            }
+        } else {
+            holder.expandedView.setVisibility(View.GONE);
+        }
+        */
     }
 
     @Override
@@ -143,7 +176,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final RelativeLayout sendLocation;
         final RelativeLayout requestLocation;
         final ConstraintLayout nameItem;
-        //final RelativeLayout showOnMapLayout;
+        final RelativeLayout showOnMapLayout;
+        final LinearLayout expandedView;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -153,7 +187,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
             requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
             nameItem = (ConstraintLayout) itemView.findViewById(R.id.name_item);
-            //showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
+            showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
+            expandedView = itemView.findViewById(R.id.expandedView);
         }
     }
 }

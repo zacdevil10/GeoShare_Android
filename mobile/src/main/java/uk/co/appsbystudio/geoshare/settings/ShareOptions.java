@@ -19,7 +19,7 @@ public class ShareOptions extends DialogFragment {
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
 
-        /* Use this when tracking is implemented
+        //* Use this when tracking is implemented
         optionsMenu.setTitle("Share your location with " + name + "?").setMultiChoiceItems(R.array.shareLocationOptions, null, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
@@ -37,22 +37,12 @@ public class ShareOptions extends DialogFragment {
             public void onClick(DialogInterface dialog, int i) {
                 if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Send current location once
-                    new SingleShareLocationTask(getActivity(), name, new GPSTracking(getActivity()).getLongitude(), new GPSTracking(getActivity()).getLatitude()).execute();
-                    System.out.println("Single share");
                 } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
                     //TODO: Call alarm timer to send location at regular time intervals
-                    System.out.println("Multi share");
                 }
             }
         }).setNegativeButton("Cancel", null);
         //*/
-
-        optionsMenu.setTitle("Share your location with " + name + "?").setPositiveButton("Share", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                //Send the location once
-            }
-        }).setNegativeButton("Cancel", null);
 
         return optionsMenu.create();
     }

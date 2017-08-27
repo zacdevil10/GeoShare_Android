@@ -29,6 +29,7 @@ public class FriendsManager extends AppCompatActivity {
         toolbar.setTitle(R.string.title_activity_friends_manager);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

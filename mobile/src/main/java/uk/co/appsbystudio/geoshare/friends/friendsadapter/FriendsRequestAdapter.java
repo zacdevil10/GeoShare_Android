@@ -47,8 +47,6 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         this.databaseReference = databaseReference;
     }
 
-
-
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_request_list_item, viewGroup, false);

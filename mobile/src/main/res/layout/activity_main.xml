@@ -76,6 +76,8 @@
         <LinearLayout
             android:layout_width="304dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginBottom="88dp"
             android:orientation="vertical"
             android:layout_gravity="end"
             android:fitsSystemWindows="true">
@@ -84,11 +86,11 @@
                 android:id="@+id/right_friends_drawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="?attr/actionBarSize"
                 android:choiceMode="singleChoice"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
-                android:clickable="false" />
+                android:clickable="false"
+                android:overScrollMode="never"/>
 
         </LinearLayout>
 

@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
         getFriends();
-        friendsNavAdapter = new FriendsNavAdapter(this, uid, databaseReference);
+        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, databaseReference);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
         rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
