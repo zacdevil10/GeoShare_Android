@@ -7,6 +7,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -14,64 +18,108 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import uk.co.appsbystudio.geoshare.database.ReturnData;
-import uk.co.appsbystudio.geoshare.friends.FriendsManagerFragment;
-import uk.co.appsbystudio.geoshare.json.DownloadImageTask;
-import uk.co.appsbystudio.geoshare.json.ImageUploadTask;
-import uk.co.appsbystudio.geoshare.json.DeleteRequestTask;
-import uk.co.appsbystudio.geoshare.json.FriendsListTask;
+import uk.co.appsbystudio.geoshare.friends.FriendsManager;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
-import uk.co.appsbystudio.geoshare.settings.FriendDialog;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
+import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
+import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private static final boolean LOCAL_LOGV = true;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private DatabaseReference databaseFriendsRef;
+    private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
+    DrawerLayout rightDrawer;
     private View header;
+    private String userId;
 
-    private MapsFragment mapsFragment = new MapsFragment();
-    private FriendsManagerFragment friendsManagerFragment = new FriendsManagerFragment();
-    private PlacesFragment placesFragment = new PlacesFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    private final ArrayList<String> uid = new ArrayList<>();
+
+    private final MapsFragment mapsFragment = new MapsFragment();
+    private final PlacesFragment placesFragment = new PlacesFragment();
+    private final SettingsFragment settingsFragment = new SettingsFragment();
 
     NavigationView navigationView;
 
+    FriendsNavAdapter friendsNavAdapter;
+
     private Bitmap bitmap;
     private File imageFile;
+
+    private FloatingActionButton searchShare;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userId = firebaseUser != null ? firebaseUser.getUid() : null;
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
+        databaseFriendsRef = database.getReference("friends/" + userId);
+        databaseFriendsRef.keepSynced(true);
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        rightDrawer = (DrawerLayout) findViewById(R.id.right_nav_drawer);
         navigationView = (NavigationView) findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
-        if (rightNavigationView != null) {
-            rightNavigationView.setHasFixedSize(true);
-        }
+        if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
-        // Get friends for right nav drawer
-        new FriendsListTask(this, rightNavigationView, null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
+        getFriends();
+        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, databaseReference);
+        if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
+
+        rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
 
         navigationView.getMenu().getItem(0).setChecked(true);
         header = navigationView.getHeaderView(0);
@@ -95,31 +143,36 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.maps:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add maps fragment");
                         getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
-                        getSupportFragmentManager().beginTransaction().remove(friendsManagerFragment).commit();
                         getSupportFragmentManager().beginTransaction().remove(placesFragment).commit();
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
-                        getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                        getFragmentManager().executePendingTransactions();
-                        if(!friendsManagerFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, friendsManagerFragment).commit();
+                        if (LOCAL_LOGV) Log.v(TAG, "Opening friends manager");
+                        item.setChecked(false);
+                        Intent intent = new Intent(MainActivity.this, FriendsManager.class);
+                        startActivity(intent);
                         return true;
                     case R.id.places:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add places fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!placesFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, placesFragment).commit();
                         return true;
                     case R.id.settings:
+                        if (LOCAL_LOGV) Log.v(TAG, "Add settings fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
                         return true;
                     case R.id.logout:
+                        if (LOCAL_LOGV) Log.v(TAG, "Calling logout()");
                         item.setChecked(false);
                         logout();
                         return true;
                     case R.id.feedback:
+                        if (LOCAL_LOGV) Log.v(TAG, "Sending feedback");
                         item.setChecked(false);
                         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                         emailIntent.setType("text/plain");
@@ -129,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(Intent.createChooser(emailIntent, "Send email via"));
                         } else {
                             //TODO: Make toast.
-                            System.out.println("No email applications found on this device!");
+                            if (LOCAL_LOGV) Log.v(TAG, "No email applications found on this device!");
                         }
                         return true;
                 }
@@ -138,31 +191,152 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        refreshPicture(new ReturnData().getUsername(this), false);
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (LOCAL_LOGV) Log.v(TAG, "Clicked on profile picture");
                 profilePictureSettings();
             }
         });
 
-        TextView usernameTextView = (TextView) header.findViewById(R.id.username);
-        String welcome = String.format(getResources().getString(R.string.welcome_user_header), new ReturnData().getUsername(this));
-        usernameTextView.setText(welcome);
+        File fileCheck = new File(getCacheDir() + "/" + userId + ".png");
+
+        if (fileCheck.exists()) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+        } else {
+            StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
+            profileRef.getFile(Uri.fromFile(fileCheck))
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+                            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+                        }
+            });
+        }
+
+        final TextView usernameTextView = (TextView) header.findViewById(R.id.username);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserInformation userInformation = dataSnapshot.child("users").child(userId).getValue(UserInformation.class);
+                assert userInformation != null;
+                System.out.println(userInformation.getName());
+                String welcome = String.format(getResources().getString(R.string.welcome_user_header), userInformation.getName());
+                usernameTextView.setText(welcome);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        searchShare = (FloatingActionButton) findViewById(R.id.searchLocationShare);
+
+        final Animation animHideFab = AnimationUtils.loadAnimation(this, R.anim.scale_down);
+        final Animation animShowFab = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+
+        animHideFab.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                searchShare.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        animShowFab.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                searchShare.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        searchShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchShare.startAnimation(animHideFab);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    searchShare.startAnimation(animShowFab);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+    }
+
+    private void getFriends() {
+        databaseFriendsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                uid.add(dataSnapshot.getKey());
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                uid.remove(dataSnapshot.getKey());
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
     public void showMapFragment() {
+        if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
-    }
-
-    public void refreshPicture(String name, Boolean upload) {
-        new DownloadImageTask((CircleImageView) header.findViewById(R.id.profile_image), null, this, name, upload).execute("https://geoshare.appsbystudio.co.uk/api/user/" + name + "/img/");
-    }
-
-    public void refreshFriendsList() {
-        new FriendsListTask(this, (RecyclerView) findViewById(R.id.right_friends_drawer), null, null, "https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/friends/", new ReturnData().getpID(this), 3).execute();
     }
 
     @Override
@@ -170,7 +344,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
-            imageFile = new File(this.getCacheDir(), "profile");
+            imageFile = new File(this.getCacheDir(), userId + ".png");
+
+            try {
+                FileOutputStream stream = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
             Uri uri = Uri.fromFile(imageFile);
 
@@ -179,30 +360,39 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
             CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
-        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
+            if (LOCAL_LOGV) Log.v(TAG, "Oppening image crop tool");
             CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
             Uri uri = activityResult.getUri();
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageFile = new File(this.getCacheDir(), "profile");
+                imageFile = new File(this.getCacheDir(), userId + ".png");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
                 if (bitmap != null) {
-                    //bitmap = scaleImage(bitmap);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                 }
 
                 fileOutputStream.close();
 
-                new ImageUploadTask(imageFile, this).execute();
+                StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
+                profileRef.putFile(Uri.fromFile(imageFile))
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                if (LOCAL_LOGV) Log.v(TAG, "Picture has been uploaded");
+                                Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+                                ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
 
+                            }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -215,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openFriendsDrawer() {
-        drawerLayout.openDrawer(GravityCompat.END);
+        rightDrawer.openDrawer(GravityCompat.END);
     }
 
     /* CLICK FUNCTIONALITY FOR PROFILE PIC */
@@ -225,9 +415,12 @@ public class MainActivity extends AppCompatActivity {
         profileDialog.show(fragmentManager, "");
     }
 
-    public void sendLocationDialog(String name) {
+    public void sendLocationDialog(String name, String friendId) {
+        if (LOCAL_LOGV) Log.v(TAG, "Oppening send location dialog");
         Bundle arguments = new Bundle();
         arguments.putString("name", name);
+        arguments.putString("friendId", friendId);
+        arguments.putString("uid", userId);
 
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment friendDialog = new ShareOptions();
@@ -235,40 +428,41 @@ public class MainActivity extends AppCompatActivity {
         friendDialog.show(fragmentManager, "");
     }
 
-    public void friendsDialog(String name) {
-        Bundle arguments = new Bundle();
-        arguments.putString("name", name);
-
+    public void shareALocation() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
-        android.app.DialogFragment friendDialog = new FriendDialog();
-        friendDialog.setArguments(arguments);
-        friendDialog.show(fragmentManager, "");
+        android.app.DialogFragment shareALocationDialog = new ShareALocationDialog();
+        shareALocationDialog.show(fragmentManager, "");
     }
 
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (rightDrawer.isDrawerOpen(GravityCompat.END)) {
+            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
+            rightDrawer.closeDrawer(GravityCompat.END);
+        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            if (LOCAL_LOGV) Log.v(TAG, "Bottom sheet closed");
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
-            rememberLogout();
+            if (LOCAL_LOGV) Log.v(TAG, "Closing app");
             super.onBackPressed();
         }
     }
 
-    private void rememberLogout() {
-        if (new ReturnData().getRemember(this) != 1) {
-            new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
-            new ReturnData().clearSession(this);
+    private void logout() {
+        if (FirebaseAuth.getInstance() != null) {
+            if (LOCAL_LOGV) Log.v(TAG, "Logging out");
+            FirebaseAuth.getInstance().signOut();
+            loginReturn();
+        } else {
+            if (LOCAL_LOGV) Log.v(TAG, "Could not log out");
         }
     }
 
-    private void logout() {
-        new DeleteRequestTask().onDeleteRequest("https://geoshare.appsbystudio.co.uk/api/user/" + new ReturnData().getUsername(this) + "/session/" + new ReturnData().getpID(this), new ReturnData().getpID(this), this);
-        new ReturnData().clearData(this);
-        loginReturn();
-    }
-
     private void loginReturn() {
+        if (LOCAL_LOGV) Log.v(TAG, "Returning to login activity");
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         this.finish();

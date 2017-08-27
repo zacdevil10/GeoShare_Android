@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.GeocodingFromAddressTask;
-import uk.co.appsbystudio.geoshare.json.MapDownloadTask;
+import uk.co.appsbystudio.geoshare.json.GeocodingFromLatLngTask;
 
 public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder>{
 
@@ -44,7 +44,6 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.city.setText(cityName.get(position).toString());
         holder.country.setText(countryName.get(position).toString());
-        new MapDownloadTask(holder.mapImage, mapURL.get(position).toString()).execute();
 
         final Intent intent = new Intent("show.on.map");
 

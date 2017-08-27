@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.places.pages;
 
 import android.os.Bundle;
-import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,8 +8,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.mypopsy.maps.StaticMap;
 
 import java.util.ArrayList;
 
@@ -21,9 +18,9 @@ public class RecentFragment extends Fragment {
 
     public RecentFragment() {}
 
-    private ArrayList<String> cityName = new ArrayList<>();
-    private ArrayList<String> countryName = new ArrayList<>();
-    private ArrayList<String> locationImageURL = new ArrayList<>();
+    private final ArrayList<String> cityName = new ArrayList<>();
+    private final ArrayList<String> countryName = new ArrayList<>();
+    private final ArrayList<String> locationImageURL = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,11 +37,6 @@ public class RecentFragment extends Fragment {
         countryName.add("France");
         cityName.add("New-York City");
         countryName.add("United States of America");
-
-        for (String city : cityName) {
-            StaticMap staticMap = new StaticMap().center(String.valueOf(city)).size(512, 512);
-            locationImageURL.add(staticMap.toString());
-        }
 
         final RecentAdapter recentAdapter = new RecentAdapter(getActivity(), cityName, countryName, locationImageURL);
 
