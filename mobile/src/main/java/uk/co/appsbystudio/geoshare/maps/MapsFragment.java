@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +25,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -30,8 +35,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +55,8 @@ import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.GeocodingFromLatLngTask;
+import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.MapStyleManager;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, LocationListener {
 
@@ -47,7 +64,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private Marker selectedLocation;
     private GoogleMap googleMap;
 
-    private FloatingActionButton searchShare;
+    DatabaseReference databaseReference;
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     private ArrayList<Marker> markerArrayList = new ArrayList<Marker>();
 
@@ -65,6 +84,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             mapFragment.getMapAsync(this);
         }
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("current_location/" + user.getUid());
+        databaseReference.keepSynced(true);
+
         final RecyclerView searchResults = (RecyclerView) view.findViewById(R.id.searchItems);
         searchResults.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -81,48 +106,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             @Override
             public void onClick(View view) {
                 ((MainActivity) getActivity()).openFriendsDrawer();
-            }
-        });
-
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.maps_coordinator);
-        searchShare = (FloatingActionButton) view.findViewById(R.id.searchLocationShare);
-        searchShare.setTag(1);
-
-        final EditText searchPlaces = (EditText) view.findViewById(R.id.places_search);
-
-        searchPlaces.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() > 2) {
-
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        //View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
-        //BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-
-        searchShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Integer integer = (Integer) view.getTag();
-                if (integer == 1) {
-                    System.out.println("Search");
-                    searchPlaces.requestFocus();
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(searchPlaces, InputMethodManager.SHOW_IMPLICIT);
-                } else {
-                    System.out.println("Share");
-                    ((MainActivity) getActivity()).shareALocation();
-                }
             }
         });
 
@@ -147,6 +130,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             googleMap.setMyLocationEnabled(true);
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(new GPSTracking(getContext()).getLatitude(), new GPSTracking(getContext()).getLongitude()), 15));
         }
+
+        MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
+        styleManager.addStyle(14, R.raw.map_style);
+
         googleMap.getUiSettings().setCompassEnabled(false);
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
@@ -167,8 +154,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                     }
 
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    searchShare.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_share_white_48px));
-                    searchShare.setTag(2);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
@@ -180,11 +165,49 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             public void onMapClick(LatLng latLng) {
                 if (selectedLocation != null) {
                     selectedLocation.remove();
-                    searchShare.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_search_white_48px));
-                    searchShare.setTag(1);
                 }
             }
         });
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                addFriendMarker(databaseLocations.getLongitude(), databaseLocations.getLat());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                addFriendMarker(databaseLocations.getLongitude(), databaseLocations.getLat());
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void addFriendMarker(Double longitude, Double latitude) {
+        if (this.googleMap != null) {
+
+            if (selectedLocation != null) {
+                selectedLocation.remove();
+            }
+
+            selectedLocation = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
+        }
     }
 
     private void addMarker(Double longitude, Double latitude) {
@@ -196,8 +219,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
             selectedLocation = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9));
-            searchShare.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_share_white_48px));
-            searchShare.setTag(2);
         }
     }
 

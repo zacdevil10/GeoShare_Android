@@ -10,7 +10,6 @@ android {
         targetSdkVersion 26
         versionCode 3
         versionName "1.1"
-        multiDexEnabled false
     }
     buildTypes {
         release {
@@ -23,9 +22,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-database:11.2.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    wearApp project(':wear')
 
     compile 'com.android.support:appcompat-v7:26.0.1'
     compile 'com.google.android.gms:play-services-maps:11.2.0'
@@ -42,9 +39,11 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:11.2.0'
 
     compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.marlonmafra.android.widget:edittext-password:1.0.0'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.2.5'
+    compile 'br.com.simplepass:loading-button-android:1.8.0'
+
+    compile 'com.github.florent37:diagonallayout:1.0.7'
 
     testCompile 'junit:junit:4.12'
 }

@@ -1,152 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/name_item"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="88dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:background="?android:attr/selectableItemBackground">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/friend_profile_image"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_profile_picture"/>
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/friend_name"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/friend_profile_image"
-            android:layout_toStartOf="@+id/more"
-            android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
+            android:text=""
+            android:textColor="@color/colorPrimary"
             android:textSize="16sp"
-            android:text="" />
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintRight_toLeftOf="@+id/friend_profile_image"
+            android:layout_marginEnd="8dp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/more"
-            android:src="@drawable/ic_keyboard_arrow_down_black_48px"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/friend_profile_image"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:padding="16dp"
-            android:contentDescription="@string/menu_desc"/>
+            android:src="@drawable/ic_profile_picture"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp" />
 
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 
-    <RelativeLayout
-        android:id="@+id/sendLocation"
-        android:orientation="horizontal"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?android:attr/selectableItemBackground">
+        android:layout_height="match_parent"
+        android:id="@+id/expandedView"
+        android:orientation="vertical"
+        android:background="@drawable/friends_nav_drawer_expanded_background"
+        android:backgroundTint="@android:color/white"
+        android:visibility="gone">
 
-        <ImageView
+        <RelativeLayout
+            android:id="@+id/sendLocation"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:scaleType="fitXY"
-            android:layout_height="4dp"
-            android:src="@drawable/shadow_top"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/shadowTop"
-            android:contentDescription="Shadow top" />
+            android:layout_height="56dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless">
 
-        <TextView
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:text="Share current location" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/requestLocation"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:textSize="16sp"
-            android:text="Share current location" />
+            android:layout_height="56dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless">
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/friend_name1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:text="Request location" />
 
-    <RelativeLayout
-        android:id="@+id/requestLocation"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?android:attr/selectableItemBackground">
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/friend_name1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:textSize="16sp"
-            android:text="Request location" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:scaleType="fitXY"
-            android:layout_height="4dp"
-            android:src="@drawable/shadow_bottom"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/imageView"
-            android:contentDescription="Shadow bottom" />
-
-
-    </RelativeLayout>
-
-    <!--RelativeLayout
+        <RelativeLayout
         android:id="@+id/showOnMapLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:visibility="gone"
         android:clickable="true"
         android:focusable="true"
-        android:background="#EEEEEE">
+        android:background="?android:attr/selectableItemBackgroundBorderless">
 
-        <TextView
-            android:id="@+id/showOnMapText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:textSize="16sp"
-            android:text="Show on map" />
+            <TextView
+                android:id="@+id/showOnMapText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:text="Show on map" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:scaleType="fitXY"
-            android:layout_height="4dp"
-            android:src="@drawable/shadow_bottom"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/imageView"
-            android:contentDescription="Shadow bottom" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/checkBox"
-            android:layout_alignBottom="@+id/imageView"
-            android:layout_alignParentEnd="true" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/checkBox"
+                android:layout_alignParentEnd="true" />
 
 
-    </RelativeLayout!-->
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
 
