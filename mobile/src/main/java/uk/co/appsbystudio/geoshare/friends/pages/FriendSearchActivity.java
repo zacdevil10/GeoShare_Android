@@ -5,12 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.R;
@@ -37,12 +32,12 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
 
-    String uid;
+    private String uid;
 
-    RecyclerView searchResults;
-    FriendsSearchAdapter searchAdapter;
+    private RecyclerView searchResults;
+    private FriendsSearchAdapter searchAdapter;
 
-    SearchView searchView;
+    private SearchView searchView;
 
     private final ArrayList<String> names = new ArrayList<>();
     private final ArrayList<String> userId = new ArrayList<>();

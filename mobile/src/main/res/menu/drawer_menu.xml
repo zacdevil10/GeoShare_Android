@@ -5,19 +5,19 @@
 
         <item
             android:id="@+id/maps"
-            android:checked="false"
+            android:checked="true"
             android:icon="@drawable/ic_map_black_48px"
             android:title="@string/maps" />
 
-        <item
+        <!--item
             android:id="@+id/places"
             android:checked="false"
             android:icon="@drawable/ic_location_on_black_48px"
-            android:title="@string/places" />
+            android:title="@string/places" /!-->
 
         <item
             android:id="@+id/friends"
-            android:checked="false"
+            android:checkable="false"
             android:icon="@drawable/ic_people_black_48px"
             android:title="@string/friends_manager" />
 

@@ -11,7 +11,6 @@ public class RecentSearches {
 
     public RecentSearches(String entry, String timeStamp, boolean isSearch) {
         this.entry = entry;
-        this.uid = uid;
         this.timeStamp = timeStamp;
         this.isSearch = isSearch;
     }

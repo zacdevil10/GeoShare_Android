@@ -22,7 +22,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
-        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_list_item, viewGroup, false);
+        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.places_search_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -43,7 +43,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
 
         ViewHolder(View itemView) {
             super(itemView);
-            locationName = (TextView) itemView.findViewById(R.id.friend_name);
+            locationName = (TextView) itemView.findViewById(R.id.search_result_text);
         }
     }
 }

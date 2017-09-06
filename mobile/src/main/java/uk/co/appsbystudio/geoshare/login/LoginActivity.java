@@ -1,6 +1,5 @@
 package uk.co.appsbystudio.geoshare.login;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -28,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import uk.co.appsbystudio.geoshare.MainActivity;
-import uk.co.appsbystudio.geoshare.Manifest;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
@@ -36,13 +34,16 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final boolean LOCAL_LOGV = true;
 
-    EditText nameEntry, emailEntry, passwordEntry;
-    Button signUp, signUpShow;
-    CircularProgressButton login;
-    String name;
-    String email;
-    String password;
-    Bitmap error;
+    private EditText nameEntry;
+    private EditText emailEntry;
+    private EditText passwordEntry;
+    private Button signUp;
+    private Button signUpShow;
+    private CircularProgressButton login;
+    private String name;
+    private String email;
+    private String password;
+    private Bitmap error;
 
     private static final int GET_PERMS = 1;
 

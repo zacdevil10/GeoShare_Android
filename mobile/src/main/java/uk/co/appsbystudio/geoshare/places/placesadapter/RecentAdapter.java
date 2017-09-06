@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.json.GeocodingFromAddressTask;
-import uk.co.appsbystudio.geoshare.json.GeocodingFromLatLngTask;
 
 public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder>{
 

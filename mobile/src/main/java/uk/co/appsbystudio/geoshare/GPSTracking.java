@@ -15,7 +15,7 @@ import android.support.v4.app.ActivityCompat;
 public class GPSTracking extends Service implements LocationListener {
 
     private final Context context;
-
+    private boolean isTracking;
     private boolean getLocation;
 
     private Location location;
@@ -23,14 +23,20 @@ public class GPSTracking extends Service implements LocationListener {
     private double longitude;
 
     private static final long DISTANCE_TO_CHANGE = 10;
-    private static final long TIME_TO_UPDATE = 1000 * 60;
+    private static final long TIME_TO_UPDATE = 1000 * 10;
 
     public GPSTracking(Context context) {
         this.context = context;
-        getLoccation();
+        getLocation();
     }
 
-    private Location getLoccation() {
+    public GPSTracking(Context context, boolean isTracking) {
+        this.context = context;
+        this.isTracking = isTracking;
+        getLocation();
+    }
+
+    private Location getLocation() {
         try {
             LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -86,9 +92,11 @@ public class GPSTracking extends Service implements LocationListener {
         return longitude;
     }
 
+    /*
     public boolean getLocation() {
         return this.getLocation;
     }
+    //*/
 
     @Nullable
     @Override

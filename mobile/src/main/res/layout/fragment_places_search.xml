@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    tools:context="uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/back"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_arrow_back_white_24dp"
+            android:tint="@color/colorAccent"
+            android:background="@drawable/places_back_background"/>
+
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:drawableStart="@drawable/ic_search_green_24dp"
+            android:drawablePadding="8dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:hint="@string/search"
+            android:inputType="text"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:textColorHint="@color/colorAccent"
+            android:textColor="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/search_result_list"/>
+
+</LinearLayout>

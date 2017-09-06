@@ -59,7 +59,7 @@
                             android:textColor="@color/colorPrimary"
                             android:gravity="center"
                             android:textSize="@dimen/search_text_medium"
-                            android:text="Nearby\n10 Friends" />
+                            android:text="Nearby\n4 Friends" />
 
                         <ImageView
                             android:id="@+id/friend_drawer"

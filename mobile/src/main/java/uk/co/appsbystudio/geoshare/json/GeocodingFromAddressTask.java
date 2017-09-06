@@ -22,7 +22,6 @@ public class GeocodingFromAddressTask extends AsyncTask<Void, Void, LatLng> {
 
     @Override
     protected LatLng doInBackground(Void... params) {
-
         Geocoder gc = new Geocoder(context);
         LatLng latLng = null;
         try {

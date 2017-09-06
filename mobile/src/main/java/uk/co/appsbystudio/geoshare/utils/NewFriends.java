@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.utils;
 
-public class NewFriends {
+class NewFriends {
 
     private String uid;
 }

@@ -33,7 +33,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -53,6 +52,7 @@ import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
+import uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
-    DrawerLayout rightDrawer;
+    private DrawerLayout rightDrawer;
     private View header;
     private String userId;
 
@@ -82,21 +82,26 @@ public class MainActivity extends AppCompatActivity {
     private final PlacesFragment placesFragment = new PlacesFragment();
     private final SettingsFragment settingsFragment = new SettingsFragment();
 
-    NavigationView navigationView;
+    private final PlacesSearchFragment placesSearchFragment = new PlacesSearchFragment();
 
-    FriendsNavAdapter friendsNavAdapter;
+    private NavigationView navigationView;
+
+    private FriendsNavAdapter friendsNavAdapter;
 
     private Bitmap bitmap;
     private File imageFile;
 
-    private FloatingActionButton searchShare;
+    private FloatingActionButton search;
     private BottomSheetBehavior bottomSheetBehavior;
+
+    Animation animShowFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
@@ -115,10 +120,12 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
 
+        //Get friends and populate right nav drawer
         getFriends();
         friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, databaseReference);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
+        //TODO: Update from deprecated method
         rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
 
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -133,8 +140,15 @@ public class MainActivity extends AppCompatActivity {
             this.setTaskDescription(taskDesc);
         }
 
+        /* BOTTOM SHEET FRAGMENT SWAPPING */
+        //getSupportFragmentManager().beginTransaction().add(R.id.bottom_sheet_container, placesSearchFragment).commit();
+
         /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
-        getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
+        }
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -154,12 +168,14 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, FriendsManager.class);
                         startActivity(intent);
                         return true;
+                    /*
                     case R.id.places:
                         if (LOCAL_LOGV) Log.v(TAG, "Add places fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
                         getFragmentManager().executePendingTransactions();
                         if(!placesFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, placesFragment).commit();
                         return true;
+                    //*/
                     case R.id.settings:
                         if (LOCAL_LOGV) Log.v(TAG, "Add settings fragment");
                         getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
@@ -199,12 +215,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Check if users profile picture is stored in the cache
         File fileCheck = new File(getCacheDir() + "/" + userId + ".png");
 
         if (fileCheck.exists()) {
+            //If file exists, set image view image as profile picture from storage
+            //TODO: Allow for updating picture on different devices
+            /* Could mean that this method will not work without getting the picture every time
+                or adding a last updated section to the users profile picture
+                and comparing with the date of the file created.
+             */
             Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
             ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
         } else {
+            //If the file doesn't exist, download from Firebase
             StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
             profileRef.getFile(Uri.fromFile(fileCheck))
                     .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -216,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        //Get users name and add to welcome message
         final TextView usernameTextView = (TextView) header.findViewById(R.id.username);
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -235,10 +260,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
-        searchShare = (FloatingActionButton) findViewById(R.id.searchLocationShare);
+        search = (FloatingActionButton) findViewById(R.id.searchLocationShare);
 
+        //Set the animation for the FAB when the bottom sheet is made in/visible
         final Animation animHideFab = AnimationUtils.loadAnimation(this, R.anim.scale_down);
-        final Animation animShowFab = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+        animShowFab = AnimationUtils.loadAnimation(this, R.anim.scale_up);
 
         animHideFab.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -248,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                searchShare.setVisibility(View.GONE);
+                search.setVisibility(View.GONE);
             }
 
             @Override
@@ -260,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         animShowFab.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                searchShare.setVisibility(View.VISIBLE);
+                search.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -277,29 +303,19 @@ public class MainActivity extends AppCompatActivity {
         View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
-        searchShare.setOnClickListener(new View.OnClickListener() {
+        search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchShare.startAnimation(animHideFab);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
-
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    searchShare.startAnimation(animShowFab);
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
+                search.startAnimation(animHideFab);
+                //getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
+                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_up, R.anim.exit_down).replace(R.id.content_frame, placesSearchFragment).addToBackStack("").commit();
+                //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
     }
 
+    /* FIREBASE GET LIST OF FRIENDS */
+    //TODO: Can move this to onCreate
     private void getFriends() {
         databaseFriendsRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -329,14 +345,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     public void showMapFragment() {
         if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
+    }
+
+    public void backFromSearch() {
+        if (LOCAL_LOGV) Log.v(TAG, "Back from searching");
+        getSupportFragmentManager().beginTransaction().remove(placesSearchFragment).commit();
+        search.startAnimation(animShowFab);
     }
 
     @Override
@@ -399,6 +419,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
     public void openDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
@@ -415,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
         profileDialog.show(fragmentManager, "");
     }
 
+    /* DIALOG FOR SENDING YOUR CURRENT LOCATION TO A FRIEND */
     public void sendLocationDialog(String name, String friendId) {
         if (LOCAL_LOGV) Log.v(TAG, "Oppening send location dialog");
         Bundle arguments = new Bundle();
@@ -428,6 +451,7 @@ public class MainActivity extends AppCompatActivity {
         friendDialog.show(fragmentManager, "");
     }
 
+    /* DIALOG FOR SHARING A MAP LOCATION WITH A FRIEND */
     public void shareALocation() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment shareALocationDialog = new ShareALocationDialog();
@@ -451,6 +475,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* FIREBASE AUTH LOG OUT */
     private void logout() {
         if (FirebaseAuth.getInstance() != null) {
             if (LOCAL_LOGV) Log.v(TAG, "Logging out");

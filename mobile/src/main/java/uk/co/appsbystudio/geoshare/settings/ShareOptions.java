@@ -13,9 +13,6 @@ import android.os.Bundle;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.services.TrackingService;
@@ -23,7 +20,7 @@ import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
 public class ShareOptions extends DialogFragment {
 
-    boolean[] defaultSet = new boolean[2];
+    private boolean[] defaultSet = new boolean[2];
 
     private PendingIntent pendingIntent;
 
@@ -82,7 +79,7 @@ public class ShareOptions extends DialogFragment {
         return optionsMenu.create();
     }
 
-    public void startTracking() {
+    private void startTracking() {
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         int interval = 8000;
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
