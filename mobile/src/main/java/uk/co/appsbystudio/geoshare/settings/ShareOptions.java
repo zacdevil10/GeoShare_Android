@@ -84,6 +84,11 @@ public class ShareOptions extends DialogFragment {
                             });
 
                         databaseReference.child("current_location").child(friendId).child("tracking").child(uid).child("timestamp").setValue(System.currentTimeMillis());
+
+                        GPSTracking gpsTracking = new GPSTracking(getActivity());
+                        DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
+
+                        databaseReference.child("current_location").child(uid).child("location").setValue(databaseLocations);
                     }
                 }
             }

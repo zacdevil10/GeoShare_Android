@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -114,9 +115,11 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         if (hasTracking.containsKey(userId.get(position).toString()) && hasTracking.get(userId.get(position).toString())) {
             holder.trackingIndicator.setVisibility(View.VISIBLE);
             holder.requestLocationText.setText("Tracking enabled");
+            holder.requestLocation.setClickable(false);
         } else {
             holder.trackingIndicator.setVisibility(View.GONE);
             holder.requestLocationText.setText("Request location");
+            holder.requestLocation.setClickable(true);
         }
 
         final boolean isExpanded = position == expandedPosition;
@@ -142,6 +145,13 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             @Override
             public void onClick(View view) {
                 holder.showOnMapCheckBox.setChecked(!holder.showOnMapCheckBox.isChecked());
+            }
+        });
+
+        holder.showOnMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                databaseReference.child("current_location").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").setValue(b);
             }
         });
 

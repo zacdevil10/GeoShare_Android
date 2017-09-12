@@ -48,7 +48,7 @@
                             android:src="@drawable/ic_menu_green_24dp" />
 
                         <TextView
-                            android:id="@+id/near"
+                            android:id="@+id/friendNearText"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:paddingLeft="@dimen/search_key_line"
@@ -59,7 +59,7 @@
                             android:textColor="@color/colorPrimary"
                             android:gravity="center"
                             android:textSize="@dimen/search_text_medium"
-                            android:text="Nearby\n4 Friends" />
+                            android:text="Nearby\n0 Friends" />
 
                         <ImageView
                             android:id="@+id/friend_drawer"

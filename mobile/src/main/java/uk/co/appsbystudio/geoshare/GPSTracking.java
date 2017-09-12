@@ -36,15 +36,15 @@ public class GPSTracking extends Service implements LocationListener {
     private boolean hasTrue;
 
     //TODO: Use values from shared preferences
-    private static final long DISTANCE_TO_CHANGE = 1;
-    private static final long TIME_TO_UPDATE = 1000;
+    private static final long DISTANCE_TO_CHANGE = 5;
+    private static final long TIME_TO_UPDATE = 1000 * 10;
 
     public GPSTracking(Context context) {
         this.context = context;
         getLocation();
     }
 
-    private Location getLocation() {
+    public Location getLocation() {
         try {
             LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
