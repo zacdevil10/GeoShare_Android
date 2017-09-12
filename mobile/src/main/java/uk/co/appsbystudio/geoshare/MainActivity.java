@@ -2,6 +2,7 @@ package uk.co.appsbystudio.geoshare;
 
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -46,6 +47,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
+    private DatabaseReference isTrackingRef;
     private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
 
     private final ArrayList<String> uid = new ArrayList<>();
+    private final HashMap<String, Boolean> hasTracking = new HashMap<>();
 
     private final MapsFragment mapsFragment = new MapsFragment();
     private final PlacesFragment placesFragment = new PlacesFragment();
@@ -94,12 +98,21 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton search;
     private BottomSheetBehavior bottomSheetBehavior;
 
+    private SharedPreferences sharedPreferences;
+
+    public static File cacheDir;
+
     Animation animShowFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent gpsService = new Intent(this, GPSTracking.class);
+        startService(gpsService);
+
+        cacheDir = this.getCacheDir();
 
         //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance();
@@ -109,7 +122,11 @@ public class MainActivity extends AppCompatActivity {
         databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
+        isTrackingRef = database.getReference("current_location/" + userId + "/tracking");
+        isTrackingRef.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
+
+        sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Get friends and populate right nav drawer
         getFriends();
-        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, databaseReference);
+        getTrackingStatus();
+        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
         //TODO: Update from deprecated method
@@ -347,6 +365,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void getTrackingStatus() {
+        isTrackingRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                hasTracking.put(dataSnapshot.getKey(), true);
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                hasTracking.remove(dataSnapshot.getKey());
+                friendsNavAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void showMapFragment() {
         if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
@@ -480,6 +529,7 @@ public class MainActivity extends AppCompatActivity {
         if (FirebaseAuth.getInstance() != null) {
             if (LOCAL_LOGV) Log.v(TAG, "Logging out");
             FirebaseAuth.getInstance().signOut();
+            sharedPreferences.edit().clear().apply();
             loginReturn();
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Could not log out");

@@ -23,8 +23,6 @@ public class DirectionsDownloadTask extends AsyncTask<String, String, String> {
     protected String doInBackground(String... url) {
         String data = "";
 
-        System.out.println(url[0]);
-
         try {
             data = downloadUrl(url[0]);
         } catch (Exception e) {
@@ -37,8 +35,6 @@ public class DirectionsDownloadTask extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-
-        System.out.println("This is the result: " + result);
 
         DirectionsParserTask parserTask = new DirectionsParserTask(googleMap);
         parserTask.execute(result);

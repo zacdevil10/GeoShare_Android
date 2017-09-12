@@ -1,10 +1,11 @@
 package uk.co.appsbystudio.geoshare.utils;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -30,7 +31,6 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
         List<List<HashMap<String, String>>> routes = null;
 
         try {
-            System.out.println("This is the jsonData: " + jsonData[0]);
             jsonObject = new JSONObject(jsonData[0]);
             DirectionsDataParserTask directionsDataParserTask = new DirectionsDataParserTask();
 
@@ -43,7 +43,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
 
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> results) {
-        ArrayList<LatLng> points;
+        ArrayList<LatLng> points = null;
         PolylineOptions polylineOptions = null;
 
         for (int i = 0; i < results.size(); i++) {
@@ -67,7 +67,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
             polylineOptions.color(Application.getAppContext().getResources().getColor(R.color.colorAccent));
         }
 
-        if(polylineOptions != null) {
+        if (polylineOptions != null) {
             googleMap.addPolyline(polylineOptions);
         }
     }

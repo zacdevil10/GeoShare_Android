@@ -20,9 +20,7 @@ class DirectionsDataParserTask {
         JSONArray jSteps;
 
         try {
-
             jRoutes = jObject.getJSONArray("routes");
-
             for(int i=0;i<jRoutes.length();i++){
                 jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
                 List path = new ArrayList<>();
