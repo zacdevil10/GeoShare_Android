@@ -58,8 +58,7 @@
                             android:layout_weight="1"
                             android:textColor="@color/colorPrimary"
                             android:gravity="center"
-                            android:textSize="@dimen/search_text_medium"
-                            android:text="Nearby\n0 Friends" />
+                            android:textSize="@dimen/search_text_medium" />
 
                         <ImageView
                             android:id="@+id/friend_drawer"

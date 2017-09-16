@@ -56,6 +56,7 @@ import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
+import uk.co.appsbystudio.geoshare.services.TrackingService;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
 import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent gpsService = new Intent(this, GPSTracking.class);
+        Intent gpsService = new Intent(this, TrackingService.class);
         startService(gpsService);
 
         cacheDir = this.getCacheDir();
@@ -369,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
         isTrackingRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //Boolean tracking = dataSnapshot.getValue(Boolean.class);
                 hasTracking.put(dataSnapshot.getKey(), true);
                 friendsNavAdapter.notifyDataSetChanged();
             }

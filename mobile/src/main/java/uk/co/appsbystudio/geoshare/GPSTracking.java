@@ -108,14 +108,13 @@ public class GPSTracking extends Service implements LocationListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        if (LOCAL_LOGV) Log.v(TAG, "onBind");
         return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
@@ -136,8 +135,8 @@ public class GPSTracking extends Service implements LocationListener {
         for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
             if (hasShared.getValue()) {
                 hasTrue = true;
-                DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-                databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
+                //DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
+                //databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
                 break;
             } else {
                 hasTrue = false;
@@ -146,6 +145,8 @@ public class GPSTracking extends Service implements LocationListener {
         }
 
         if (hasTrue) {
+            //DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
+            //databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
             for (Map.Entry<String, Boolean> id : shares.entrySet()) {
                 if (LOCAL_LOGV) Log.v(TAG, "Updating timestamp for " + id.getKey());
                 if (LOCAL_LOGV) Log.v(TAG, "Id status: " + id.getValue());

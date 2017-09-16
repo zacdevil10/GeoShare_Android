@@ -65,6 +65,8 @@
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
 
+        <service android:name=".services.TrackingService" android:exported="false" />
+
     </application>
 
 </manifest>
