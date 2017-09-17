@@ -6,6 +6,7 @@
 
     <color name="colorPrimaryTransparent">#304caf50</color>
     <color name="colorPrimaryDarkerTransparent">#644caf50</color>
+    <color name="colorAccentTransparent">#40ff9800</color>
 
     <color name="recent_color">#E0E0E0</color>
 

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
-public class GPSTracking extends Service implements LocationListener {
+public class GPSTracking implements LocationListener {
     private static final String TAG = "GPSTracking";
     private static final boolean LOCAL_LOGV = true;
 
@@ -33,11 +33,9 @@ public class GPSTracking extends Service implements LocationListener {
     private double latitude;
     private double longitude;
 
-    private boolean hasTrue;
-
     //TODO: Use values from shared preferences
-    private static final long DISTANCE_TO_CHANGE = 5;
-    private static final long TIME_TO_UPDATE = 1000 * 10;
+    private static final long DISTANCE_TO_CHANGE = 1;
+    private static final long TIME_TO_UPDATE = 50;
 
     public GPSTracking(Context context) {
         this.context = context;
@@ -46,7 +44,7 @@ public class GPSTracking extends Service implements LocationListener {
 
     public Location getLocation() {
         try {
-            LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -105,25 +103,11 @@ public class GPSTracking extends Service implements LocationListener {
     }
     //*/
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        if (LOCAL_LOGV) Log.v(TAG, "onBind");
-        return null;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
-    }
-
     @Override
     public void onLocationChanged(Location location) {
+        this.location = location;
+
+        /*
         if (LOCAL_LOGV) Log.v(TAG, "Location has changed");
         SharedPreferences sharedPreferences = Application.getAppContext().getSharedPreferences("tracking", MODE_PRIVATE);
         Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
@@ -153,6 +137,7 @@ public class GPSTracking extends Service implements LocationListener {
                 if (id.getValue()) databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
             }
         }
+        */
 
 
     }

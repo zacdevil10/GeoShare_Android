@@ -370,14 +370,20 @@ public class MainActivity extends AppCompatActivity {
         isTrackingRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                //Boolean tracking = dataSnapshot.getValue(Boolean.class);
-                hasTracking.put(dataSnapshot.getKey(), true);
-                friendsNavAdapter.notifyDataSetChanged();
+                Boolean tracking = dataSnapshot.child("tracking").getValue(Boolean.class);
+                if (tracking != null) {
+                    hasTracking.put(dataSnapshot.getKey(), tracking);
+                    friendsNavAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                Boolean tracking = dataSnapshot.child("tracking").getValue(Boolean.class);
+                if (tracking != null) {
+                    hasTracking.put(dataSnapshot.getKey(), tracking);
+                    friendsNavAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

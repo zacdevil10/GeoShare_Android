@@ -85,6 +85,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private boolean isTracking;
     private GoogleMap googleMap;
 
+    private GPSTracking gpsTracking;
+
     private DatabaseReference databaseReference;
     private DatabaseReference shareReference;
     private DatabaseReference trackingReference;
@@ -118,6 +120,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         if (savedInstanceState == null) {
             mapFragment.setRetainInstance(true);
         }
+
+        if (gpsTracking == null) gpsTracking = new GPSTracking(getContext());
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -176,7 +180,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             googleMap.setBuildingsEnabled(false);
 
             /* USING CUSTOM GPS TRACKING MARKER */
-            GPSTracking gpsTracking = new GPSTracking(getContext());
             LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
 
             Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
@@ -328,8 +331,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 final String friendId = dataSnapshot.getKey();
                 if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added friendId: " + friendId);
 
-                if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
-                   getTrackingFriends(friendId);
+                if (dataSnapshot.child("tracking").getValue(Boolean.class) != null) {
+                    if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
+                        if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
+                            if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
+                                getTrackingFriends(friendId);
+                            }
+                        } else {
+                            getTrackingFriends(friendId);
+                        }
+                    }
                 }
 
                 nearbyFriends();
@@ -341,8 +352,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 final String friendId = dataSnapshot.getKey();
                 if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated friendId: " + friendId);
 
-                if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
-                    getTrackingFriends(friendId);
+                if (dataSnapshot.child("tracking").getValue(Boolean.class) != null && dataSnapshot.child("tracking").getValue(Boolean.class)) {
+                    if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
+                        if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
+                            getTrackingFriends(friendId);
+                        } else {
+                            if (friendMarkerList.containsKey(friendId)) removeFriendMarker(friendId);
+                        }
+                    } else {
+                        getTrackingFriends(friendId);
+                    }
                 } else {
                     if (friendMarkerList.containsKey(friendId)) {
                         removeFriendMarker(friendId);
@@ -542,7 +561,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     //GET NEARBY FRIENDS IN A GIVEN RADIUS
     private void nearbyFriends() {
         //TODO: Should be able to set this at the start of onCreate and access that at any point
-        GPSTracking gpsTracking = new GPSTracking(getContext());
         int count = 0;
 
         for (String markerId : friendMarkerList.keySet()) {
@@ -564,11 +582,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void nearbyRadius() {
         if (nearbyCircle != null) nearbyCircle.remove();
 
-        GPSTracking gpsTracking = new GPSTracking(getContext());
         int radius = 200;
         LatLng latLng = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
 
-        CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
+        CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
 
         nearbyCircle = googleMap.addCircle(nearbyCircleOptions);
     }
@@ -581,7 +598,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         if (accuracyCircle != null) {
             accuracyCircle.setCenter(latLng);
         } else {
-            CircleOptions accuracyCircleOptions = new CircleOptions().center(latLng).radius(location.getAccuracy()).fillColor(getResources().getColor(R.color.colorPrimaryDarkerTransparent)).strokeWidth(0);
+            CircleOptions accuracyCircleOptions = new CircleOptions().center(latLng).radius(location.getAccuracy()).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent)).strokeWidth(0);
             accuracyCircle = googleMap.addCircle(accuracyCircleOptions);
         }
     }

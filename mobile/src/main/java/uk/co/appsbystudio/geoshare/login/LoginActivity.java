@@ -29,6 +29,7 @@ import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        getPermissions();
+        //getPermissions();
 
         nameEntry = (EditText) findViewById(R.id.nameInput);
         emailEntry = (EditText) findViewById(R.id.emailInput);
@@ -105,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
                     if (LOCAL_LOGV) Log.v(TAG, "User has already signed in: " + currentUser.getUid());
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
                     startActivity(intent);
                     finish();
                 }

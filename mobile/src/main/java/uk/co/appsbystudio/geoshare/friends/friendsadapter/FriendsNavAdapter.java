@@ -151,7 +151,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.showOnMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                databaseReference.child("current_location").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").setValue(b);
+                databaseReference.child("current_location").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("showOnMap").setValue(b);
             }
         });
 

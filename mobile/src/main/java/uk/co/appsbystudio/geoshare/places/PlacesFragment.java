@@ -14,6 +14,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.places.pages.FavouritesFragment;
 import uk.co.appsbystudio.geoshare.places.pages.RecentFragment;
 import uk.co.appsbystudio.geoshare.places.pages.SharedFragment;
+import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager;
 
 public class PlacesFragment extends Fragment {
 

@@ -21,10 +21,10 @@ import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
 public class ShareOptions extends DialogFragment {
 
-    private boolean[] defaultSet = new boolean[2];
-
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+
+    private GPSTracking gpsTracking;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -34,11 +34,10 @@ public class ShareOptions extends DialogFragment {
         final String friendId = args.getString("friendId");
         final String uid = args.getString("uid");
 
+        gpsTracking = new GPSTracking(getActivity());
+
         sharedPreferences = getActivity().getSharedPreferences("tracking", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
-        defaultSet[0] = true;
-        defaultSet[1] = false;
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
 
@@ -58,7 +57,6 @@ public class ShareOptions extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int i) {
                 if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
-                    GPSTracking gpsTracking = new GPSTracking(getActivity());
                     DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
 
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -85,7 +83,6 @@ public class ShareOptions extends DialogFragment {
 
                         databaseReference.child("current_location").child(friendId).child("tracking").child(uid).child("timestamp").setValue(System.currentTimeMillis());
 
-                        GPSTracking gpsTracking = new GPSTracking(getActivity());
                         DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
 
                         databaseReference.child("current_location").child(uid).child("location").setValue(databaseLocations);
