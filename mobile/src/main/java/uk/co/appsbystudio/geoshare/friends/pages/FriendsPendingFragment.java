@@ -29,10 +29,8 @@ import uk.co.appsbystudio.geoshare.utils.AddFriendsInfo;
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback {
 
     private FirebaseAuth auth;
-    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private DatabaseReference databasePendingReference;
-    private StorageReference storageReference;
 
     private FriendsRequestAdapter friendsRequestAdapter;
     private FriendsPendingAdapter friendsPendingAdapter;
@@ -50,19 +48,19 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         View view = inflater.inflate(R.layout.fragment_friends_pending, container, false);
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
         databasePendingReference = database.getReference("pending/" + auth.getCurrentUser().getUid());
         databasePendingReference.keepSynced(true);
-        storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
-        RecyclerView friendsIncomingList = (RecyclerView) view.findViewById(R.id.friend_incoming_list);
+        RecyclerView friendsIncomingList = view.findViewById(R.id.friend_incoming_list);
         friendsIncomingList.setHasFixedSize(false);
         friendsIncomingList.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
         friendsIncomingList.setLayoutManager(layoutManagerRequests);
 
-        RecyclerView friendsOutgoingList = (RecyclerView) view.findViewById(R.id.friend_outgoing_list);
+        RecyclerView friendsOutgoingList = view.findViewById(R.id.friend_outgoing_list);
         friendsOutgoingList.setHasFixedSize(false);
         friendsOutgoingList.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
@@ -76,8 +74,8 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         friendsIncomingList.setAdapter(friendsRequestAdapter);
         friendsOutgoingList.setAdapter(friendsPendingAdapter);
 
-        TextView noRequests = (TextView) view.findViewById(R.id.friends_no_requests);
-        TextView noPending = (TextView) view.findViewById(R.id.friends_no_pending);
+        TextView noRequests = view.findViewById(R.id.friends_no_requests);
+        TextView noPending = view.findViewById(R.id.friends_no_pending);
 
         return view;
     }

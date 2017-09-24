@@ -26,7 +26,7 @@ public class RecentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_recent, container, false);
 
-        RecyclerView recentRecyclerView = (RecyclerView) view.findViewById(R.id.recentList);
+        RecyclerView recentRecyclerView = view.findViewById(R.id.recentList);
         recentRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recentRecyclerView.setLayoutManager(layoutManager);

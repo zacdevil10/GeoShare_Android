@@ -2,10 +2,8 @@ package uk.co.appsbystudio.geoshare.utils;
 
 import android.os.AsyncTask;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -43,7 +41,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
 
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> results) {
-        ArrayList<LatLng> points = null;
+        ArrayList<LatLng> points;
         PolylineOptions polylineOptions = null;
 
         for (int i = 0; i < results.size(); i++) {

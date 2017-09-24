@@ -1,27 +1,12 @@
 package uk.co.appsbystudio.geoshare;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.Map;
-
-import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
 public class GPSTracking implements LocationListener {
     private static final String TAG = "GPSTracking";
@@ -33,8 +18,7 @@ public class GPSTracking implements LocationListener {
     private double latitude;
     private double longitude;
 
-    //TODO: Use values from shared preferences
-    private static final long DISTANCE_TO_CHANGE = 1;
+    private static final long DISTANCE_TO_CHANGE = 0;
     private static final long TIME_TO_UPDATE = 50;
 
     public GPSTracking(Context context) {
@@ -53,7 +37,8 @@ public class GPSTracking implements LocationListener {
             } else {
                 if (networkEnabled) {
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, this);
-                    if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
                         // here to request the missing permissions, and then overriding
@@ -61,6 +46,7 @@ public class GPSTracking implements LocationListener {
                         //                                          int[] grantResults)
                         // to handle the case where the user grants the permission. See the documentation
                         // for ActivityCompat#requestPermissions for more details.
+                        return null;
                     }
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {
@@ -97,49 +83,9 @@ public class GPSTracking implements LocationListener {
         return longitude;
     }
 
-    /*
-    public boolean getLocation() {
-        return this.getLocation;
-    }
-    //*/
-
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
-
-        /*
-        if (LOCAL_LOGV) Log.v(TAG, "Location has changed");
-        SharedPreferences sharedPreferences = Application.getAppContext().getSharedPreferences("tracking", MODE_PRIVATE);
-        Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
-            if (hasShared.getValue()) {
-                hasTrue = true;
-                //DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-                //databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
-                break;
-            } else {
-                hasTrue = false;
-                databaseReference.child("current_location").child(userId).child("location").removeValue();
-            }
-        }
-
-        if (hasTrue) {
-            //DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-            //databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
-            for (Map.Entry<String, Boolean> id : shares.entrySet()) {
-                if (LOCAL_LOGV) Log.v(TAG, "Updating timestamp for " + id.getKey());
-                if (LOCAL_LOGV) Log.v(TAG, "Id status: " + id.getValue());
-                if (id.getValue()) databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
-            }
-        }
-        */
-
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -83,7 +82,7 @@
                 android:layout_centerVertical="true"
                 android:textSize="16sp"
                 android:id="@+id/sendLocationText"
-                android:text="Share current location" />
+                android:text="@string/share_current_location" />
 
         </RelativeLayout>
 
@@ -103,7 +102,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
                 android:textSize="16sp"
-                android:text="Request location" />
+                android:text="@string/request_location" />
 
         </RelativeLayout>
 
@@ -123,7 +122,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
                 android:textSize="16sp"
-                android:text="Show on map" />
+                android:text="@string/show_on_map" />
 
             <CheckBox
                 android:layout_width="wrap_content"

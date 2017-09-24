@@ -24,13 +24,12 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     private final Context context;
     private final ArrayList cityName;
     private final ArrayList countryName;
-    private final ArrayList mapURL;
 
     public RecentAdapter(Context context, ArrayList<String> cityName, ArrayList countryName, ArrayList mapURL) {
         this.context = context;
         this.cityName = cityName;
         this.countryName = countryName;
-        this.mapURL = mapURL;
+        ArrayList mapURL1 = mapURL;
     }
 
     @Override
@@ -80,10 +79,10 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
 
         ViewHolder(View itemView) {
             super(itemView);
-            city = (TextView) itemView.findViewById(R.id.location);
-            country = (TextView) itemView.findViewById(R.id.city_country);
-            mapImage = (ImageView) itemView.findViewById(R.id.mapImage);
-            showOnMap = (LinearLayout) itemView.findViewById(R.id.showMore);
+            city = itemView.findViewById(R.id.location);
+            country = itemView.findViewById(R.id.city_country);
+            mapImage = itemView.findViewById(R.id.mapImage);
+            showOnMap = itemView.findViewById(R.id.showMore);
         }
     }
 }

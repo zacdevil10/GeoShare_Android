@@ -214,17 +214,17 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            trackingIndicator = (CircleImageView) itemView.findViewById(R.id.trackingIndicator);
-            arrow = (ImageView) itemView.findViewById(R.id.more);
-            sendLocation = (RelativeLayout) itemView.findViewById(R.id.sendLocation);
-            sendLocationText = (TextView) itemView.findViewById(R.id.sendLocationText);
-            requestLocation = (RelativeLayout) itemView.findViewById(R.id.requestLocation);
-            requestLocationText = (TextView) itemView.findViewById(R.id.requestLocationText);
-            nameItem = (ConstraintLayout) itemView.findViewById(R.id.name_item);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            trackingIndicator = itemView.findViewById(R.id.trackingIndicator);
+            arrow = itemView.findViewById(R.id.more);
+            sendLocation = itemView.findViewById(R.id.sendLocation);
+            sendLocationText = itemView.findViewById(R.id.sendLocationText);
+            requestLocation = itemView.findViewById(R.id.requestLocation);
+            requestLocationText = itemView.findViewById(R.id.requestLocationText);
+            nameItem = itemView.findViewById(R.id.name_item);
             showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
-            showOnMapCheckBox = (CheckBox) itemView.findViewById(R.id.showOnMapCheckBox);
+            showOnMapCheckBox = itemView.findViewById(R.id.showOnMapCheckBox);
             expandedView = itemView.findViewById(R.id.expandedView);
         }
     }

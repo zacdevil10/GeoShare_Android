@@ -9,14 +9,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.AndroidException;
-import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -24,27 +23,45 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import uk.co.appsbystudio.geoshare.Application;
-import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
-public class TrackingService extends IntentService {
+public class TrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     //TODO: Use values from shared preferences
-    private static final long DISTANCE_TO_CHANGE = 5;
-    private static final long TIME_TO_UPDATE = 1000 * 10;
+    private static final long DISTANCE_TO_CHANGE = 0;
+    private static long TIME_TO_UPDATE;
+
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+    private String bestProvider;
 
     private boolean hasTrue;
 
-    public TrackingService() {
-        super("TrackingService");
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "DEFAULT")) * 1000;
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         System.out.println("Tracking service");
-        LocationListener locationListener = new LocationListener();
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener();
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
         criteria.setAltitudeRequired(false);
@@ -54,18 +71,39 @@ public class TrackingService extends IntentService {
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setCostAllowed(true);
 
-        String bestProvider = locationManager.getBestProvider(criteria, false);
+        bestProvider = locationManager.getBestProvider(criteria, false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals("sync_frequency")) {
+            System.out.println(s);
+            TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "DEFAULT")) * 1000;
+
+            System.out.println(TIME_TO_UPDATE);
+
+            if (locationManager != null) {
+                locationManager.removeUpdates(locationListener);
+            }
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
+        }
     }
 
     private class LocationListener implements android.location.LocationListener {

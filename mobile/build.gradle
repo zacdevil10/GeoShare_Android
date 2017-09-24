@@ -8,8 +8,8 @@ android {
         applicationId "uk.co.appsbystudio.geoshare"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 4
-        versionName "2.0"
+        versionCode 3
+        versionName "1.0.2"
     }
     buildTypes {
         release {
@@ -23,6 +23,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
 
     compile 'com.android.support:appcompat-v7:26.0.1'
     compile 'com.google.android.gms:play-services-maps:11.2.0'
@@ -41,7 +42,6 @@ dependencies {
     compile 'com.theartofdev.edmodo:android-image-cropper:2.2.5'
     compile 'br.com.simplepass:loading-button-android:1.8.0'
     compile 'com.github.florent37:diagonallayout:1.0.7'
-
     testCompile 'junit:junit:4.12'
 }
 

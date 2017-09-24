@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity"
-    android:background="@color/colorPrimary">
+    tools:context="uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity">
 
     <uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
         android:id="@+id/view_pager"

@@ -3,5 +3,5 @@
     <item android:id="@+id/showProfile"
         android:title="@string/view_profile" />
     <item android:id="@+id/removeFriend"
-        android:title="Unfriend"/>
+        android:title="@string/unfriend"/>
 </menu>

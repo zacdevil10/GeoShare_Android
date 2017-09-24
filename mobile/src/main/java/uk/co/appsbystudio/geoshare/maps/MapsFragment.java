@@ -5,23 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -45,7 +45,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -63,7 +62,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -80,9 +78,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private static final String TAG = "MapsFragment";
     private static final boolean LOCAL_LOGV = true;
 
-    private MapFragment mapFragment;
     private Marker selectedLocation;
     private boolean isTracking;
+    private boolean mobileNetwork;
     private GoogleMap googleMap;
 
     private GPSTracking gpsTracking;
@@ -90,8 +88,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private DatabaseReference databaseReference;
     private DatabaseReference shareReference;
     private DatabaseReference trackingReference;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+
+    private String bestProvider;
+    private int updateFrequency;
+
+    private SharedPreferences sharedPreferences;
 
     private TextView friendsNearText;
 
@@ -101,7 +105,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private Circle accuracyCircle;
 
     private HashMap<String, Marker> friendMarkerList = new HashMap<>();
-    private HashMap<LatLng, String> friendLatLng = new HashMap<>();
 
     private int standardZoomLevel = 16;
 
@@ -114,7 +117,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         /* HANDLES FOR VARIOUS VIEWS */
-        mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         if (savedInstanceState == null) {
@@ -123,8 +126,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         if (gpsTracking == null) gpsTracking = new GPSTracking(getContext());
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -132,11 +138,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         shareReference.keepSynced(true);
 
         trackingReference = FirebaseDatabase.getInstance().getReference("current_location/" + user.getUid() + "/tracking");
-        trackingReference.keepSynced(true);
+        if (mobileNetwork) trackingReference.keepSynced(true);
 
-        friendsNearText = (TextView) view.findViewById(R.id.friendNearText);
+        friendsNearText = view.findViewById(R.id.friendNearText);
 
-        final RecyclerView searchResults = (RecyclerView) view.findViewById(R.id.searchItems);
+        final RecyclerView searchResults = view.findViewById(R.id.searchItems);
         searchResults.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         searchResults.setLayoutManager(layoutManager);
@@ -155,9 +161,49 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
+        /* SETTING UP LOCATION CHANGE LISTENER */
+        locationListener = new LocationListener();
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(true);
+        criteria.setSpeedRequired(false);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setCostAllowed(true);
+
+        bestProvider = locationManager.getBestProvider(criteria, false);
+
+        updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
+
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(onShowOnMapRequest, new IntentFilter("show.on.map"));
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
+        updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
+        locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
     }
 
     @Override
@@ -175,44 +221,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
-        } else {
-            googleMap.setMyLocationEnabled(false);
-            googleMap.setBuildingsEnabled(false);
-
-            /* USING CUSTOM GPS TRACKING MARKER */
-            LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
-
-            Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
-            Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
-
-            CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).tilt(60).zoom(standardZoomLevel).build();
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            myLocation = googleMap.addMarker(new MarkerOptions().position(currentLocation).flat(true).icon(BitmapDescriptorFactory.fromBitmap(scaledLocation)).anchor(0.5f, 0.5f));
-
-
-            /* SETTING UP LOCATION CHANGE LISTENER */
-            LocationListener locationListener = new LocationListener();
-            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-            Criteria criteria = new Criteria();
-            criteria.setAltitudeRequired(false);
-            criteria.setBearingRequired(true);
-            criteria.setSpeedRequired(false);
-            criteria.setPowerRequirement(Criteria.POWER_LOW);
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            criteria.setCostAllowed(true);
-
-            String bestProvider = locationManager.getBestProvider(criteria, false);
-            locationManager.requestLocationUpdates(bestProvider, 50, 1, locationListener);
-
-            nearbyRadius();
-            accuracyCircle(gpsTracking.getLocation());
-
-            //TODO: Get bearings
-
-            //TODO: Set isTracking to false when user drags the map
-            isTracking = true;
         }
+
+        googleMap.setMyLocationEnabled(false);
+        googleMap.setBuildingsEnabled(false);
+
+        /* USING CUSTOM GPS TRACKING MARKER */
+        LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
+
+        Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
+        Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).tilt(60).zoom(standardZoomLevel).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        myLocation = googleMap.addMarker(new MarkerOptions().position(currentLocation).flat(true).icon(BitmapDescriptorFactory.fromBitmap(scaledLocation)).anchor(0.5f, 0.5f));
+
+        locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
+
+        nearbyRadius();
+        accuracyCircle(gpsTracking.getLocation());
+
+        //TODO: Get bearings
+
+        //TODO: Set isTracking to false when user drags the map
+        isTracking = true;
 
         MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
         styleManager.addStyle(14, R.raw.map_style);
@@ -324,70 +356,79 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        trackingReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added");
-                final String friendId = dataSnapshot.getKey();
-                if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added friendId: " + friendId);
+        if (mobileNetwork) {
+            trackingReference.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added");
+                    final String friendId = dataSnapshot.getKey();
+                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added friendId: " + friendId);
 
-                if (dataSnapshot.child("tracking").getValue(Boolean.class) != null) {
-                    if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
+                    if (dataSnapshot.child("tracking").getValue(Boolean.class) != null) {
+                        if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
+                            if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
+                                if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
+                                    getTrackingFriends(friendId);
+                                }
+                            } else {
+                                getTrackingFriends(friendId);
+                            }
+                        }
+                    }
+
+                    nearbyFriends();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated");
+                    final String friendId = dataSnapshot.getKey();
+                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated friendId: " + friendId);
+
+                    if (dataSnapshot.child("tracking").getValue(Boolean.class) != null && dataSnapshot.child("tracking").getValue(Boolean.class)) {
                         if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
                             if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
                                 getTrackingFriends(friendId);
+                            } else {
+                                if (friendMarkerList.containsKey(friendId)) removeFriendMarker(friendId);
                             }
                         } else {
                             getTrackingFriends(friendId);
                         }
-                    }
-                }
-
-                nearbyFriends();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated");
-                final String friendId = dataSnapshot.getKey();
-                if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated friendId: " + friendId);
-
-                if (dataSnapshot.child("tracking").getValue(Boolean.class) != null && dataSnapshot.child("tracking").getValue(Boolean.class)) {
-                    if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
-                        if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
-                            getTrackingFriends(friendId);
-                        } else {
-                            if (friendMarkerList.containsKey(friendId)) removeFriendMarker(friendId);
-                        }
                     } else {
-                        getTrackingFriends(friendId);
+                        if (friendMarkerList.containsKey(friendId)) {
+                            removeFriendMarker(friendId);
+                        }
                     }
-                } else {
-                    if (friendMarkerList.containsKey(friendId)) {
-                        removeFriendMarker(friendId);
-                    }
+
+                    nearbyFriends();
                 }
 
-                nearbyFriends();
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Removed");
+                    removeFriendMarker(dataSnapshot.getKey());
+                    nearbyFriends();
+                }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Removed");
-                removeFriendMarker(dataSnapshot.getKey());
-                nearbyFriends();
-            }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
+    }
 
-            }
-        });
+    private void setTrackingReference() {
+        //TODO: Enable and disable tracking sync when on mobile network
+        /*
+        Remove all friend tracking markers
+         */
     }
 
     private void getTrackingFriends(final String friendId) {
@@ -527,6 +568,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         if (friendMarker != null) friendMarker.remove();
         friendMarkerList.remove(friendId);
     }
+
+    private void removeAllFriendMarkers() {
+        //TODO: Remove all friend markers
+    }
     /* END OF FRIEND MARKER METHODS */
 
 
@@ -560,7 +605,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     //GET NEARBY FRIENDS IN A GIVEN RADIUS
     private void nearbyFriends() {
-        //TODO: Should be able to set this at the start of onCreate and access that at any point
         int count = 0;
 
         for (String markerId : friendMarkerList.keySet()) {
@@ -582,7 +626,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void nearbyRadius() {
         if (nearbyCircle != null) nearbyCircle.remove();
 
-        int radius = 200;
+        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "DEFAULT"));
         LatLng latLng = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
 
         CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);

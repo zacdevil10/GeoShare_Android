@@ -24,7 +24,7 @@ public class PlacesSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_places_search, container, false);
 
-        RecyclerView searchList = (RecyclerView) view.findViewById(R.id.search_result_list);
+        RecyclerView searchList = view.findViewById(R.id.search_result_list);
         searchList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         searchList.setLayoutManager(layoutManager);

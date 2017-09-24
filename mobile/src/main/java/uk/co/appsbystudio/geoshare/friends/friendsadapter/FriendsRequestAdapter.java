@@ -126,10 +126,10 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
         ViewHolder(View itemView) {
             super(itemView);
-            friend_name = (TextView) itemView.findViewById(R.id.friend_name);
-            friends_pictures = (CircleImageView) itemView.findViewById(R.id.friend_profile_image);
-            accept_request = (ImageView) itemView.findViewById(R.id.friend_accept);
-            decline_request = (ImageView) itemView.findViewById(R.id.friend_reject);
+            friend_name = itemView.findViewById(R.id.friend_name);
+            friends_pictures = itemView.findViewById(R.id.friend_profile_image);
+            accept_request = itemView.findViewById(R.id.friend_accept);
+            decline_request = itemView.findViewById(R.id.friend_reject);
         }
     }
 }

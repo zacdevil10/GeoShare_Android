@@ -23,7 +23,6 @@ public class FriendInfoActivity extends AppCompatActivity {
     private String userId;
 
     private FirebaseAuth auth;
-    private FirebaseDatabase database;
     private DatabaseReference ref;
 
     @Override
@@ -32,7 +31,7 @@ public class FriendInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friend_info);
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         ref = database.getReference();
 
         Bundle bundle= getIntent().getExtras();
@@ -41,15 +40,15 @@ public class FriendInfoActivity extends AppCompatActivity {
             userId = bundle.getString("uid");
         }
 
-        ImageView backdropImage = (ImageView) findViewById(R.id.infoBackdropImage);
-        CircleImageView profileImage = (CircleImageView) findViewById(R.id.avatar);
+        ImageView backdropImage = findViewById(R.id.infoBackdropImage);
+        CircleImageView profileImage = findViewById(R.id.avatar);
 
         Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
         profileImage.setImageBitmap(imageBitmap);
 
         ((TextView) findViewById(R.id.name)).setText(name);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

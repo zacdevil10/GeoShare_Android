@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -27,14 +28,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.GetStartedFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.PermissionsFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.RadiusSetupFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.SetupProfileFragment;
-import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager;;
+import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager;
 
 public class InitialSetupActivity extends AppCompatActivity {
 
@@ -51,6 +51,8 @@ public class InitialSetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_setup);
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -106,10 +108,6 @@ public class InitialSetupActivity extends AppCompatActivity {
             case R.id.setPictureButton:
                 profilePictureSettings();
                 break;
-            case R.id.finishButton:
-                Intent intent = new Intent(InitialSetupActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
         }
     }
 
@@ -176,7 +174,7 @@ public class InitialSetupActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
+                                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                             }
                         });
             } catch (IOException e) {

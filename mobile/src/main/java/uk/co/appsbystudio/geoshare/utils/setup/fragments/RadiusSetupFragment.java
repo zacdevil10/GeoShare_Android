@@ -1,8 +1,10 @@
 package uk.co.appsbystudio.geoshare.utils.setup.fragments;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.ui.SeekBarTextIndicator;
 
@@ -18,6 +21,8 @@ public class RadiusSetupFragment extends Fragment {
 
     private SeekBarTextIndicator seekBarTextIndicator;
     private TextView progressText;
+
+    private SharedPreferences sharedPreferences;
 
     public RadiusSetupFragment() {
         // Required empty public constructor
@@ -31,6 +36,8 @@ public class RadiusSetupFragment extends Fragment {
 
         seekBarTextIndicator = view.findViewById(R.id.setRadiusSeekBar);
         progressText = view.findViewById(R.id.progressText);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         seekBarTextIndicator.setMax(200);
         seekBarTextIndicator.setProgress(100);
@@ -60,6 +67,18 @@ public class RadiusSetupFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+
+        view.findViewById(R.id.finishButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedPreferences.edit().putString("nearby_radius", progressText.getText().toString()).apply();
+                sharedPreferences.edit().putBoolean("first_run", false).apply();
+
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+                getActivity().finish();
             }
         });
 

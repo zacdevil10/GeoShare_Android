@@ -1,39 +1,59 @@
 package uk.co.appsbystudio.geoshare.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
-public class SettingsFragment extends Fragment {
-
-    public SettingsFragment() {}
+public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
-        //LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        addPreferencesFromResource(R.xml.pref_main);
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        Preference dialogPreference = getPreferenceScreen().findPreference("nearby_radius");
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_48px);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        if (dialogPreference.getSharedPreferences().getBoolean("ringtone_silent", true)) {
+            findPreference("ringtone").setEnabled(false);
+            findPreference("ringtone_vibrate").setEnabled(false);
+        }
+
+        dialogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).openDrawer();
+            public boolean onPreferenceClick(Preference preference) {
+
+                return true;
             }
         });
-        toolbar.setTitle(R.string.settings);
+    }
 
-        return view;
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        //TODO: Update info where needed
+        if (s.equals("ringtone_silent")) {
+            if (sharedPreferences.getBoolean("ringtone_silent", true)) {
+                findPreference("ringtone").setEnabled(false);
+                findPreference("ringtone_vibrate").setEnabled(false);
+            } else {
+                findPreference("ringtone").setEnabled(true);
+                findPreference("ringtone_vibrate").setEnabled(true);
+            }
+        }
     }
 }

@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import uk.co.appsbystudio.geoshare.R;
 
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder>{
-    private final Context context;
     private final ArrayList namesArray;
 
     public PlacesAdapter(Context context, ArrayList namesArray) {
-        this.context = context;
+        Context context1 = context;
         this.namesArray = namesArray;
     }
 
@@ -43,7 +42,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
 
         ViewHolder(View itemView) {
             super(itemView);
-            locationName = (TextView) itemView.findViewById(R.id.search_result_text);
+            locationName = itemView.findViewById(R.id.search_result_text);
         }
     }
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_header_notifications">
+        <SwitchPreference
+            android:key="friend_notification"
+            android:title="@string/pref_title_new_friend_notifications"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="location_notification"
+            android:title="@string/pref_title_new_location_notifications"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="ringtone_silent"
+            android:title="@string/pref_ringtone_silent"
+            android:defaultValue="false"/>
+
+        <RingtonePreference
+            android:key="ringtone"
+            android:title="@string/pref_title_ringtone"
+            android:ringtoneType="notification"/>
+
+        <SwitchPreference
+            android:key="ringtone_vibrate"
+            android:title="@string/pref_title_vibrate"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_data_sync">
+        <ListPreference
+            android:key="sync_frequency"
+            android:title="@string/pref_title_sync_frequency"
+            android:summary="%s"
+            android:defaultValue="60"
+            android:entries="@array/pref_sync_frequency_titles"
+            android:entryValues="@array/pref_sync_frequency_values"/>
+
+        <CheckBoxPreference
+            android:key="mobile_network"
+            android:title="@string/pref_title_mobile_network"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_location">
+        <ListPreference
+            android:key="update_frequency"
+            android:title="@string/pref_title_update_frequency"
+            android:summary="%s"
+            android:defaultValue="10"
+            android:entries="@array/pref_update_frequency_preference_titles"
+            android:entryValues="@array/pref_update_frequency_preference_values"/>
+
+        <Preference
+            android:key="nearby_radius"
+            android:title="@string/pref_title_nearby_radius"
+            android:summary="%s"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_account">
+        <EditTextPreference
+            android:key="display_name"
+            android:title="Display name"
+            android:summary="Summary" />
+
+        <Preference
+            android:key="profile_picture"
+            android:title="@string/pref_title_profile_picture" />
+
+        <Preference
+            android:key="change_password"
+            android:title="@string/pref_title_change_password" />
+
+        <Preference
+            android:key="delete_user"
+            android:title="@string/pref_title_delete_user"
+            android:summary="This action cannot be undone!" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_about">
+        <Preference
+            android:summary="This is a summary of the app and the cool stuff that it can. This content will be updated at some point for fun."
+            android:selectable="false" />
+
+        <Preference
+            android:title="@string/pref_title_version"
+            android:summary="2.0"
+            android:selectable="false"/>
+
+        <Preference
+            android:key="send_feedback"
+            android:title="@string/send_feedback"
+            android:summary="Have any queries? We are happy to help!" />
+
+        <Preference
+            android:key="faq"
+            android:title="@string/pref_title_faq"
+            android:summary="View frequently asked questions" />
+    </PreferenceCategory>
+</PreferenceScreen>

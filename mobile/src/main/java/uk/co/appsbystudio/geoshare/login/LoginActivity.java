@@ -1,12 +1,14 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +48,10 @@ public class LoginActivity extends AppCompatActivity {
     private String password;
     private Bitmap error;
 
+    private Intent intent;
+
+    private SharedPreferences sharedPreferences;
+
     private static final int GET_PERMS = 1;
 
     private boolean showingSignUp = false;
@@ -53,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
-    private FirebaseDatabase database;
     private DatabaseReference ref;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +67,16 @@ public class LoginActivity extends AppCompatActivity {
 
         //getPermissions();
 
-        nameEntry = (EditText) findViewById(R.id.nameInput);
-        emailEntry = (EditText) findViewById(R.id.emailInput);
-        passwordEntry = (EditText) findViewById(R.id.passwordInput);
-        login = (CircularProgressButton) findViewById(R.id.log_in);
-        signUp = (Button) findViewById(R.id.sign_up);
-        signUpShow = (Button) findViewById(R.id.open_sign_up);
+        nameEntry = findViewById(R.id.nameInput);
+        emailEntry = findViewById(R.id.emailInput);
+        passwordEntry = findViewById(R.id.passwordInput);
+        login = findViewById(R.id.log_in);
+        signUp = findViewById(R.id.sign_up);
+        signUpShow = findViewById(R.id.open_sign_up);
 
         error = BitmapFactory.decodeResource(LoginActivity.this.getResources(), R.drawable.ic_close_white_48px);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         signUpShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         ref = database.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -105,8 +112,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
-                    if (LOCAL_LOGV) Log.v(TAG, "User has already signed in: " + currentUser.getUid());
-                    Intent intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
+                    if (LOCAL_LOGV) Log.v(TAG, "User has signed in: " + currentUser.getUid());
+                    if (sharedPreferences.getBoolean("first_run", true)) {
+                        intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
+                    } else {
+                        intent = new Intent(LoginActivity.this, MainActivity.class);
+                    }
                     startActivity(intent);
                     finish();
                 }
@@ -165,9 +176,6 @@ public class LoginActivity extends AppCompatActivity {
                                 login.doneLoadingAnimation(Color.WHITE, error);
                             }
                             login.revertAnimation();
-                        } else {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
                         }
                     }
                 });

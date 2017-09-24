@@ -27,7 +27,7 @@
 
         <item
             android:id="@+id/settings"
-            android:checked="false"
+            android:checkable="false"
             android:icon="@drawable/ic_settings_black_48px"
             android:title="@string/settings"/>
 

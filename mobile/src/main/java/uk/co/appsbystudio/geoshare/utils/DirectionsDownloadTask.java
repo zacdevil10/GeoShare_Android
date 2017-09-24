@@ -57,7 +57,7 @@ public class DirectionsDownloadTask extends AsyncTask<String, String, String> {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuffer stringBuffer = new StringBuffer();
 
-            String line = "";
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line);
             }

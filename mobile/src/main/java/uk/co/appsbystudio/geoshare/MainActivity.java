@@ -1,6 +1,9 @@
 package uk.co.appsbystudio.geoshare;
 
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -8,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -58,7 +60,7 @@ import uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.services.TrackingService;
 import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
-import uk.co.appsbystudio.geoshare.settings.SettingsFragment;
+import uk.co.appsbystudio.geoshare.settings.SettingsActivity;
 import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.settings.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
@@ -67,10 +69,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final boolean LOCAL_LOGV = true;
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
     private StorageReference storageReference;
@@ -85,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final MapsFragment mapsFragment = new MapsFragment();
     private final PlacesFragment placesFragment = new PlacesFragment();
-    private final SettingsFragment settingsFragment = new SettingsFragment();
 
     private final PlacesSearchFragment placesSearchFragment = new PlacesSearchFragment();
 
@@ -110,30 +107,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent gpsService = new Intent(this, TrackingService.class);
-        startService(gpsService);
+        Intent trackingService = new Intent(this, TrackingService.class);
+        startService(trackingService);
 
         cacheDir = this.getCacheDir();
 
         //Firebase initialisation
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference databaseReference = database.getReference();
+
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
+
         isTrackingRef = database.getReference("current_location/" + userId + "/tracking");
         isTrackingRef.keepSynced(true);
+
         storageReference = FirebaseStorage.getInstance().getReference();
 
         sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
 
         /* HANDLES FOR VARIOUS VIEWS */
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        rightDrawer = (DrawerLayout) findViewById(R.id.right_nav_drawer);
-        navigationView = (NavigationView) findViewById(R.id.left_nav_view);
-        RecyclerView rightNavigationView = (RecyclerView) findViewById(R.id.right_friends_drawer);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        rightDrawer = findViewById(R.id.right_nav_drawer);
+        navigationView = findViewById(R.id.left_nav_view);
+        RecyclerView rightNavigationView = findViewById(R.id.right_friends_drawer);
         if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         navigationView.getMenu().getItem(0).setChecked(true);
         header = navigationView.getHeaderView(0);
-        CircleImageView profilePicture = (CircleImageView) header.findViewById(R.id.profile_image);
+        CircleImageView profilePicture = header.findViewById(R.id.profile_image);
 
         /* RECENT APPS COLOR */
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -177,8 +180,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.maps:
                         if (LOCAL_LOGV) Log.v(TAG, "Add maps fragment");
-                        getSupportFragmentManager().beginTransaction().remove(settingsFragment).commit();
-                        getSupportFragmentManager().beginTransaction().remove(placesFragment).commit();
                         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
                         return true;
                     case R.id.friends:
@@ -197,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
                     //*/
                     case R.id.settings:
                         if (LOCAL_LOGV) Log.v(TAG, "Add settings fragment");
-                        getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                        getFragmentManager().executePendingTransactions();
-                        if(!settingsFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
+                        item.setChecked(false);
+                        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(settingsIntent);
                         return true;
                     case R.id.logout:
                         if (LOCAL_LOGV) Log.v(TAG, "Calling logout()");
@@ -260,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Get users name and add to welcome message
-        final TextView usernameTextView = (TextView) header.findViewById(R.id.username);
+        final TextView usernameTextView = header.findViewById(R.id.username);
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -278,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
-        search = (FloatingActionButton) findViewById(R.id.searchLocationShare);
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
+        search = findViewById(R.id.searchLocationShare);
 
         //Set the animation for the FAB when the bottom sheet is made in/visible
         final Animation animHideFab = AnimationUtils.loadAnimation(this, R.anim.scale_down);

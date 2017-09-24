@@ -67,10 +67,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
+        <activity android:name=".settings.SettingsActivity"
+            android:theme="@style/SettingsTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.co.appsbystudio.geoshare.MainActivity" />
+        </activity>
 
         <service
             android:name=".services.TrackingService"
             android:exported="false" />
+
     </application>
 
 </manifest>

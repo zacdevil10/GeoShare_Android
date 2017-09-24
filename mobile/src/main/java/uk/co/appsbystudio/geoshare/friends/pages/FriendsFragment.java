@@ -25,11 +25,7 @@ import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 
 public class FriendsFragment extends Fragment {
 
-    private FirebaseAuth auth;
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
-    private StorageReference storageReference;
 
     private FriendsAdapter friendsAdapter;
     SwipeRefreshLayout swipeRefresh;
@@ -42,14 +38,14 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
         databaseFriendsRef.keepSynced(true);
-        storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
-        RecyclerView friendsList = (RecyclerView) view.findViewById(R.id.friend_list);
+        RecyclerView friendsList = view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         friendsList.setLayoutManager(layoutManager);

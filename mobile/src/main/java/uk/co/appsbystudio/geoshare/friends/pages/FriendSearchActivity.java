@@ -28,13 +28,10 @@ import uk.co.appsbystudio.geoshare.utils.UserInformation;
 public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
 
     private FirebaseAuth auth;
-    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private StorageReference storageReference;
 
     private String uid;
 
-    private RecyclerView searchResults;
     private FriendsSearchAdapter searchAdapter;
 
     private SearchView searchView;
@@ -52,9 +49,9 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         setContentView(R.layout.activity_friend_search);
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReferenceFromUrl("https://modular-decoder-118720.firebaseio.com/");
-        storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
         uid = auth.getCurrentUser().getUid();
 
@@ -65,7 +62,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
             }
         });
 
-        searchResults = (RecyclerView) findViewById(R.id.searchResults);
+        RecyclerView searchResults = findViewById(R.id.searchResults);
         searchResults.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         searchResults.setLayoutManager(layoutManager);
@@ -75,7 +72,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         searchAdapter = new FriendsSearchAdapter(FriendSearchActivity.this, databaseReference, auth, names, isSearch, isRecent, userId, FriendSearchActivity.this);
         searchResults.setAdapter(searchAdapter);
 
-        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView = findViewById(R.id.searchView);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

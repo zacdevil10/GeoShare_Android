@@ -24,7 +24,7 @@ public class ShareALocationDialog extends DialogFragment {
 
         builder.setView(view);
 
-        RecyclerView friendList = (RecyclerView) view.findViewById(R.id.friend_selection);
+        RecyclerView friendList = view.findViewById(R.id.friend_selection);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         friendList.setLayoutManager(layoutManager);
 

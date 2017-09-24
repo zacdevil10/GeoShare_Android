@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.settings;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,7 +20,6 @@ import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
 public class ShareOptions extends DialogFragment {
 
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
     private GPSTracking gpsTracking;
@@ -36,7 +34,7 @@ public class ShareOptions extends DialogFragment {
 
         gpsTracking = new GPSTracking(getActivity());
 
-        sharedPreferences = getActivity().getSharedPreferences("tracking", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("tracking", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
