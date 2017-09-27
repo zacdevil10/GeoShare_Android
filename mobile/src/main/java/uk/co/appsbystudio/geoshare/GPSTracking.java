@@ -23,10 +23,10 @@ public class GPSTracking implements LocationListener {
 
     public GPSTracking(Context context) {
         this.context = context;
-        getLocation();
+        setLocation();
     }
 
-    public Location getLocation() {
+    private void setLocation() {
         try {
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -46,7 +46,7 @@ public class GPSTracking implements LocationListener {
                         //                                          int[] grantResults)
                         // to handle the case where the user grants the permission. See the documentation
                         // for ActivityCompat#requestPermissions for more details.
-                        return null;
+                        return;
                     }
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {
@@ -69,7 +69,9 @@ public class GPSTracking implements LocationListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public Location getLocation() {
         return location;
     }
 

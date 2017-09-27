@@ -10,21 +10,20 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="centerCrop"
         android:src="@mipmap/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="8dp" />
 
     <TextView
         android:id="@+id/startup_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="144dp"
         android:gravity="center_horizontal"
         android:text="@string/login_header"
@@ -37,11 +36,11 @@
     <!--  Name Label -->
     <EditText
         android:id="@+id/nameInput"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
         android:drawableStart="@drawable/ic_person_white_24dp"
         android:drawablePadding="8dp"
         android:background="@drawable/round_edge_green_outline"
@@ -53,16 +52,17 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startup_title" />
+        app:layout_constraintTop_toBottomOf="@+id/startup_title"
+        tools:layout_editor_absoluteX="8dp" />
 
     <!--  Email Label -->
     <EditText
         android:id="@+id/emailInput"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
         android:drawableStart="@drawable/ic_email_white_24dp"
         android:drawablePadding="8dp"
         android:background="@drawable/round_edge_green_outline"
@@ -73,16 +73,17 @@
         android:textColor="@color/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameInput" />
+        app:layout_constraintTop_toBottomOf="@+id/nameInput"
+        tools:layout_editor_absoluteX="8dp" />
 
     <!--  Password Label -->
     <EditText
         android:id="@+id/passwordInput"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
         android:background="@drawable/round_edge_green_outline"
         android:drawableStart="@drawable/ic_lock_white_24dp"
         android:drawablePadding="8dp"
@@ -94,27 +95,27 @@
         android:textColorHint="@color/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailInput" />
+        app:layout_constraintTop_toBottomOf="@+id/emailInput"
+        tools:layout_editor_absoluteX="8dp" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInput">
+        app:layout_constraintTop_toBottomOf="@+id/passwordInput"
+        tools:layout_editor_absoluteX="8dp">
 
         <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
             android:id="@+id/log_in"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginStart="24dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/round_edge_green_background"
             android:text="@string/login_submit"
@@ -131,8 +132,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginStart="24dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/round_edge_green_background"
             android:text="@string/login_sign_up"
@@ -144,11 +145,21 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginStart="24dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:text="@string/login_sign_up"
+            android:textColor="@color/text" />
+
+        <Button
+            android:id="@+id/forgot_password"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:text="@string/forgot_password"
             android:textColor="@color/text" />
 
     </LinearLayout>

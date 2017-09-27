@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordEntry;
     private Button signUp;
     private Button signUpShow;
+    private Button forgotPassword;
     private CircularProgressButton login;
     private String name;
     private String email;
@@ -55,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int GET_PERMS = 1;
 
     private boolean showingSignUp = false;
+    private boolean showingForgotPassword = false;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -73,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.log_in);
         signUp = findViewById(R.id.sign_up);
         signUpShow = findViewById(R.id.open_sign_up);
+        forgotPassword = findViewById(R.id.forgot_password);
 
         error = BitmapFactory.decodeResource(LoginActivity.this.getResources(), R.drawable.ic_close_white_48px);
 
@@ -81,12 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         signUpShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nameEntry.setVisibility(View.VISIBLE);
-                nameEntry.requestFocus();
-                login.setVisibility(View.GONE);
-                signUpShow.setVisibility(View.GONE);
-                signUp.setVisibility(View.VISIBLE);
-                showingSignUp = true;
+                setSignUpView();
             }
         });
 
@@ -101,6 +99,33 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 validate(true);
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!TextUtils.isEmpty(emailEntry.getText().toString())) {
+                    firebaseAuth.sendPasswordResetEmail(emailEntry.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (!task.isSuccessful()) {
+                                        setForgotPasswordView();
+                                        Toast.makeText(LoginActivity.this, "Hmm...That didn't seem to work!", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    setLoginView();
+                                    Toast.makeText(LoginActivity.this, "Email sent!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    if (showingForgotPassword) {
+                        emailEntry.setError(getString(R.string.error_field_required));
+                    } else {
+                        setForgotPasswordView();
+                    }
+                }
             }
         });
 
@@ -123,6 +148,57 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void setSignUpView() {
+        nameEntry.setVisibility(View.VISIBLE);
+        emailEntry.setVisibility(View.VISIBLE);
+        passwordEntry.setVisibility(View.VISIBLE);
+        signUp.setVisibility(View.VISIBLE);
+        forgotPassword.setVisibility(View.GONE);
+        signUpShow.setVisibility(View.GONE);
+        login.setVisibility(View.GONE);
+
+        nameEntry.requestFocus();
+
+        showingSignUp = true;
+    }
+
+    private void setForgotPasswordView() {
+        nameEntry.setVisibility(View.GONE);
+        emailEntry.setVisibility(View.VISIBLE);
+        passwordEntry.setVisibility(View.GONE);
+        signUp.setVisibility(View.GONE);
+        forgotPassword.setVisibility(View.VISIBLE);
+        signUpShow.setVisibility(View.GONE);
+        login.setVisibility(View.GONE);
+
+        emailEntry.requestFocus();
+
+        forgotPassword.setBackground(getDrawable(R.drawable.round_edge_green_background));
+        forgotPassword.setText("DONE");
+
+        showingForgotPassword = true;
+    }
+
+    private  void setLoginView() {
+        nameEntry.setVisibility(View.GONE);
+        emailEntry.setVisibility(View.VISIBLE);
+        passwordEntry.setVisibility(View.VISIBLE);
+        signUp.setVisibility(View.GONE);
+        forgotPassword.setVisibility(View.VISIBLE);
+        signUpShow.setVisibility(View.VISIBLE);
+        login.setVisibility(View.VISIBLE);
+
+        emailEntry.requestFocus();
+
+        if (showingForgotPassword) {
+            forgotPassword.setText("FORGOT PASSWORD?");
+            forgotPassword.setBackgroundResource(0);
+        }
+
+        showingSignUp = false;
+        showingForgotPassword = false;
     }
 
     private void validate(boolean signUp) {
@@ -198,31 +274,10 @@ public class LoginActivity extends AppCompatActivity {
                                 if (LOCAL_LOGV) Log.v(TAG, "Updating profile was successful");
                             }
 
-                            nameEntry.setVisibility(View.GONE);
-                            login.setVisibility(View.VISIBLE);
-                            signUpShow.setVisibility(View.VISIBLE);
-                            signUp.setVisibility(View.GONE);
+                            setLoginView();
                         }
                     }
                 });
-    }
-
-    private void getPermissions() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) + ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, GET_PERMS);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case GET_PERMS:
-                if (grantResults.length > 0 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    System.out.println("We have permission!");
-                }
-        }
     }
 
     @Override
@@ -247,12 +302,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (showingSignUp) {
-            nameEntry.setVisibility(View.GONE);
-            login.setVisibility(View.VISIBLE);
-            signUpShow.setVisibility(View.VISIBLE);
-            signUp.setVisibility(View.GONE);
-            showingSignUp = false;
+        if (showingSignUp || showingForgotPassword) {
+            setLoginView();
         } else {
             super.onBackPressed();
         }
