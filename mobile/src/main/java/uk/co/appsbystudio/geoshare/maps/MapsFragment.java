@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,6 +15,12 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Address;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -23,6 +30,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -47,6 +55,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,7 +84,7 @@ import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.DirectionsDownloadTask;
 import uk.co.appsbystudio.geoshare.utils.MapStyleManager;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, SharedPreferences.OnSharedPreferenceChangeListener, SensorEventListener {
     private static final String TAG = "MapsFragment";
     private static final boolean LOCAL_LOGV = true;
 
@@ -104,7 +114,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private Circle nearbyCircle;
     private Circle accuracyCircle;
 
+    public static Polyline directions;
+
     private HashMap<String, Marker> friendMarkerList = new HashMap<>();
+    //private HashMap<String, Marker> rememberFriendMarker = new HashMap<>();
 
     private int standardZoomLevel = 16;
 
@@ -177,33 +190,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
 
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(onShowOnMapRequest, new IntentFilter("show.on.map"));
+        SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
 
         return view;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        locationManager.removeUpdates(locationListener);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
-        updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
-        locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -213,13 +210,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         googleMap.setPadding(0, (int) (72 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 
@@ -232,18 +222,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
         Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
 
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).tilt(60).zoom(standardZoomLevel).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(standardZoomLevel).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         myLocation = googleMap.addMarker(new MarkerOptions().position(currentLocation).flat(true).icon(BitmapDescriptorFactory.fromBitmap(scaledLocation)).anchor(0.5f, 0.5f));
 
         locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
 
-        nearbyRadius();
-        accuracyCircle(gpsTracking.getLocation());
+        nearbyRadius(currentLocation);
+        accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
 
         //TODO: Get bearings
 
-        //TODO: Set isTracking to false when user drags the map
         isTracking = true;
 
         MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
@@ -256,7 +245,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (selectedLocation != null) {
+                /*if (selectedLocation != null) {
                     selectedLocation.remove();
                 }
                 try {
@@ -271,7 +260,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         });
 
@@ -292,12 +281,43 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 LatLng myLocationLatLng = myLocation.getPosition();
                 LatLng destination = marker.getPosition();
 
+                if (directions != null) directions.remove();
+
                 if (destination != myLocationLatLng) {
                     String url = getDirectionsUrl(myLocationLatLng, destination);
                     DirectionsDownloadTask directionsDownloadTask = new DirectionsDownloadTask(googleMap);
                     directionsDownloadTask.execute(url);
                 }
+
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(destination).zoom(standardZoomLevel).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                marker.showInfoWindow();
+
                 return true;
+            }
+        });
+
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View view = getLayoutInflater().inflate(R.layout.marker_info_window, null);
+
+                TextView markerAddressText = view.findViewById(R.id.marker_address);
+
+                try {
+                    Address address = new GeocodingFromLatLngTask(getContext(), marker.getPosition().latitude, marker.getPosition().longitude).execute().get();
+                    markerAddressText.setText(address.getFeatureName() + " " + address.getThoroughfare() + "\n" + address.getLocality() + ", " + address.getSubLocality() + ", " + address.getPostalCode());
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                return view;
             }
         });
 
@@ -356,13 +376,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        if (mobileNetwork) {
+        if (!mobileNetwork) {
             trackingReference.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added");
                     final String friendId = dataSnapshot.getKey();
-                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Added friendId: " + friendId);
+                    if (LOCAL_LOGV)
+                        Log.v(TAG, "trackingReference Child Added friendId: " + friendId);
 
                     if (dataSnapshot.child("tracking").getValue(Boolean.class) != null) {
                         if (dataSnapshot.child("tracking").getValue(Boolean.class)) {
@@ -383,14 +404,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                     if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated");
                     final String friendId = dataSnapshot.getKey();
-                    if (LOCAL_LOGV) Log.v(TAG, "trackingReference Child Updated friendId: " + friendId);
+                    if (LOCAL_LOGV)
+                        Log.v(TAG, "trackingReference Child Updated friendId: " + friendId);
 
                     if (dataSnapshot.child("tracking").getValue(Boolean.class) != null && dataSnapshot.child("tracking").getValue(Boolean.class)) {
                         if (dataSnapshot.child("showOnMap").getValue(Boolean.class) != null) {
                             if (dataSnapshot.child("showOnMap").getValue(Boolean.class)) {
                                 getTrackingFriends(friendId);
                             } else {
-                                if (friendMarkerList.containsKey(friendId)) removeFriendMarker(friendId);
+                                if (friendMarkerList.containsKey(friendId))
+                                    removeFriendMarker(friendId);
                             }
                         } else {
                             getTrackingFriends(friendId);
@@ -463,7 +486,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 if (fileCheck.exists()) {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
                     Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap))));
-                    if (!isUpdating) dropPinEffect(friendMarker);
+                    // if (!isUpdating) dropPinEffect(friendMarker);
                     friendMarker.setTag(friendId);
                     friendMarkerList.put(friendId, friendMarker);
                 } else {
@@ -475,7 +498,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
                                     Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap))));
-                                    if (!isUpdating) dropPinEffect(friendMarker);
+                                    // if (!isUpdating) dropPinEffect(friendMarker);
                                     friendMarker.setTag(friendId);
                                     friendMarkerList.put(friendId, friendMarker);
                                 }
@@ -483,8 +506,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
-                                    if (!isUpdating) dropPinEffect(friendMarker);
+                                    Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(null))));
+                                    // if (!isUpdating) dropPinEffect(friendMarker);
                                     friendMarker.setTag(friendId);
                                     friendMarkerList.put(friendId, friendMarker);
                                 }
@@ -535,7 +558,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             Bitmap scaledMarker = Bitmap.createScaledBitmap(mapMarker, 116, 155, false);
 
             canvas.drawBitmap(scaledMarker, 0, 0, null);
-            canvas.drawBitmap(getCroppedBitmap(profileImage), 16, 16, null);
+            if (profileImage != null) canvas.drawBitmap(getCroppedBitmap(profileImage), 16, 16, null);
         }
 
         return bmp;
@@ -553,14 +576,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
         canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
                 bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        Bitmap bmp = Bitmap.createScaledBitmap(output, 84, 84, false);
-        return bmp;
-        //return output;
+        return Bitmap.createScaledBitmap(output, 84, 84, false);
     }
 
     private void removeFriendMarker(String friendId) {
@@ -571,6 +591,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private void removeAllFriendMarkers() {
         //TODO: Remove all friend markers
+        for (String markerId : friendMarkerList.keySet()) {
+            Marker marker = friendMarkerList.get(markerId);
+            marker.remove();
+        }
     }
     /* END OF FRIEND MARKER METHODS */
 
@@ -580,12 +604,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         String sOrigin = "origin=" + origin.latitude + "," + origin.longitude;
         String sDest = "destination=" + dest.latitude + "," + dest.longitude;
 
-        String sensor = "sensor=false";
+        String params = sOrigin + "&" + sDest + "&sensor=false";
 
-        String params = sOrigin + "&" + sDest + "&" + sensor;
-        String output = "json";
-
-        return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + params + "&key=" + getString(R.string.server_key);
+        return "https://maps.googleapis.com/maps/api/directions/json?" + params + "&key=" + getString(R.string.server_key);
     }
 
     //Add a standard marker to the map
@@ -607,6 +628,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void nearbyFriends() {
         int count = 0;
 
+        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "DEFAULT"));
+
         for (String markerId : friendMarkerList.keySet()) {
             LatLng markerLocation = friendMarkerList.get(markerId).getPosition();
             Location tempLocation = new Location(LocationManager.GPS_PROVIDER);
@@ -615,7 +638,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             tempLocation.setLongitude(markerLocation.longitude);
 
             //TODO: Shared preferences
-            if (gpsTracking.getLocation().distanceTo(tempLocation) < 200) {
+            if (gpsTracking.getLocation().distanceTo(tempLocation) < radius) {
                 count = count + 1;
             }
         }
@@ -623,11 +646,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         friendsNearText.setText("Nearby\n" + count + " Friends");
     }
 
-    private void nearbyRadius() {
+    private void nearbyRadius(LatLng latLng) {
         if (nearbyCircle != null) nearbyCircle.remove();
 
         int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "DEFAULT"));
-        LatLng latLng = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
 
         CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
 
@@ -636,35 +658,87 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     /* END OF NEARBY METHODS */
 
-    private void accuracyCircle(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    private void accuracyCircle(LatLng latLng, float accuracy) {
 
         if (accuracyCircle != null) {
             accuracyCircle.setCenter(latLng);
         } else {
-            CircleOptions accuracyCircleOptions = new CircleOptions().center(latLng).radius(location.getAccuracy()).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent)).strokeWidth(0);
+            CircleOptions accuracyCircleOptions = new CircleOptions().center(latLng).radius(accuracy).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent)).strokeWidth(0);
             accuracyCircle = googleMap.addCircle(accuracyCircleOptions);
         }
     }
-
-    //TODO: Remove this?
-    private final BroadcastReceiver onShowOnMapRequest = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String markerState = intent.getStringExtra("markerState");
-            Double longitude = intent.getDoubleExtra("long", 0);
-            Double latitude = intent.getDoubleExtra("lat", 0);
-
-            if (markerState.contentEquals("default")) addMarker(longitude, latitude);
-
-            ((MainActivity) getActivity()).showMapFragment();
-        }
-    };
 
     @Override
     public void onCameraMoveStarted(int i) {
         //If the user moves the map view, don't centre myLocation marker when location changes
         if (i == 1) isTracking = false;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals("update_frequency")) {
+            updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.removeUpdates(locationListener);
+            locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
+        } else if (s.equals("mobile_network")) {
+            mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
+        }
+    }
+
+    float[] inR = new float[16];
+    float[] I = new float[16];
+    float[] gravity = new float[3];
+    float[] magneticField = new float[3];
+    float[] orientVals = new float[3];
+
+    double azimuth = 0;
+    double pitch = 0;
+    double roll = 0;
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
+
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                gravity = sensorEvent.values.clone();
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                magneticField = sensorEvent.values.clone();
+                break;
+        }
+
+        if (gravity != null && magneticField != null) {
+            boolean success = SensorManager.getRotationMatrix(inR, I, gravity, magneticField);
+
+            GeomagneticField geoField = new GeomagneticField(
+                    (float) gpsTracking.getLatitude(),
+                    (float) gpsTracking.getLongitude(),
+                    (float) gpsTracking.getLocation().getAltitude(),
+                    System.currentTimeMillis()
+            );
+
+            if (success) {
+                SensorManager.getOrientation(inR, orientVals);
+                azimuth = Math.toDegrees(orientVals[0]);
+                pitch = Math.toDegrees(orientVals[1]);
+                roll = Math.toDegrees(orientVals[2]);
+
+                azimuth -= geoField.getDeclination();
+
+                if (myLocation != null) {
+                    myLocation.setRotation((float) azimuth);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 
     private class LocationListener implements android.location.LocationListener {
@@ -673,16 +747,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         public void onLocationChanged(Location location) {
             if (isTracking) {
                 //Will only move the camera if the users current location is in focus
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(location.getLatitude(), location.getLongitude())).tilt(60).zoom(standardZoomLevel).build();
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(location.getLatitude(), location.getLongitude())).zoom(standardZoomLevel).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                System.out.println(azimuth);
             }
 
-            myLocation.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+            myLocation.setPosition(latLng);
 
             /* GET NUMBER OF FRIENDS WITHIN A GIVEN RADIUS */
             nearbyFriends();
-            nearbyRadius();
-            accuracyCircle(location);
+            nearbyRadius(latLng);
+            accuracyCircle(latLng, location.getAccuracy());
         }
 
         @Override

@@ -19,7 +19,7 @@ public class GPSTracking implements LocationListener {
     private double longitude;
 
     private static final long DISTANCE_TO_CHANGE = 0;
-    private static final long TIME_TO_UPDATE = 50;
+    private static final long TIME_TO_UPDATE = 500;
 
     public GPSTracking(Context context) {
         this.context = context;

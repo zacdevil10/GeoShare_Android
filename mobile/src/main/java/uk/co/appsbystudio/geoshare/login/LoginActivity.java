@@ -34,8 +34,6 @@ import uk.co.appsbystudio.geoshare.utils.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "LoginActivity";
-    private static final boolean LOCAL_LOGV = true;
 
     private EditText nameEntry;
     private EditText emailEntry;
@@ -53,8 +51,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
-    private static final int GET_PERMS = 1;
-
     private boolean showingSignUp = false;
     private boolean showingForgotPassword = false;
 
@@ -67,7 +63,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //getPermissions();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        ref = database.getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         nameEntry = findViewById(R.id.nameInput);
         emailEntry = findViewById(R.id.emailInput);
@@ -87,14 +85,12 @@ public class LoginActivity extends AppCompatActivity {
                 setSignUpView();
             }
         });
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validate(false);
             }
         });
-
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,15 +125,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        ref = database.getReference();
-        firebaseAuth = FirebaseAuth.getInstance();
+
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
-                    if (LOCAL_LOGV) Log.v(TAG, "User has signed in: " + currentUser.getUid());
                     if (sharedPreferences.getBoolean("first_run", true)) {
                         intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
                     } else {
@@ -202,7 +195,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validate(boolean signUp) {
-        if (LOCAL_LOGV) Log.v(TAG, "Validating");
         name = nameEntry.getText().toString();
         email = emailEntry.getText().toString();
         password = passwordEntry.getText().toString();
@@ -231,11 +223,9 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else if (!signUp){
-            if (LOCAL_LOGV) Log.v(TAG, "Login?");
             login.startAnimation();
             login();
         } else {
-            if (LOCAL_LOGV) Log.v(TAG, "Signup?");
             showingSignUp = false;
             signUp();
         }
@@ -265,13 +255,11 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         } else {
-                            if (LOCAL_LOGV) Log.v(TAG, "Updating profile");
                             user = firebaseAuth.getCurrentUser();
                             UserInformation userInformation = new UserInformation(name, name.toLowerCase(), email);
                             if (user != null) {
                                 String userId = user.getUid();
                                 ref.child("users").child(userId).setValue(userInformation);
-                                if (LOCAL_LOGV) Log.v(TAG, "Updating profile was successful");
                             }
 
                             setLoginView();

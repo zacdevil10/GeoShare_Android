@@ -27,7 +27,6 @@ import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
 
 public class TrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    //TODO: Use values from shared preferences
     private static final long DISTANCE_TO_CHANGE = 0;
     private static long TIME_TO_UPDATE;
 
@@ -59,7 +58,6 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        System.out.println("Tracking service");
         locationListener = new LocationListener();
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -90,15 +88,11 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals("sync_frequency")) {
-            System.out.println(s);
             TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "DEFAULT")) * 1000;
-
-            System.out.println(TIME_TO_UPDATE);
 
             if (locationManager != null) {
                 locationManager.removeUpdates(locationListener);
             }
-
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -110,7 +104,6 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         @Override
         public void onLocationChanged(Location location) {
-            System.out.println("Location has changed in the service");
             SharedPreferences sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
             Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
 
