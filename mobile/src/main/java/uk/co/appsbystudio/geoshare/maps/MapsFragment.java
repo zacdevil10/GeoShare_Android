@@ -209,7 +209,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         googleMap.setPadding(0, (int) (72 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -224,7 +225,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(standardZoomLevel).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        myLocation = googleMap.addMarker(new MarkerOptions().position(currentLocation).flat(true).icon(BitmapDescriptorFactory.fromBitmap(scaledLocation)).anchor(0.5f, 0.5f));
+        myLocation = googleMap.addMarker(
+                new MarkerOptions()
+                        .position(currentLocation)
+                        .flat(true)
+                        .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
+                        .anchor(0.5f, 0.5f)
+        );
 
         locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
 
@@ -312,7 +319,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
                 try {
                     Address address = new GeocodingFromLatLngTask(getContext(), marker.getPosition().latitude, marker.getPosition().longitude).execute().get();
-                    markerAddressText.setText(address.getFeatureName() + " " + address.getThoroughfare() + "\n" + address.getLocality() + ", " + address.getSubLocality() + ", " + address.getPostalCode());
+                    markerAddressText.setText(String.format("%s %s\n%s, %s, %s", address.getFeatureName(), address.getThoroughfare(), address.getLocality(), address.getSubLocality(), address.getPostalCode()));
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
@@ -324,43 +331,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         shareReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (LOCAL_LOGV) Log.v(TAG, "shareReference Child Added");
-                if (dataSnapshot.getKey().equals("tracking")) {
-                    //Check to see who is streaming location and get location
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is tracking");
-                } else if (dataSnapshot.getKey().equals("location")) {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is location");
-                } else {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is friend id");
+                if (!dataSnapshot.getKey().equals("tracking") && !dataSnapshot.getKey().equals("location")) {
                     DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                    addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat(), false);
+                    if (databaseLocations != null) {
+                        addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat(), false);
+                    }
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if (LOCAL_LOGV) Log.v(TAG, "shareReference Child Changed");
-                //removeFriendMarker(dataSnapshot.getKey());
-                if (dataSnapshot.getKey().equals("tracking")) {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is tracking updated");
-                } else if (dataSnapshot.getKey().equals("location")) {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is location updated");
-                } else {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is friend id updating");
+                if (!dataSnapshot.getKey().equals("tracking") && !dataSnapshot.getKey().equals("location")) {
                     DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                    updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                    if (databaseLocations != null) {
+                        updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                    }
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if (LOCAL_LOGV) Log.v(TAG, "shareReference Child Removed");
-                if (dataSnapshot.getKey().equals("tracking")) {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is tracking removed");
-                } else if (dataSnapshot.getKey().equals("location")) {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is location removed");
-                } else {
-                    if (LOCAL_LOGV) Log.v(TAG, "shareReference Child is friend id removed");
+                if (!dataSnapshot.getKey().equals("tracking") && !dataSnapshot.getKey().equals("location")) {
                     removeFriendMarker(dataSnapshot.getKey());
                 }
             }
@@ -486,7 +477,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 if (fileCheck.exists()) {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
                     Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap))));
-                    // if (!isUpdating) dropPinEffect(friendMarker);
                     friendMarker.setTag(friendId);
                     friendMarkerList.put(friendId, friendMarker);
                 } else {
@@ -498,7 +488,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
                                     Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap))));
-                                    // if (!isUpdating) dropPinEffect(friendMarker);
                                     friendMarker.setTag(friendId);
                                     friendMarkerList.put(friendId, friendMarker);
                                 }
@@ -507,7 +496,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Marker friendMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(null))));
-                                    // if (!isUpdating) dropPinEffect(friendMarker);
                                     friendMarker.setTag(friendId);
                                     friendMarkerList.put(friendId, friendMarker);
                                 }
@@ -520,32 +508,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void updateFriendMarker(String friendId, final Double longitude, final Double latitude) {
         Marker friendMarker = friendMarkerList.get(friendId);
         friendMarker.setPosition(new LatLng(latitude, longitude));
-    }
-
-    private void dropPinEffect(final Marker marker) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final long duration = 1500;
-
-        final Interpolator interpolator = new BounceInterpolator();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = Math.max(
-                        1 - interpolator.getInterpolation((float) elapsed
-                                / duration), 0);
-                marker.setAnchor(0.5f, 1.0f + 14 * t);
-
-                if (t > 0.0) {
-                    handler.postDelayed(this, 15);
-                } else {
-                    marker.showInfoWindow();
-
-                }
-            }
-        });
     }
 
     private Bitmap bitmapCanvas(Bitmap profileImage) {
@@ -643,7 +605,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
         }
 
-        friendsNearText.setText("Nearby\n" + count + " Friends");
+        friendsNearText.setText(String.format("Nearby\n%d Friends", count));
     }
 
     private void nearbyRadius(LatLng latLng) {
@@ -663,7 +625,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         if (accuracyCircle != null) {
             accuracyCircle.setCenter(latLng);
         } else {
-            CircleOptions accuracyCircleOptions = new CircleOptions().center(latLng).radius(accuracy).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent)).strokeWidth(0);
+            CircleOptions accuracyCircleOptions = new CircleOptions()
+                    .center(latLng)
+                    .radius(accuracy)
+                    .fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent))
+                    .strokeWidth(0);
+
             accuracyCircle = googleMap.addCircle(accuracyCircleOptions);
         }
     }
@@ -678,7 +645,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals("update_frequency")) {
             updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             locationManager.removeUpdates(locationListener);
