@@ -7,22 +7,23 @@ import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+
+import uk.co.appsbystudio.geoshare.Application;
 
 public class GeocodingFromLatLngTask extends AsyncTask<Object, Object, Address> {
 
-    private final Context context;
     private final Double lat;
     private final Double lng;
 
-    public GeocodingFromLatLngTask(Context context, Double lat, Double lng) {
-        this.context =  context;
+    public GeocodingFromLatLngTask(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;
     }
 
     @Override
     protected Address doInBackground(Object... params) {
-        Geocoder gc = new Geocoder(context);
+        Geocoder gc = new Geocoder(Application.getAppContext(), Locale.getDefault());
         Address finalAddress = null;
 
         try {

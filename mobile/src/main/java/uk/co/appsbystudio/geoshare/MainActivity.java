@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static File cacheDir;
 
+    public static HashMap<String, Boolean> friendsId = new HashMap<>();
+    public static HashMap<String, Boolean> pendingId = new HashMap<>();
+
     Animation animShowFab;
 
     @Override
@@ -279,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
+        /*CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
         search = findViewById(R.id.searchLocationShare);
 
         //Set the animation for the FAB when the bottom sheet is made in/visible
@@ -331,16 +334,16 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_up, R.anim.exit_down).replace(R.id.content_frame, placesSearchFragment).addToBackStack("").commit();
                 //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
-        });
+        });*/
     }
 
     /* FIREBASE GET LIST OF FRIENDS */
-    //TODO: Can move this to onCreate
     private void getFriends() {
         databaseFriendsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 uid.add(dataSnapshot.getKey());
+                if (!friendsId.containsKey(dataSnapshot.getKey())) friendsId.put(dataSnapshot.getKey(), true);
                 friendsNavAdapter.notifyDataSetChanged();
             }
 
@@ -352,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 uid.remove(dataSnapshot.getKey());
+                if (friendsId.containsKey(dataSnapshot.getKey())) friendsId.remove(dataSnapshot.getKey());
                 friendsNavAdapter.notifyDataSetChanged();
             }
 
@@ -524,9 +528,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (rightDrawer.isDrawerOpen(GravityCompat.END)) {
             if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
             rightDrawer.closeDrawer(GravityCompat.END);
-        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            if (LOCAL_LOGV) Log.v(TAG, "Bottom sheet closed");
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Closing app");
             super.onBackPressed();

@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:focusable="true">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_profile_image"
@@ -21,19 +20,22 @@
         android:id="@+id/friend_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/menu"
+        android:layout_toStartOf="@+id/sendRequestButton"
         android:layout_toEndOf="@id/friend_profile_image"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:textSize="16sp"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:text="" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/add_friend_desc"
-        android:id="@+id/menu"
-        android:src="@drawable/ic_more_vert_black_48px"
+        android:id="@+id/sendRequestButton"
+        android:src="@drawable/ic_send_black_24dp"
+        android:tint="@android:color/darker_gray"
         android:background="@android:color/transparent"
         android:padding="16dp"
         android:layout_centerVertical="true"

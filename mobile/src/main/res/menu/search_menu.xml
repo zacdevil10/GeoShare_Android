@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/addFriend"
         android:title="@string/add_friend"/>
-    <item android:id="@+id/showProfile"
-        android:title="@string/view_profile" />
+    <!--<item android:id="@+id/showProfile"
+        android:title="@string/view_profile" />-->
 </menu>

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
@@ -114,12 +115,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
         if (hasTracking.containsKey(userId.get(position).toString()) && hasTracking.get(userId.get(position).toString())) {
             holder.trackingIndicator.setVisibility(View.VISIBLE);
-            holder.requestLocationText.setText("Tracking enabled");
-            holder.requestLocation.setClickable(false);
         } else {
             holder.trackingIndicator.setVisibility(View.GONE);
-            holder.requestLocationText.setText("Request location");
-            holder.requestLocation.setClickable(true);
         }
 
         final boolean isExpanded = position == expandedPosition;
@@ -190,6 +187,13 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 }
             });
         }
+
+        holder.findLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MapsFragment.findFriendOnMap(userId.get(holder.getAdapterPosition()).toString());
+            }
+        });
     }
 
     @Override
@@ -205,8 +209,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final ImageView arrow;
         final RelativeLayout sendLocation;
         final TextView sendLocationText;
-        final RelativeLayout requestLocation;
-        final TextView requestLocationText;
+        final RelativeLayout findLocation;
+        final TextView findLocationText;
         final ConstraintLayout nameItem;
         final RelativeLayout showOnMapLayout;
         final CheckBox showOnMapCheckBox;
@@ -220,8 +224,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             arrow = itemView.findViewById(R.id.more);
             sendLocation = itemView.findViewById(R.id.sendLocation);
             sendLocationText = itemView.findViewById(R.id.sendLocationText);
-            requestLocation = itemView.findViewById(R.id.requestLocation);
-            requestLocationText = itemView.findViewById(R.id.requestLocationText);
+            findLocation = itemView.findViewById(R.id.findLocation);
+            findLocationText = itemView.findViewById(R.id.findLocationText);
             nameItem = itemView.findViewById(R.id.name_item);
             showOnMapLayout = itemView.findViewById(R.id.showOnMapLayout);
             showOnMapCheckBox = itemView.findViewById(R.id.showOnMapCheckBox);

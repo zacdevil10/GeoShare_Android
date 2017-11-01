@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <android.support.design.widget.FloatingActionButton
+            <!--<android.support.design.widget.FloatingActionButton
                 android:id="@+id/searchLocationShare"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                     android:layout_height="match_parent"
                     android:id="@+id/bottom_sheet_container"/>
 
-            </LinearLayout>
+            </LinearLayout>-->
 
         </android.support.design.widget.CoordinatorLayout>
 

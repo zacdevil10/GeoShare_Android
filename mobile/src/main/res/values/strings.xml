@@ -154,5 +154,6 @@
     <string name="show_on_map">Show on map</string>
     <string name="add_friend">Add friend</string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="find_location">Find location</string>
 
 </resources>

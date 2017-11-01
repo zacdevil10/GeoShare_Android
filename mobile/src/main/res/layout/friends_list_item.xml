@@ -6,8 +6,7 @@
     android:layout_height="56dp"
     android:id="@+id/item"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:focusable="true">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_profile_image"
@@ -26,6 +25,8 @@
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:textSize="16sp"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:text="" />
 
     <ImageView

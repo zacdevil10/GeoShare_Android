@@ -40,10 +40,17 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
     private final ArrayList userId;
     private final DatabaseReference databaseReference;
 
-    public FriendsAdapter(Context context, ArrayList userId, DatabaseReference databaseReference) {
+    public interface Callback {
+        void onRemoveFriend(String friendId);
+    }
+
+    private Callback callback;
+
+    public FriendsAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
         this.userId = userId;
         this.databaseReference = databaseReference;
+        this.callback = callback;
     }
 
     @Override
@@ -105,10 +112,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                         switch (item.getItemId()) {
                             case R.id.removeFriend:
                                 //TODO: Remove friend
-                                return true;
-                            case R.id.showProfile:
-                                Intent intent = new Intent(context, FriendInfoActivity.class);
-                                context.startActivity(intent);
+                                callback.onRemoveFriend(userId.get(holder.getAdapterPosition()).toString());
                                 return true;
                             default:
                                 return false;
@@ -121,13 +125,13 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
             }
         });
 
-        holder.item.setOnClickListener(new View.OnClickListener() {
+        /*holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, FriendInfoActivity.class);
                 context.startActivity(intent);
             }
-        });
+        });*/
     }
 
     @Override

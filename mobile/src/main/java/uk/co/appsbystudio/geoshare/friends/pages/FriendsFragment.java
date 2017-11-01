@@ -19,16 +19,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment implements FriendsAdapter.Callback {
 
     private DatabaseReference databaseFriendsRef;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     private FriendsAdapter friendsAdapter;
-    SwipeRefreshLayout swipeRefresh;
 
     private final ArrayList<String> userId = new ArrayList<>();
 
@@ -38,12 +41,11 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference();
+        databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
         databaseFriendsRef.keepSynced(true);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
         RecyclerView friendsList = view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
@@ -52,7 +54,7 @@ public class FriendsFragment extends Fragment {
 
         getFriends();
 
-        friendsAdapter = new FriendsAdapter(getContext(),userId, databaseReference);
+        friendsAdapter = new FriendsAdapter(getContext(),userId, databaseReference, this);
         friendsList.setAdapter(friendsAdapter);
 
         return view;
@@ -87,5 +89,19 @@ public class FriendsFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onRemoveFriend(String friendId) {
+        if (auth.getCurrentUser() != null) {
+            databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
+            databaseReference.child("friends").child(friendId).child(auth.getCurrentUser().getUid()).removeValue();
+
+            databaseReference.child("current_location").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
+            databaseReference.child("current_location").child(friendId).child(auth.getCurrentUser().getUid()).removeValue();
+
+            databaseReference.child("current_location").child(auth.getCurrentUser().getUid()).child("tracking").child(friendId).removeValue();
+            databaseReference.child("current_location").child(friendId).child("tracking").child(auth.getCurrentUser().getUid()).removeValue();
+        }
     }
 }

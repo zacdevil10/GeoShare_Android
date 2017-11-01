@@ -34,10 +34,17 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
     private final ArrayList userId;
     private final DatabaseReference databaseReference;
 
-    public FriendsPendingAdapter(Context context, ArrayList userId, DatabaseReference databaseReference) {
+    public interface Callback {
+        void onReject(Boolean accept, String uid);
+    }
+
+    private Callback callback;
+
+    public FriendsPendingAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
         this.userId = userId;
         this.databaseReference = databaseReference;
+        this.callback = callback;
     }
 
     @Override
@@ -93,7 +100,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                callback.onReject(false, userId.get(holder.getAdapterPosition()).toString());
             }
         });
     }
