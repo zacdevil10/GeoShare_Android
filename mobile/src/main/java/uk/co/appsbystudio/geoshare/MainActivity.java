@@ -1,9 +1,6 @@
 package uk.co.appsbystudio.geoshare;
 
 import android.app.ActivityManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,8 +8,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -25,7 +22,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -58,12 +54,12 @@ import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment;
 import uk.co.appsbystudio.geoshare.places.PlacesFragment;
-import uk.co.appsbystudio.geoshare.services.TrackingService;
-import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
-import uk.co.appsbystudio.geoshare.settings.SettingsActivity;
-import uk.co.appsbystudio.geoshare.settings.ShareALocationDialog;
-import uk.co.appsbystudio.geoshare.settings.ShareOptions;
-import uk.co.appsbystudio.geoshare.utils.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
+import uk.co.appsbystudio.geoshare.utils.dialog.SettingsActivity;
+import uk.co.appsbystudio.geoshare.utils.dialog.ShareALocationDialog;
+import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
+import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -82,19 +78,17 @@ public class MainActivity extends AppCompatActivity {
     private final HashMap<String, Boolean> hasTracking = new HashMap<>();
 
     private final MapsFragment mapsFragment = new MapsFragment();
-    private final PlacesFragment placesFragment = new PlacesFragment();
+    /*private final PlacesFragment placesFragment = new PlacesFragment();*/
 
-    private final PlacesSearchFragment placesSearchFragment = new PlacesSearchFragment();
-
-    private NavigationView navigationView;
+    /*private final PlacesSearchFragment placesSearchFragment = new PlacesSearchFragment();*/
 
     private FriendsNavAdapter friendsNavAdapter;
 
     private Bitmap bitmap;
     private File imageFile;
 
-    private FloatingActionButton search;
-    private BottomSheetBehavior bottomSheetBehavior;
+    /*private FloatingActionButton search;
+    private BottomSheetBehavior bottomSheetBehavior;*/
 
     private SharedPreferences sharedPreferences;
 
@@ -103,13 +97,14 @@ public class MainActivity extends AppCompatActivity {
     public static HashMap<String, Boolean> friendsId = new HashMap<>();
     public static HashMap<String, Boolean> pendingId = new HashMap<>();
 
-    Animation animShowFab;
+    /*Animation animShowFab;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Start tracking service
         Intent trackingService = new Intent(this, TrackingService.class);
         startService(trackingService);
 
@@ -138,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = findViewById(R.id.drawer_layout);
         rightDrawer = findViewById(R.id.right_nav_drawer);
-        navigationView = findViewById(R.id.left_nav_view);
+        NavigationView navigationView = findViewById(R.id.left_nav_view);
         RecyclerView rightNavigationView = findViewById(R.id.right_friends_drawer);
         if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -147,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
         //Get friends and populate right nav drawer
         getFriends();
         getTrackingStatus();
+
+
         friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
@@ -176,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         }
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 drawerLayout.closeDrawers();
 
@@ -409,17 +406,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void showMapFragment() {
+    /*public void showMapFragment() {
         if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
         getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
-    }
+    }*/
 
-    public void backFromSearch() {
+    /*public void backFromSearch() {
         if (LOCAL_LOGV) Log.v(TAG, "Back from searching");
         getSupportFragmentManager().beginTransaction().remove(placesSearchFragment).commit();
         search.startAnimation(animShowFab);
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

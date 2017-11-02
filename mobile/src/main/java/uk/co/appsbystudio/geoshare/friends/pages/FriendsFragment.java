@@ -1,8 +1,8 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,13 +15,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
 
@@ -38,15 +34,16 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
     public FriendsFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
-        databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
-        databaseFriendsRef.keepSynced(true);
-
+        if (auth.getCurrentUser() != null) {
+            databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
+            databaseFriendsRef.keepSynced(true);
+        }
         RecyclerView friendsList = view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());

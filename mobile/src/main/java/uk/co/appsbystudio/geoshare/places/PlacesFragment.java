@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.places;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +22,7 @@ public class PlacesFragment extends Fragment {
     public PlacesFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //final Context context = new ContextThemeWrapper(getActivity(), R.style.fragment_theme);
         //LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = inflater.inflate(R.layout.fragment_places, container, false);

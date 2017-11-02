@@ -38,7 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
-import uk.co.appsbystudio.geoshare.utils.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
     private final Context context;

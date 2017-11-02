@@ -1,6 +1,5 @@
-package uk.co.appsbystudio.geoshare.json;
+package uk.co.appsbystudio.geoshare.utils.geocoder;
 
-import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -10,19 +9,19 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.util.List;
 
+import uk.co.appsbystudio.geoshare.Application;
+
 public class GeocodingFromAddressTask extends AsyncTask<Void, Void, LatLng> {
 
-    private final Context context;
     private final String location;
 
-    public GeocodingFromAddressTask(Context context, String location) {
-        this.context =  context;
+    public GeocodingFromAddressTask(String location) {
         this.location = location;
     }
 
     @Override
     protected LatLng doInBackground(Void... params) {
-        Geocoder gc = new Geocoder(context);
+        Geocoder gc = new Geocoder(Application.getAppContext());
         LatLng latLng = null;
         try {
             List<Address> address = gc.getFromLocationName(location, 1);

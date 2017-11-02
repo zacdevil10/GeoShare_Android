@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.places.pages;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +24,7 @@ public class RecentFragment extends Fragment {
     private final ArrayList<String> locationImageURL = new ArrayList<>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_recent, container, false);
 
         RecyclerView recentRecyclerView = view.findViewById(R.id.recentList);
@@ -38,7 +39,7 @@ public class RecentFragment extends Fragment {
         cityName.add("New-York City");
         countryName.add("United States of America");
 
-        final RecentAdapter recentAdapter = new RecentAdapter(getActivity(), cityName, countryName, locationImageURL);
+        final RecentAdapter recentAdapter = new RecentAdapter(getActivity(), cityName, countryName);
 
         recentRecyclerView.setAdapter(recentAdapter);
 

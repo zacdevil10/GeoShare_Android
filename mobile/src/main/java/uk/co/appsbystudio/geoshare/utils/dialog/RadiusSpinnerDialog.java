@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.settings.dialog;
+package uk.co.appsbystudio.geoshare.utils.dialog;
 
 import android.content.Context;
 import android.preference.DialogPreference;

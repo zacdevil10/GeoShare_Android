@@ -1,7 +1,6 @@
-package uk.co.appsbystudio.geoshare.services;
+package uk.co.appsbystudio.geoshare.utils.services;
 
 import android.Manifest;
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
@@ -23,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 
 public class TrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -44,7 +42,6 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
@@ -147,4 +144,35 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         }
     }
+
+    /*@Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Intent restartService = new Intent(getApplicationContext(), this.getClass());
+        restartService.setPackage(getPackageName());
+        PendingIntent restartServicePI = PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);
+
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 100, restartServicePI);
+        }
+    }*/
+
+    /*private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+
+    public class TrackingBinder extends Binder {
+
+        public TrackingService getService() {
+            return TrackingService.this;
+        }
+    }*/
 }

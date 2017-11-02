@@ -29,7 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.settings.ProfilePictureOptions;
+import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.GetStartedFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.PermissionsFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.RadiusSetupFragment;

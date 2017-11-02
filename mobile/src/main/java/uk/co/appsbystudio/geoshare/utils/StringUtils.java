@@ -5,7 +5,7 @@ public class StringUtils {
     private final static String NON_THIN = "[^iIl1\\.,']";
 
     private static int textWidth(String str) {
-        return (int) (str.length() - str.replaceAll(NON_THIN, "").length() / 2);
+        return str.length() - str.replaceAll(NON_THIN, "").length() / 2;
     }
 
     public static String ellipsize(String text, int max) {

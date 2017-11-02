@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.utils.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
     private final Context context;

@@ -1,21 +1,21 @@
-package uk.co.appsbystudio.geoshare.utils;
+package uk.co.appsbystudio.geoshare.utils.firebase;
 
 public class DatabaseLocations {
 
     private String friendId;
     private Double longitude;
     private Double lat;
-    private long timeStamp;
+    private Long timeStamp;
 
     public DatabaseLocations() {}
 
-    public DatabaseLocations(Double longitude, Double lat, long timeStamp) {
+    public DatabaseLocations(Double longitude, Double lat, Long timeStamp) {
         this.longitude = longitude;
         this.lat = lat;
         this.timeStamp = timeStamp;
     }
 
-    public DatabaseLocations(String friendId, Double longitude, Double lat, long timeStamp) {
+    public DatabaseLocations(String friendId, Double longitude, Double lat, Long timeStamp) {
         this.friendId = friendId;
         this.longitude = longitude;
         this.lat = lat;
@@ -34,7 +34,7 @@ public class DatabaseLocations {
         this.lat = lat;
     }
 
-    public void setTimeStamp(long timeStamp) {
+    public void setTimeStamp(Long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -50,7 +50,7 @@ public class DatabaseLocations {
         return lat;
     }
 
-    public long getTimeStamp() {
+    public Long getTimeStamp() {
         return timeStamp;
     }
 }

@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.utils;
+package uk.co.appsbystudio.geoshare.utils.directions;
 
 import android.os.AsyncTask;
 

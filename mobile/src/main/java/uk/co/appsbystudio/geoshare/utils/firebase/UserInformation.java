@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.utils;
+package uk.co.appsbystudio.geoshare.utils.firebase;
 
 public class UserInformation {
 

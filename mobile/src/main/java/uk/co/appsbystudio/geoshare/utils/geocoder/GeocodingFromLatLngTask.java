@@ -1,6 +1,5 @@
-package uk.co.appsbystudio.geoshare.json;
+package uk.co.appsbystudio.geoshare.utils.geocoder;
 
-import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;

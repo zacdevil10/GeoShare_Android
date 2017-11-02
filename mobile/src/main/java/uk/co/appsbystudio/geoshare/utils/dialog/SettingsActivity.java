@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.settings;
+package uk.co.appsbystudio.geoshare.utils.dialog;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -2,18 +2,14 @@ package uk.co.appsbystudio.geoshare.login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.utils.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity;
 
 public class LoginActivity extends AppCompatActivity {

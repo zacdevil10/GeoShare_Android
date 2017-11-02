@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.notifications;
+package uk.co.appsbystudio.geoshare.utils.services;
 
 import android.app.Service;
 import android.content.Intent;

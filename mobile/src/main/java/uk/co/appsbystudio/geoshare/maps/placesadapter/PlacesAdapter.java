@@ -14,8 +14,7 @@ import uk.co.appsbystudio.geoshare.R;
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder>{
     private final ArrayList namesArray;
 
-    public PlacesAdapter(Context context, ArrayList namesArray) {
-        Context context1 = context;
+    public PlacesAdapter(ArrayList namesArray) {
         this.namesArray = namesArray;
     }
 

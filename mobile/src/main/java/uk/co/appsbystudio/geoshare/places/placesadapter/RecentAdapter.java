@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.json.GeocodingFromAddressTask;
+import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromAddressTask;
 
 public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder>{
 
@@ -25,11 +25,10 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     private final ArrayList cityName;
     private final ArrayList countryName;
 
-    public RecentAdapter(Context context, ArrayList<String> cityName, ArrayList countryName, ArrayList mapURL) {
+    public RecentAdapter(Context context, ArrayList<String> cityName, ArrayList countryName) {
         this.context = context;
         this.cityName = cityName;
         this.countryName = countryName;
-        ArrayList mapURL1 = mapURL;
     }
 
     @Override
@@ -50,7 +49,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             public void onClick(View view) {
                 LatLng latLng = null;
                 try {
-                    latLng = new GeocodingFromAddressTask(context, cityName.get(holder.getAdapterPosition()).toString()).execute().get();
+                    latLng = new GeocodingFromAddressTask(cityName.get(holder.getAdapterPosition()).toString()).execute().get();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }

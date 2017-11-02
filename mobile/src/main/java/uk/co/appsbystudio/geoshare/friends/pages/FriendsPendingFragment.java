@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +26,7 @@ import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
-import uk.co.appsbystudio.geoshare.utils.AddFriendsInfo;
+import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
 
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {
 
@@ -48,7 +49,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     public FriendsPendingFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_pending, container, false);
 
         auth = FirebaseAuth.getInstance();

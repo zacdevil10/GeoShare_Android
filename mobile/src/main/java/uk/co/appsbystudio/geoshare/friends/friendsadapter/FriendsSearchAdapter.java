@@ -1,17 +1,13 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -32,8 +28,6 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.pages.FriendInfoActivity;
-import uk.co.appsbystudio.geoshare.utils.RecentSearches;
 
 public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
 
@@ -99,23 +93,19 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
         if (MainActivity.friendsId.containsKey(userId.get(position).toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.colorPrimary)));
-        }
-
-        if (MainActivity.pendingId.containsKey(userId.get(position).toString())) {
+        } else if (MainActivity.pendingId.containsKey(userId.get(position).toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));
-        }
-
-        holder.sendRequestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!MainActivity.pendingId.containsKey(userId.get(holder.getAdapterPosition()).toString()) && !MainActivity.pendingId.containsKey(userId.get(holder.getAdapterPosition()).toString())) {
+        } else {
+            holder.sendRequestButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     callback.onSendRequest(userId.get(holder.getAdapterPosition()).toString());
                     holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
                     holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override

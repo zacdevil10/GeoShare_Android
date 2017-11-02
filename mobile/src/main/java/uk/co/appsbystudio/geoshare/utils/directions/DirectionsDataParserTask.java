@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.utils;
+package uk.co.appsbystudio.geoshare.utils.directions;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -44,9 +44,8 @@ class DirectionsDataParserTask {
                 }
             }
 
-        } catch (JSONException e) {
+        } catch (Exception e){
             e.printStackTrace();
-        }catch (Exception e){
         }
 
 

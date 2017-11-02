@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.settings;
+package uk.co.appsbystudio.geoshare.utils.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,7 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.utils.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 
 public class ShareOptions extends DialogFragment {
 
@@ -84,6 +84,8 @@ public class ShareOptions extends DialogFragment {
                         DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
 
                         databaseReference.child("current_location").child(uid).child("location").setValue(databaseLocations);
+
+                        databaseReference.child("current_location").child(friendId).child(uid).removeValue();
                     }
                 }
             }

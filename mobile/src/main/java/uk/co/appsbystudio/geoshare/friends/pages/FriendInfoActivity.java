@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.utils.AddFriendsInfo;
+import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
 
 public class FriendInfoActivity extends AppCompatActivity {
 
@@ -52,10 +52,12 @@ public class FriendInfoActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddFriendsInfo outgoing = new AddFriendsInfo(true);
-                ref.child("pending").child(auth.getCurrentUser().getUid()).child(userId).setValue(outgoing);
-                AddFriendsInfo incoming = new AddFriendsInfo(false);
-                ref.child("pending").child(userId).child(auth.getCurrentUser().getUid()).setValue(incoming);
+                if (auth.getCurrentUser() != null){
+                    AddFriendsInfo outgoing = new AddFriendsInfo(true);
+                    ref.child("pending").child(auth.getCurrentUser().getUid()).child(userId).setValue(outgoing);
+                    AddFriendsInfo incoming = new AddFriendsInfo(false);
+                    ref.child("pending").child(userId).child(auth.getCurrentUser().getUid()).setValue(incoming);
+                }
             }
         });
     }

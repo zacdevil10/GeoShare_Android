@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.maps;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,7 @@ public class PlacesSearchFragment extends Fragment {
     public PlacesSearchFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_places_search, container, false);
 
         RecyclerView searchList = view.findViewById(R.id.search_result_list);
@@ -36,17 +37,17 @@ public class PlacesSearchFragment extends Fragment {
         locations.add("Item 5");
         locations.add("Item 6");
 
-        PlacesAdapter placesAdapter = new PlacesAdapter(getContext(), locations);
+        PlacesAdapter placesAdapter = new PlacesAdapter(locations);
 
         searchList.setAdapter(placesAdapter);
 
-        view.findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+        /*view.findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((MainActivity) getActivity()).backFromSearch();
                 //PlacesSearchFragment.super.getActivity().onBackPressed();
             }
-        });
+        });*/
 
         return view;
     }
