@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +23,9 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
 
 public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
+
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     private DatabaseReference databaseReference;
 
@@ -36,7 +41,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_search);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReferenceFromUrl("https://modular-decoder-118720.firebaseio.com/");
 
@@ -98,6 +103,30 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
                 return false;
             }
         });
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    finish();
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener);
+        }
     }
 
     @Override

@@ -13,5 +13,7 @@ public class FirebaseHelper {
 
     public static final String USERS = "users";
 
+    public static final String TOKEN = "token";
+
     public static final String PROFILE_PICTURE = "profile_picture";
 }

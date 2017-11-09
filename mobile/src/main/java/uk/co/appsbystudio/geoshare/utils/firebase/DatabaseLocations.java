@@ -5,21 +5,21 @@ public class DatabaseLocations {
     private String friendId;
     private Double longitude;
     private Double lat;
-    private Long timeStamp;
+    private Long timestamp;
 
     public DatabaseLocations() {}
 
-    public DatabaseLocations(Double longitude, Double lat, Long timeStamp) {
+    public DatabaseLocations(Double longitude, Double lat, Long timestamp) {
         this.longitude = longitude;
         this.lat = lat;
-        this.timeStamp = timeStamp;
+        this.timestamp = timestamp;
     }
 
-    public DatabaseLocations(String friendId, Double longitude, Double lat, Long timeStamp) {
+    public DatabaseLocations(String friendId, Double longitude, Double lat, Long timestamp) {
         this.friendId = friendId;
         this.longitude = longitude;
         this.lat = lat;
-        this.timeStamp = timeStamp;
+        this.timestamp = timestamp;
     }
 
     public void setFriendId(String friendId) {
@@ -34,8 +34,8 @@ public class DatabaseLocations {
         this.lat = lat;
     }
 
-    public void setTimeStamp(Long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getFriendId() {
@@ -50,7 +50,7 @@ public class DatabaseLocations {
         return lat;
     }
 
-    public Long getTimeStamp() {
-        return timeStamp;
+    public Long getTimestamp() {
+        return timestamp;
     }
 }

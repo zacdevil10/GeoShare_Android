@@ -155,5 +155,7 @@
     <string name="add_friend">Add friend</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="find_location">Find location</string>
+    <string name="desc_picture_is_set">You have already set a profile picture!</string>
+    <string name="upload_new_picture">UPLOAD NEW PICTURE</string>
 
 </resources>

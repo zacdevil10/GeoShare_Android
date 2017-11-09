@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,9 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
@@ -20,7 +24,9 @@ import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
 
 public class FriendsManager extends AppCompatActivity {
 
-    @Override
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_manager);
@@ -29,6 +35,8 @@ public class FriendsManager extends AppCompatActivity {
         toolbar.setTitle(R.string.title_activity_friends_manager);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -51,6 +59,30 @@ public class FriendsManager extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    finish();
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
     }
 
     /**

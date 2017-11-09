@@ -73,7 +73,7 @@ import uk.co.appsbystudio.geoshare.utils.ui.MapStyleManager;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, SharedPreferences.OnSharedPreferenceChangeListener, SensorEventListener {
-    private Marker selectedLocation;
+
     private boolean isTracking;
     private FloatingActionButton trackingButton;
     private Marker selectedMarker;
@@ -141,12 +141,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         user = auth.getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
         shareReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid());
         shareReference.keepSynced(true);
-
         trackingReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid() + "/" + FirebaseHelper.TRACKING);
-        if (mobileNetwork) trackingReference.keepSynced(true);
 
         friendsNearText = view.findViewById(R.id.friendNearText);
 
@@ -209,7 +206,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         bestProvider = locationManager.getBestProvider(criteria, false);
 
-        updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
+        updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000;
+
+        System.out.println("UPDATE FREQUENCY: " + updateFrequency);
 
         SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
 
@@ -223,8 +222,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        /*googleMap.setPadding(0, (int) (72 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);*/
-
         if (ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -232,6 +229,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         googleMap.setMyLocationEnabled(false);
         googleMap.setBuildingsEnabled(false);
+
+        /* FIREBASE TRACKING SETUP */
+        setTrackingReference();
 
         /* USING CUSTOM GPS TRACKING MARKER */
         LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
@@ -267,35 +267,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                /*if (selectedLocation != null) {
-                    selectedLocation.remove();
-                }
-                try {
-                    if (googleMap.getCameraPosition().zoom > 14) {
-                        selectedLocation = googleMap.addMarker(new MarkerOptions().position(latLng).title(new GeocodingFromLatLngTask(getContext(), latLng.latitude, latLng.longitude).execute().get().getAddressLine(0)));
-                    } else if (googleMap.getCameraPosition().zoom > 11) {
-                        selectedLocation = googleMap.addMarker(new MarkerOptions().position(latLng).title(new GeocodingFromLatLngTask(getContext(), latLng.latitude, latLng.longitude).execute().get().getAddressLine(2)));
-                    } else {
-                        selectedLocation = googleMap.addMarker(new MarkerOptions().position(latLng).title(new GeocodingFromLatLngTask(getContext(), latLng.latitude, latLng.longitude).execute().get().getAddressLine(1)));
-                    }
-
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }*/
-            }
-        });
-
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (selectedLocation != null) {
-                    selectedLocation.remove();
-                }
-
                 if (selectedMarker != null) {
                     if (initAnimator.isRunning()) initAnimator.cancel();
                     if (endAnimator.isRunning()) endAnimator.cancel();
@@ -378,13 +352,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                             if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
                                 if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
                                     addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimeStamp());
+                                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                                 }
                             }
                         }
                         addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimeStamp());
-                        System.out.println(databaseLocations.getTimeStamp());
+                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                     }
                 }
 
@@ -393,11 +366,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.print(dataSnapshot.getKey());
                 if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
                     DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
                     if (databaseLocations != null) {
                         updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimeStamp());
+                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                    }
+                } else if (dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
+                    if (!dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
+                        if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
+                            if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
+                                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                                if (databaseLocations != null) {
+                                    updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -424,78 +410,80 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             }
         });
-
-        if (mobileNetwork) {
-            trackingReference.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    final String friendId = dataSnapshot.getKey();
-
-                    if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
-                        if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
-                            if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
-                                if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
-                                    getTrackingFriends(friendId);
-                                }
-                            } else {
-                                getTrackingFriends(friendId);
-                            }
-                        }
-                    }
-
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    final String friendId = dataSnapshot.getKey();
-
-                    if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null && dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
-                        if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
-                            if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
-                                getTrackingFriends(friendId);
-                            } else {
-                                if (friendMarkerList.containsKey(friendId))
-                                    removeFriendMarker(friendId);
-                            }
-                        } else {
-                            getTrackingFriends(friendId);
-                        }
-                    } else {
-                        if (friendMarkerList.containsKey(friendId)) {
-                            removeFriendMarker(friendId);
-                        }
-                    }
-
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    removeFriendMarker(dataSnapshot.getKey());
-                    friendLocationTime.remove(dataSnapshot.getKey());
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
     }
 
     private void setTrackingReference() {
         //TODO: Enable and disable tracking sync when on mobile network
-        /*
-        Remove all friend tracking markers
-         */
+        if (mobileNetwork) {
+            trackingReference.keepSynced(true);
+            trackingReference.addChildEventListener(trackingEventListener);
+        } else {
+            trackingReference.keepSynced(false);
+            trackingReference.removeEventListener(trackingEventListener);
+        }
     }
+
+    private ChildEventListener trackingEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            final String friendId = dataSnapshot.getKey();
+
+            if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
+                if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
+                    if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
+                        if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
+                            getTrackingFriends(friendId);
+                        }
+                    } else {
+                        getTrackingFriends(friendId);
+                    }
+                }
+            }
+
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            final String friendId = dataSnapshot.getKey();
+
+            if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null && dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
+                if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
+                    if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
+                        getTrackingFriends(friendId);
+                    } else {
+                        if (friendMarkerList.containsKey(friendId))
+                            removeFriendMarker(friendId);
+                    }
+                } else {
+                    getTrackingFriends(friendId);
+                }
+            } else {
+                if (friendMarkerList.containsKey(friendId)) {
+                    removeFriendMarker(friendId);
+                }
+            }
+
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            removeFriendMarker(dataSnapshot.getKey());
+            friendLocationTime.remove(dataSnapshot.getKey());
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     private void getTrackingFriends(final String friendId) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -508,7 +496,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     } else {
                         addFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
                     }
-                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimeStamp());
+                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                     nearbyFriends();
                 } else {
                     DatabaseLocations staticLocations = dataSnapshot.child(FirebaseHelper.CURRENT_LOCATION).child(user.getUid()).getValue(DatabaseLocations.class);
@@ -518,7 +506,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         } else {
                             addFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
                         }
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimeStamp());
+                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                     }
                 }
             }
@@ -543,7 +531,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     friendMarker.setTag(friendId);
                     friendMarkerList.put(friendId, friendMarker);
                 } else {
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                    final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
                     StorageReference profileRef = storageReference.child(FirebaseHelper.PROFILE_PICTURE + "/" + friendId + ".png");
                     profileRef.getFile(Uri.fromFile(new File(MainActivity.cacheDir + "/" + friendId + ".png")))
                             .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -600,26 +588,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
     /* END OF FRIEND MARKER METHODS */
 
-    //Add a standard marker to the map
-    private void addMarker(Double longitude, Double latitude) {
-        if (googleMap != null) {
-
-            if (selectedLocation != null) {
-                selectedLocation.remove();
-            }
-
-            selectedLocation = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 9));
-        }
-    }
-
     /* NEARBY METHODS */
 
     //GET NEARBY FRIENDS IN A GIVEN RADIUS
     private void nearbyFriends() {
         int count = 0;
 
-        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "DEFAULT"));
+        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "0"));
 
         for (String markerId : friendMarkerList.keySet()) {
             LatLng markerLocation = friendMarkerList.get(markerId).getPosition();
@@ -638,10 +613,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     private void nearbyRadius(LatLng latLng) {
-        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "DEFAULT"));
+        int radius = Integer.parseInt(sharedPreferences.getString("nearby_radius", "100"));
 
         if (nearbyCircle != null) {
             nearbyCircle.setCenter(latLng);
+            nearbyCircle.setRadius(radius);
         } else {
             CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
 
@@ -653,7 +629,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     /* LOCATION ACCURACY */
     private void accuracyCircle(LatLng latLng, float accuracy) {
-
         if (accuracyCircle != null) {
             accuracyCircle.setCenter(latLng);
         } else {
@@ -690,20 +665,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        if (s.equals("update_frequency")) {
-            updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "DEFAULT")) * 1000;
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.removeUpdates(locationListener);
-            locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
-        } else if (s.equals("mobile_network")) {
-            mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
+        switch (s) {
+            case "update_frequency":
+                updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000;
+                if (ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                locationManager.removeUpdates(locationListener);
+                locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
+                break;
+            case "mobile_network":
+                mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
+                setTrackingReference();
+                break;
+            case "nearby_radius":
+                nearbyRadius(new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude()));
+                break;
         }
     }
 
-    float[] inR = new float[16];
+    /*float[] inR = new float[16];
     float[] I = new float[16];
     float[] gravity = new float[3];
     float[] magneticField = new float[3];
@@ -711,11 +693,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     double azimuth = 0;
     double pitch = 0;
-    double roll = 0;
+    double roll = 0;*/
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
+        /*if (sensorEvent.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
 
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
@@ -748,7 +730,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     myLocation.setRotation((float) azimuth);
                 }
             }
-        }
+        }*/
     }
 
     @Override
@@ -765,7 +747,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(location.getLatitude(), location.getLongitude())).zoom(standardZoomLevel).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                System.out.println(azimuth);
+                /*System.out.println(azimuth);*/
             }
 
             listenerLocation = location;

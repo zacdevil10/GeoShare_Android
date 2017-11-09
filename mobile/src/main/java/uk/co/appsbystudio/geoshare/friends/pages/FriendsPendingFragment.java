@@ -147,8 +147,8 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         if (accept) {
             databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
             databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid()).setValue(true);
-            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+            //databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
+            //databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
         } else {
             databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
             databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();

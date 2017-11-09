@@ -17,6 +17,9 @@ import android.view.View;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -30,6 +33,7 @@ import java.io.IOException;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.GetStartedFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.PermissionsFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.RadiusSetupFragment;
@@ -54,8 +58,21 @@ public class InitialSetupActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            userId = auth.getCurrentUser().getUid();
+        }
         storageReference = FirebaseStorage.getInstance().getReference();
+
+        //FCM Token
+        String token = FirebaseInstanceId.getInstance().getToken();
+
+        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN);
+
+        if (auth.getCurrentUser() != null && token != null) {
+            tokenRef.child(userId).child(token).child("platform").setValue("android");
+        }
 
         viewPager = findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {

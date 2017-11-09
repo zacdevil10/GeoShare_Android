@@ -10,9 +10,8 @@ class TimeUtils {
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
-    private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    static String convertMessageDate(Long dateMilli) {
+    static String convertDate(Long dateMilli) {
         if (dateMilli < 1000000000000L) {
             //Timestamp is in seconds
             dateMilli *= 1000;
@@ -26,11 +25,9 @@ class TimeUtils {
         Date date = new Date(dateMilli);
         Date currentDate = new Date(currentTime);
 
-        SimpleDateFormat lessThanOneDays = new SimpleDateFormat("", Locale.getDefault());
-        SimpleDateFormat lessThanSevenDays = new SimpleDateFormat("EEE", Locale.getDefault());
+        SimpleDateFormat lessThanSevenDays = new SimpleDateFormat("EEEE", Locale.getDefault());
         SimpleDateFormat moreThanSevenDays = new SimpleDateFormat("MMM dd", Locale.getDefault());
 
-        //*
         final long diff = currentTime - dateMilli;
         if (diff < MINUTE_MILLIS) {
             return "Just now";
@@ -58,20 +55,6 @@ class TimeUtils {
 
             return formattedDate;
         }
-        //*/
-
-        /*
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, 7);
-        String formattedDate;
-        if (calendar.getTime().compareTo(currentDate) < 0) {
-            formattedDate = moreThanSevenDays.format(date);
-        } else {
-            formattedDate = lessThanSevenDays.format(date);
-        }
-        return formattedDate;
-        //*/
     }
 
 }

@@ -51,7 +51,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "DEFAULT")) * 1000;
+        TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "60")) * 1000;
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -106,25 +106,30 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String userId = null;
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            }
 
             for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
                 if (hasShared.getValue()) {
                     hasTrue = true;
-                    //DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-                    //databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
                     break;
                 } else {
                     hasTrue = false;
-                    databaseReference.child("current_location").child(userId).child("location").removeValue();
+                    if (userId != null) {
+                        databaseReference.child("current_location").child(userId).child("location").removeValue();
+                    }
                 }
             }
 
             if (hasTrue) {
                 DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-                databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
-                for (Map.Entry<String, Boolean> id : shares.entrySet()) {
-                    if (id.getValue()) databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                if (userId != null) {
+                    databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
+                    for (Map.Entry<String, Boolean> id : shares.entrySet()) {
+                        if (id.getValue()) databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                    }
                 }
             }
         }

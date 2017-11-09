@@ -85,8 +85,11 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
             String[] split = addressComponents.split(",", 2);
 
             finalAddress[0] = split[0];
-            finalAddress[1] = split[1];
-            finalAddress[2] = TimeUtils.convertMessageDate(time);
+
+            if (split[1].startsWith(" ")) finalAddress[1] = split[1].substring(1);
+            else finalAddress[1] = split[1];
+
+            finalAddress[2] = "Updated: " + TimeUtils.convertDate(time);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             finalAddress[0] = "";
