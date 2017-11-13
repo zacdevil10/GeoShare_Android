@@ -33,6 +33,12 @@ public class UrlUtil {
         return "https://maps.googleapis.com/maps/api/geocode/json?" + latLng + "&key=" + Application.getAppContext().getString(R.string.server_key);
     }
 
+    public static String getReverseGeocodingUrl(String lat, String lng) {
+        String latLng = "latlng=" + lat + "," + lng;
+
+        return "https://maps.googleapis.com/maps/api/geocode/json?" + latLng + "&key=" + Application.getAppContext().getString(R.string.server_key);
+    }
+
     //Download url result
     public static String downloadUrl(String strUrl) throws IOException {
         String data = "";

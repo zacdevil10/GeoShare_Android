@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -29,6 +30,8 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
 
     private FriendsAdapter friendsAdapter;
 
+    private TextView noFriendsText;
+
     private final ArrayList<String> userId = new ArrayList<>();
 
     public FriendsFragment() {}
@@ -49,6 +52,8 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         friendsList.setLayoutManager(layoutManager);
 
+        noFriendsText = view.findViewById(R.id.friends_no_friends);
+
         getFriends();
 
         friendsAdapter = new FriendsAdapter(getContext(),userId, databaseReference, this);
@@ -63,6 +68,10 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 userId.add(dataSnapshot.getKey());
                 friendsAdapter.notifyDataSetChanged();
+
+                if (userId.size() > 0) {
+                    noFriendsText.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -74,6 +83,10 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 userId.remove(dataSnapshot.getKey());
                 friendsAdapter.notifyDataSetChanged();
+
+                if (userId.size() == 0) {
+                    noFriendsText.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -92,13 +105,6 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
     public void onRemoveFriend(String friendId) {
         if (auth.getCurrentUser() != null) {
             databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
-            databaseReference.child("friends").child(friendId).child(auth.getCurrentUser().getUid()).removeValue();
-
-            databaseReference.child("current_location").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
-            databaseReference.child("current_location").child(friendId).child(auth.getCurrentUser().getUid()).removeValue();
-
-            databaseReference.child("current_location").child(auth.getCurrentUser().getUid()).child("tracking").child(friendId).removeValue();
-            databaseReference.child("current_location").child(friendId).child("tracking").child(auth.getCurrentUser().getUid()).removeValue();
         }
     }
 }

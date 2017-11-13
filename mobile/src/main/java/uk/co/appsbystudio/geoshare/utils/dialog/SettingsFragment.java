@@ -1,13 +1,18 @@
 package uk.co.appsbystudio.geoshare.utils.dialog;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 
 import uk.co.appsbystudio.geoshare.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    Preference displayNamePreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -15,45 +20,49 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         addPreferencesFromResource(R.xml.pref_main);
 
-        Preference dialogPreference = getPreferenceScreen().findPreference("nearby_radius");
+        displayNamePreference = getPreferenceScreen().findPreference("display_name");
 
-        if (dialogPreference.getSharedPreferences().getBoolean("ringtone_silent", true)) {
-            findPreference("ringtone").setEnabled(false);
-            findPreference("ringtone_vibrate").setEnabled(false);
-        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        dialogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        displayNamePreference.setSummary(sharedPreferences.getString("display_name", "DEFAULT"));
+
+        Preference profilePicture = getPreferenceScreen().findPreference("profile_picture");
+        Preference deleteAccount = getPreferenceScreen().findPreference("delete_user");
+
+        profilePicture.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-
-                return true;
+                profilePictureSettings();
+                return false;
             }
         });
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
+        deleteAccount.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                deleteAccountDialog();
+                return false;
+            }
+        });
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        //TODO: Update info where needed
-        if (s.equals("ringtone_silent")) {
-            if (sharedPreferences.getBoolean("ringtone_silent", true)) {
-                findPreference("ringtone").setEnabled(false);
-                findPreference("ringtone_vibrate").setEnabled(false);
-            } else {
-                findPreference("ringtone").setEnabled(true);
-                findPreference("ringtone_vibrate").setEnabled(true);
-            }
+        if (s.equals("display_name")) {
+            displayNamePreference.setSummary(sharedPreferences.getString("display_name", ""));
         }
+    }
+
+    private void deleteAccountDialog() {
+        FragmentManager fragmentManager = getFragmentManager();
+        DialogFragment deleteDialog = new DeleteUser();
+        deleteDialog.show(fragmentManager, "");
+    }
+
+    private void profilePictureSettings() {
+        FragmentManager fragmentManager = getFragmentManager();
+        DialogFragment profileDialog = new ProfilePictureOptions();
+        profileDialog.show(fragmentManager, "");
     }
 }

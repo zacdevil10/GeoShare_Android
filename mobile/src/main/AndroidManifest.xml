@@ -2,15 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.appsbystudio.geoshare">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".Application"
@@ -39,13 +42,13 @@
         <activity
             android:name=".utils.setup.InitialSetupActivity"
             android:label="Initial Setup"
-            android:theme="@style/LoginActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/LoginActivity" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
-            android:theme="@style/MainTheme"
-            android:configChanges="orientation|screenSize"/>
+            android:theme="@style/MainTheme" />
         <activity
             android:name=".friends.pages.FriendSearchActivity"
             android:theme="@style/FriendsTheme" />
@@ -55,6 +58,7 @@
         <activity
             android:name=".friends.FriendsManager"
             android:label="@string/title_activity_friends_manager"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
             android:theme="@style/FriendsTheme">
             <meta-data
@@ -70,7 +74,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
-        <activity android:name=".utils.dialog.SettingsActivity"
+        <activity
+            android:name=".utils.dialog.SettingsActivity"
             android:theme="@style/SettingsTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -80,21 +85,27 @@
         <service
             android:name=".utils.services.TrackingService"
             android:exported="false" />
-
-        <service android:name=".utils.services.FirebaseMessagingService"
+        <service
+            android:name=".utils.services.FirebaseMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".utils.services.FirebaseIDService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <service android:name=".utils.services.FirebaseIDService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon_white" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary" />
     </application>
 
 </manifest>

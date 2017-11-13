@@ -1,16 +1,16 @@
 package uk.co.appsbystudio.geoshare.utils.geocoder;
 
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
-import uk.co.appsbystudio.geoshare.Application;
+import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 
-public class GeocodingFromLatLngTask extends AsyncTask<Object, Object, Address> {
+public class GeocodingFromLatLngTask extends AsyncTask<Void, Void, String> {
 
     private final Double lat;
     private final Double lng;
@@ -21,15 +21,18 @@ public class GeocodingFromLatLngTask extends AsyncTask<Object, Object, Address> 
     }
 
     @Override
-    protected Address doInBackground(Object... params) {
-        Geocoder gc = new Geocoder(Application.getAppContext(), Locale.getDefault());
-        Address finalAddress = null;
+    protected String doInBackground(Void... voids) {
+        String finalAddress = null;
 
+        String url = UrlUtil.getReverseGeocodingUrl(lat, lng);
         try {
-            List<Address> address = gc.getFromLocation(lat, lng, 1);
+            String jsonResponse = UrlUtil.downloadUrl(url);
 
-            finalAddress = address.get(0);
-        } catch (IOException e) {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+
+            finalAddress = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getString("formatted_address");
+
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 

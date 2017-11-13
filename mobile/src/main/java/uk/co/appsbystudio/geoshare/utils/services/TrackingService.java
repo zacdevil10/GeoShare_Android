@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.utils.services;
 
 import android.Manifest;
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -21,7 +23,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
+import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.ui.notifications.TrackingServiceNotification;
 
 public class TrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -48,6 +52,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     @Override
     public void onCreate() {
         super.onCreate();
+
+        TrackingServiceNotification.notify(this, 1);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -80,6 +86,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         if (locationManager != null) {
             locationManager.removeUpdates(locationListener);
         }
+
+        TrackingServiceNotification.cancel(this);
     }
 
     @Override
@@ -103,6 +111,19 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         public void onLocationChanged(Location location) {
             SharedPreferences sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
             Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
+
+            //Notifications
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "tracking_channel")
+                    .setSmallIcon(R.drawable.icon_white)
+                    .setContentTitle("Tracking service is running")
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setTicker("Tracking service is running")
+                    .setNumber(1)
+                    .setAutoCancel(false)
+                    .setOngoing(true)
+                    .setLocalOnly(true);
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -128,10 +149,17 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                 if (userId != null) {
                     databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
                     for (Map.Entry<String, Boolean> id : shares.entrySet()) {
-                        if (id.getValue()) databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                        if (id.getValue()) {
+                            inboxStyle.addLine(id.getKey());
+                            databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                        }
                     }
                 }
             }
+
+            builder.setStyle(inboxStyle);
+
+            TrackingServiceNotification.notify(getApplicationContext(), builder.build());
         }
 
         @Override

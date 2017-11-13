@@ -185,6 +185,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                             Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
                             selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
                             selectedMarker.setAnchor(0.5f, 1);
+                        } else {
+                            selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
+                            selectedMarker.setAnchor(0.5f, 1);
                         }
                         selectedMarker = null;
                     }
@@ -207,8 +210,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         bestProvider = locationManager.getBestProvider(criteria, false);
 
         updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000;
-
-        System.out.println("UPDATE FREQUENCY: " + updateFrequency);
 
         SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
 
@@ -278,6 +279,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
                         selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
                         selectedMarker.setAnchor(0.5f, 1);
+                    } else {
+                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
+                        selectedMarker.setAnchor(0.5f, 1);
                     }
                     CameraPosition cameraPosition = new CameraPosition.Builder().target(selectedMarker.getPosition()).zoom(standardZoomLevel).build();
                     googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -307,13 +311,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
                         selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
                         selectedMarker.setAnchor(0.5f, 1);
+                    } else {
+                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
+                        selectedMarker.setAnchor(0.5f, 1);
                     }
                 }
 
                 selectedMarker = marker;
 
                 String friendId = (String) marker.getTag();
-                System.out.print("Time: " + friendLocationTime.get(friendId));
 
                 LatLng myLocationLatLng = myLocation.getPosition();
                 LatLng destination = marker.getPosition();
@@ -366,7 +372,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.print(dataSnapshot.getKey());
                 if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
                     DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
                     if (databaseLocations != null) {
@@ -652,6 +657,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             if (fileCheck.exists()) {
                 Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
                 selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
+                selectedMarker.setAnchor(0.5f, 1);
+            } else {
+                selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
                 selectedMarker.setAnchor(0.5f, 1);
             }
             selectedMarker = null;

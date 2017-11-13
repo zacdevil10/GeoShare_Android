@@ -71,7 +71,6 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
         //TODO: Friends picture
         if (!userId.isEmpty()) {
-            System.out.println(userId);
             File fileCheck = new File(context.getCacheDir() + "/" + userId.get(position) + ".png");
 
             if (fileCheck.exists()) {

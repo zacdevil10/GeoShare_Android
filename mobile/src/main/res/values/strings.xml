@@ -158,4 +158,20 @@
     <string name="desc_picture_is_set">You have already set a profile picture!</string>
     <string name="upload_new_picture">UPLOAD NEW PICTURE</string>
 
+    <string name="new_friend_notification_title_template">%1$s has sent you a friend request</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="new_friend_notification_placeholder_text_template">Tap to open Friends Manager</string>
+
+    <string name="action_accept">Accept</string>
+    <string name="action_decline">Decline</string>
+    <string name="you_have_no_friends">You have no friends</string>
+
+    <string name="new_share_location_notification_title_template">New location: %1$s</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="new_share_location_notification_placeholder_text_template">Tap to view on map</string>
+
+    <string name="tracking_service_notification_title_template">Tracking service is running</string>
+
 </resources>

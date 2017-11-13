@@ -63,8 +63,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserInformation userInformation = dataSnapshot.child("users").child(userId.get(holder.getAdapterPosition()).toString()).getValue(UserInformation.class);
-                assert userInformation != null;
-                holder.friend_name.setText(userInformation.getName());
+
+                if (userInformation != null) {
+                    holder.friend_name.setText(userInformation.getName());
+                }
             }
 
             @Override
@@ -73,7 +75,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
             }
         });
 
-        //TODO: Set friends profile picture
         if (!userId.isEmpty()) {
             File fileCheck = new File(context.getCacheDir() + "/" + userId.get(position) + ".png");
 
@@ -109,7 +110,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.removeFriend:
-                                //TODO: Remove friend
                                 callback.onRemoveFriend(userId.get(holder.getAdapterPosition()).toString());
                                 return true;
                             default:
@@ -122,14 +122,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                 popupMenu.show();
             }
         });
-
-        /*holder.item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, FriendInfoActivity.class);
-                context.startActivity(intent);
-            }
-        });*/
     }
 
     @Override

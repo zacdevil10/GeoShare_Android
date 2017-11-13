@@ -7,7 +7,7 @@
     <color name="colorPrimaryTransparent">#304caf50</color>
     <color name="colorPrimaryDarkerTransparent">#644caf50</color>
 
-    <color name="recent_color">#E0E0E0</color>
+    <color name="recent_color">#FFF</color>
 
     <color name="text">#FFF</color>
 </resources>

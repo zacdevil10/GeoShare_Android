@@ -54,6 +54,9 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
                     marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
                     marker.setAnchor(0.11328125f, 1f);
+                } else {
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
+                    marker.setAnchor(0.11328125f, 1f);
                 }
             }
         });
@@ -112,6 +115,9 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
                 if (fileCheck.exists()) {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
                     marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
+                    marker.setAnchor(0.11328125f, 1f);
+                } else {
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
                     marker.setAnchor(0.11328125f, 1f);
                 }
             }

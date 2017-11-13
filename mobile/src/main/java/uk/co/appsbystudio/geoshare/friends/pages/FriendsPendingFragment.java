@@ -27,6 +27,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
+import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification;
 
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {
 
@@ -51,6 +52,8 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_pending, container, false);
+
+        NewFriendNotification.cancel(getContext());
 
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();

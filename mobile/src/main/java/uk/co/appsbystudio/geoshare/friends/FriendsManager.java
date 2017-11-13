@@ -31,6 +31,8 @@ public class FriendsManager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_manager);
 
+        Bundle extras = getIntent().getExtras();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title_activity_friends_manager);
         setSupportActionBar(toolbar);
@@ -45,6 +47,9 @@ public class FriendsManager extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(sectionsPagerAdapter);
+        if (extras != null) {
+            mViewPager.setCurrentItem(extras.getInt("tab"));
+        }
 
         TabLayout tabLayout = findViewById(R.id.tabs);
 

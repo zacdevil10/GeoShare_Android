@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
 
+    private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
     private StorageReference storageReference;
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference databaseReference = database.getReference();
+        databaseReference = database.getReference();
 
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
@@ -276,22 +277,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         //Get users name and add to welcome message
         final TextView usernameTextView = header.findViewById(R.id.username);
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInformation userInformation = dataSnapshot.child("users").child(userId).getValue(UserInformation.class);
-                if (userInformation != null) {
-                    System.out.println(userInformation.getName());
-                    String welcome = String.format(getResources().getString(R.string.welcome_user_header), userInformation.getName());
-                    usernameTextView.setText(welcome);
-                }
-            }
+        if (firebaseUser != null) {
+            String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseUser.getDisplayName());
+            usernameTextView.setText(welcome);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            sharedPreferences.edit().putString("display_name", firebaseUser.getDisplayName()).apply();
+        }
 
         /*CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
         search = findViewById(R.id.searchLocationShare);
@@ -576,8 +567,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (FirebaseAuth.getInstance() != null) {
             if (LOCAL_LOGV) Log.v(TAG, "Logging out");
             //sharedPreferences.edit().clear().apply();
+            String token = FirebaseInstanceId.getInstance().getToken();
+            if (token != null) {
+                databaseReference.child("token").child(userId).child(token).removeValue();
+            }
             FirebaseAuth.getInstance().signOut();
-            //loginReturn();
         } else {
             if (LOCAL_LOGV) Log.v(TAG, "Could not log out");
         }

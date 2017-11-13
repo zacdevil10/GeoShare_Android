@@ -8,6 +8,11 @@ public class UserInformation {
 
     public UserInformation() {}
 
+    public UserInformation(String name, String caseFoldedName) {
+        this.name = name;
+        this.caseFoldedName = caseFoldedName;
+    }
+
     public UserInformation(String name, String caseFoldedName, String email) {
         this.name = name;
         this.caseFoldedName = caseFoldedName;

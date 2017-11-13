@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -251,9 +252,14 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         } else {
+                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
+
                             user = firebaseAuth.getCurrentUser();
-                            UserInformation userInformation = new UserInformation(name, name.toLowerCase(), email);
+                            UserInformation userInformation = new UserInformation(name, name.toLowerCase());
                             if (user != null) {
+                                user.updateProfile(profileChangeRequest);
                                 String userId = user.getUid();
                                 ref.child("users").child(userId).setValue(userInformation);
                             }

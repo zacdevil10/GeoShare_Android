@@ -18,7 +18,6 @@ public class FirebaseIDService extends FirebaseInstanceIdService {
     }
 
     private void sendRegistrationToServer(String token) {
-        System.out.println("Firebase id service");
         //Add to secure part of firebase database
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN);
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
