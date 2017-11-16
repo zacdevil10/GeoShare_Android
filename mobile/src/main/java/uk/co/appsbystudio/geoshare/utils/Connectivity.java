@@ -6,14 +6,14 @@ import android.net.NetworkInfo;
 
 public class Connectivity {
 
-    public static NetworkInfo getNetworkInfo(Context context) {
+    private static NetworkInfo getNetworkInfo(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo();
     }
 
     public static boolean isConnected(Context context) {
         NetworkInfo info = Connectivity.getNetworkInfo(context);
-        return (info != null & info.isConnected());
+        return (info != null && info.isConnected());
     }
 
     public static boolean isConnectedWifi(Context context) {

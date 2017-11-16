@@ -26,9 +26,7 @@
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
 
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
 
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -73,7 +71,9 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog" />
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog" >
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light" />
 

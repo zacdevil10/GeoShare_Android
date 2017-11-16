@@ -3,6 +3,7 @@ package uk.co.appsbystudio.geoshare.maps;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -16,6 +17,7 @@ import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -65,14 +67,23 @@ import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.BitmapUtils;
+import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.directions.DirectionsDownloadTask;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
+import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
 import uk.co.appsbystudio.geoshare.utils.ui.MapStyleManager;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, SharedPreferences.OnSharedPreferenceChangeListener, SensorEventListener {
+public class MapsFragment extends Fragment implements
+        OnMapReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        SensorEventListener,
+        OnNetworkStateChangeListener.NetworkStateReceiverListener {
+
+    private OnNetworkStateChangeListener networkStateChangeListener;
 
     private boolean isTracking;
     private FloatingActionButton trackingButton;
@@ -96,6 +107,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private String bestProvider;
     private int updateFrequency;
+
+    private boolean isSynced = false;
 
     private SharedPreferences sharedPreferences;
 
@@ -132,9 +145,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             mapFragment.setRetainInstance(true);
         }
 
+        networkStateChangeListener = new OnNetworkStateChangeListener();
+        networkStateChangeListener.addListener(this);
+        Application.getAppContext().registerReceiver(networkStateChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         if (gpsTracking == null) gpsTracking = new GPSTracking(getContext());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -217,6 +236,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        networkStateChangeListener.removeListener(this);
+        Application.getAppContext().unregisterReceiver(networkStateChangeListener);
     }
 
     @Override
@@ -372,23 +399,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.println(dataSnapshot.getKey());
                 if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
                     DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
                     if (databaseLocations != null) {
                         updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
                         friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                    }
-                } else if (dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
-                    if (!dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class)) {
-                        if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
-                            if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
-                                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                                if (databaseLocations != null) {
-                                    updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -419,12 +435,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private void setTrackingReference() {
         //TODO: Enable and disable tracking sync when on mobile network
-        if (mobileNetwork) {
-            trackingReference.keepSynced(true);
-            trackingReference.addChildEventListener(trackingEventListener);
+        if (mobileNetwork || Connectivity.isConnectedWifi(Application.getAppContext())) {
+            syncTrackingRef();
         } else {
+            unsyncTrackingRef();
+        }
+    }
+
+    private void unsyncTrackingRef() {
+        if (isSynced) {
+            System.out.println("REMOVE SYNC AND LISTENER");
             trackingReference.keepSynced(false);
             trackingReference.removeEventListener(trackingEventListener);
+            isSynced = false;
+        }
+    }
+
+    private void syncTrackingRef() {
+        if (!isSynced) {
+            System.out.println("ADD SYNC AND LISTENER");
+            trackingReference.keepSynced(true);
+            trackingReference.addChildEventListener(trackingEventListener);
+            isSynced = true;
         }
     }
 
@@ -503,16 +535,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     }
                     friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                     nearbyFriends();
-                } else {
-                    DatabaseLocations staticLocations = dataSnapshot.child(FirebaseHelper.CURRENT_LOCATION).child(user.getUid()).getValue(DatabaseLocations.class);
-                    if (staticLocations != null) {
-                        if (friendMarkerList.containsKey(friendId)) {
-                            updateFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
-                        } else {
-                            addFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
-                        }
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                    }
                 }
             }
 
@@ -744,6 +766,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    @Override
+    public void networkAvailable() {
+
+    }
+
+    @Override
+    public void networkUnavailable() {
+
+    }
+
+    @Override
+    public void networkWifi() {
+        syncTrackingRef();
+    }
+
+    @Override
+    public void networkMobile() {
+        if (!mobileNetwork) {
+            unsyncTrackingRef();
+        }
     }
 
     private class LocationListener implements android.location.LocationListener {

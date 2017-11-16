@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,9 +15,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.GPSTracking;
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class ShareOptions extends DialogFragment {
 
@@ -70,6 +74,10 @@ public class ShareOptions extends DialogFragment {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     editor.putBoolean(friendId, true).apply();
+                                    if (!TrackingService.isRunning) {
+                                        Intent trackingService = new Intent(Application.getAppContext(), TrackingService.class);
+                                        Application.getAppContext().startService(trackingService);
+                                    }
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {

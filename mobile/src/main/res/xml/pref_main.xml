@@ -48,9 +48,7 @@
     <PreferenceCategory android:title="@string/pref_header_account">
         <EditTextPreference
             android:key="display_name"
-            android:title="Display name"
-            android:defaultValue="Name"
-            android:summary="Name"/>
+            android:title="Display name"/>
 
         <Preference
             android:key="profile_picture"

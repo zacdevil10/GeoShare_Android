@@ -75,7 +75,7 @@
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
         <activity
-            android:name=".utils.dialog.SettingsActivity"
+            android:name=".utils.ui.SettingsActivity"
             android:theme="@style/SettingsTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

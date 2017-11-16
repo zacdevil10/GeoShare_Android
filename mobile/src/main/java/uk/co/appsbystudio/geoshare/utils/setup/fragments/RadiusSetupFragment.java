@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.utils.setup.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -20,6 +21,12 @@ import uk.co.appsbystudio.geoshare.utils.ui.SeekBarTextIndicator;
 
 public class RadiusSetupFragment extends Fragment {
 
+    public interface SetupFinishInterface {
+        void onFinish();
+    }
+
+    private Context context;
+
     private SeekBarTextIndicator seekBarTextIndicator;
     private TextView progressText;
 
@@ -27,6 +34,12 @@ public class RadiusSetupFragment extends Fragment {
 
     public RadiusSetupFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 
     @Override
@@ -77,9 +90,7 @@ public class RadiusSetupFragment extends Fragment {
                 sharedPreferences.edit().putString("nearby_radius", progressText.getText().toString()).apply();
                 sharedPreferences.edit().putBoolean("first_run", false).apply();
 
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                ((SetupFinishInterface) context).onFinish();
             }
         });
 

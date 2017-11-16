@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GeoShare</string>
 
-    <string name="api_key">AIzaSyDigOrhxO_SLYC7F8NTRx5Nz_tsverEGnc</string>
+    <string name="api_key">AIzaSyBRJhQvg9qgozhW37sgLz8GpH2PBJjfEfI</string>
     <string name="server_key">AIzaSyCMzZatGotT2XcOm5DOmKMBnybNZgRg1jQ</string>
 
     <!-- LOGIN -->
@@ -173,5 +173,7 @@
     <string name="new_share_location_notification_placeholder_text_template">Tap to view on map</string>
 
     <string name="tracking_service_notification_title_template">Tracking service is running</string>
+    <string name="done">DONE</string>
+    <string name="back">BACK</string>
 
 </resources>

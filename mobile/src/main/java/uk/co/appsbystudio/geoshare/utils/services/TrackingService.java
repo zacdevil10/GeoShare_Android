@@ -38,6 +38,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
     private boolean hasTrue;
 
+    public static boolean isRunning;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -46,12 +48,15 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        isRunning = true;
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        isRunning = false;
 
         TrackingServiceNotification.notify(this, 1);
 
@@ -88,6 +93,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         }
 
         TrackingServiceNotification.cancel(this);
+
+        isRunning = false;
     }
 
     @Override
@@ -103,6 +110,10 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
             }
             locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
         }
+    }
+
+    private void stopService() {
+        this.stopSelf();
     }
 
     private class LocationListener implements android.location.LocationListener {
@@ -155,6 +166,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                         }
                     }
                 }
+            } else {
+                stopService();
             }
 
             builder.setStyle(inboxStyle);

@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.utils.dialog;
+package uk.co.appsbystudio.geoshare.utils.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,11 +8,9 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 

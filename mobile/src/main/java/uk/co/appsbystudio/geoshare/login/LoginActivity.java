@@ -1,10 +1,12 @@
 package uk.co.appsbystudio.geoshare.login;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -27,21 +29,31 @@ import com.google.firebase.database.FirebaseDatabase;
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
 import uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements OnNetworkStateChangeListener.NetworkStateReceiverListener {
+
+    private OnNetworkStateChangeListener networkStateChangeListener;
 
     private EditText nameEntry;
     private EditText emailEntry;
     private EditText passwordEntry;
+
     private Button signUp;
     private Button signUpShow;
     private Button forgotPassword;
+    private Button done;
+    private Button back;
+
     private CircularProgressButton login;
+
     private String name;
     private String email;
     private String password;
+
     private Bitmap error;
 
     private Intent intent;
@@ -60,6 +72,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        networkStateChangeListener = new OnNetworkStateChangeListener();
+        networkStateChangeListener.addListener(this);
+        this.registerReceiver(networkStateChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         ref = database.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -70,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.log_in);
         signUp = findViewById(R.id.sign_up);
         signUpShow = findViewById(R.id.open_sign_up);
+        done = findViewById(R.id.done);
+        back = findViewById(R.id.back);
         forgotPassword = findViewById(R.id.forgot_password);
 
         error = BitmapFactory.decodeResource(LoginActivity.this.getResources(), R.drawable.ic_close_white_48px);
@@ -95,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        forgotPassword.setOnClickListener(new View.OnClickListener() {
+        done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(emailEntry.getText().toString())) {
@@ -113,21 +131,30 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    if (showingForgotPassword) {
-                        emailEntry.setError(getString(R.string.error_field_required));
-                    } else {
-                        setForgotPasswordView();
-                    }
+                    emailEntry.setError(getString(R.string.error_field_required));
                 }
             }
         });
 
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setForgotPasswordView();
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setLoginView();
+            }
+        });
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if (currentUser != null) {
+                if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
                     if (sharedPreferences.getBoolean("first_run", true)) {
                         intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
                     } else {
@@ -142,12 +169,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setSignUpView() {
         nameEntry.setVisibility(View.VISIBLE);
-        emailEntry.setVisibility(View.VISIBLE);
-        passwordEntry.setVisibility(View.VISIBLE);
         signUp.setVisibility(View.VISIBLE);
+
+        login.setVisibility(View.GONE);
         forgotPassword.setVisibility(View.GONE);
         signUpShow.setVisibility(View.GONE);
-        login.setVisibility(View.GONE);
+
+        back.setVisibility(View.VISIBLE);
 
         nameEntry.requestFocus();
 
@@ -156,36 +184,33 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setForgotPasswordView() {
         nameEntry.setVisibility(View.GONE);
-        emailEntry.setVisibility(View.VISIBLE);
         passwordEntry.setVisibility(View.GONE);
-        signUp.setVisibility(View.GONE);
-        forgotPassword.setVisibility(View.VISIBLE);
-        signUpShow.setVisibility(View.GONE);
+
         login.setVisibility(View.GONE);
+        signUp.setVisibility(View.GONE);
+        done.setVisibility(View.VISIBLE);
+        forgotPassword.setVisibility(View.GONE);
+        signUpShow.setVisibility(View.GONE);
+        back.setVisibility(View.VISIBLE);
 
         emailEntry.requestFocus();
-
-        forgotPassword.setBackground(getDrawable(R.drawable.round_edge_green_background));
-        forgotPassword.setText("DONE");
 
         showingForgotPassword = true;
     }
 
     private  void setLoginView() {
         nameEntry.setVisibility(View.GONE);
-        emailEntry.setVisibility(View.VISIBLE);
         passwordEntry.setVisibility(View.VISIBLE);
+
+        login.setVisibility(View.VISIBLE);
         signUp.setVisibility(View.GONE);
+        done.setVisibility(View.GONE);
+
         forgotPassword.setVisibility(View.VISIBLE);
         signUpShow.setVisibility(View.VISIBLE);
-        login.setVisibility(View.VISIBLE);
+        back.setVisibility(View.GONE);
 
         emailEntry.requestFocus();
-
-        if (showingForgotPassword) {
-            forgotPassword.setText("FORGOT PASSWORD?");
-            forgotPassword.setBackgroundResource(0);
-        }
 
         showingSignUp = false;
         showingForgotPassword = false;
@@ -287,6 +312,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        networkStateChangeListener.removeListener(this);
+        this.unregisterReceiver(networkStateChangeListener);
         login.dispose();
     }
 
@@ -297,5 +324,34 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void networkAvailable() {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
+            if (sharedPreferences.getBoolean("first_run", true)) {
+                intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
+            } else {
+                intent = new Intent(LoginActivity.this, MainActivity.class);
+            }
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void networkUnavailable() {
+
+    }
+
+    @Override
+    public void networkWifi() {
+
+    }
+
+    @Override
+    public void networkMobile() {
+
     }
 }

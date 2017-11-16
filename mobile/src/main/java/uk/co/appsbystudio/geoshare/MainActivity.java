@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -22,18 +20,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,21 +45,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
-import uk.co.appsbystudio.geoshare.maps.PlacesSearchFragment;
-import uk.co.appsbystudio.geoshare.places.PlacesFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
-import uk.co.appsbystudio.geoshare.utils.dialog.SettingsActivity;
+import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
-import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
-import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -70,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private static final boolean LOCAL_LOGV = true;
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
 
     private DatabaseReference databaseReference;
@@ -81,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private DrawerLayout rightDrawer;
     private View header;
     private String userId;
+
+    private TextView usernameTextView;
 
     private final ArrayList<String> uid = new ArrayList<>();
     private final HashMap<String, Boolean> hasTracking = new HashMap<>();
@@ -114,19 +111,38 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         boolean mobileNetwork = sharedPreferences.getBoolean("mobile_network", true);
 
         if (mobileNetwork || Connectivity.isConnectedWifi(this)) {
-            //Start tracking service
-            Intent trackingService = new Intent(this, TrackingService.class);
-            startService(trackingService);
+            //Start tracking service if needed
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    SharedPreferences sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
+                    Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
+
+                    for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
+                        if (hasShared.getValue()) {
+                            Intent trackingService = new Intent(MainActivity.this, TrackingService.class);
+                            startService(trackingService);
+                            break;
+                        }
+                    }
+                }
+            };
+
+            if (!TrackingService.isRunning) {
+                thread.start();
+            }
         }
 
         cacheDir = this.getCacheDir();
 
         //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
 
@@ -167,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         navigationView.getMenu().getItem(0).setChecked(true);
         header = navigationView.getHeaderView(0);
         CircleImageView profilePicture = header.findViewById(R.id.profile_image);
+
+        usernameTextView = header.findViewById(R.id.username);
 
         /* RECENT APPS COLOR */
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -249,6 +267,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         });
 
+        setDisplayName();
+
         //Check if users profile picture is stored in the cache
         File fileCheck = new File(getCacheDir() + "/" + userId + ".png");
 
@@ -272,16 +292,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
                         }
             });
-        }
-
-        //Get users name and add to welcome message
-        final TextView usernameTextView = header.findViewById(R.id.username);
-
-        if (firebaseUser != null) {
-            String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseUser.getDisplayName());
-            usernameTextView.setText(welcome);
-
-            sharedPreferences.edit().putString("display_name", firebaseUser.getDisplayName()).apply();
         }
 
         /*CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
@@ -351,6 +361,15 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 }
             }
         };
+    }
+
+    private void setDisplayName() {
+        if (firebaseUser != null) {
+            String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseUser.getDisplayName());
+            usernameTextView.setText(welcome);
+
+            sharedPreferences.edit().putString("display_name", firebaseUser.getDisplayName()).apply();
+        }
     }
 
     /* FIREBASE GET LIST OF FRIENDS */
@@ -439,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        /*if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");
 
             imageFile = new File(this.getCacheDir(), userId + ".png");
@@ -494,6 +513,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }*/
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            imageFile = new File(cacheDir, "profile_picture.png");
+            Uri uri = Uri.fromFile(imageFile);
+
+            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
         }
     }
 
@@ -587,6 +613,25 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             } else if (Connectivity.isConnectedMobile(this)){
                 stopService(trackingService);
             }
+        } else if (s.equals("display_name")) {
+            String name = sharedPreferences.getString(s, "DEFAULT");
+            databaseReference.child("users").child(userId).child("name").setValue(name);
+            databaseReference.child("users").child(userId).child("caseFoldedName").setValue(name.toLowerCase());
+
+            UserProfileChangeRequest profileChangeRequest =  new UserProfileChangeRequest.Builder().setDisplayName(name).build();
+
+            firebaseUser.updateProfile(profileChangeRequest).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    setDisplayName();
+                }
+            });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 }

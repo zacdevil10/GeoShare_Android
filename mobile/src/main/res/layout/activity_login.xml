@@ -141,26 +141,57 @@
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/open_sign_up"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/login_sign_up"
-            android:textColor="@color/text" />
-
-        <Button
-            android:id="@+id/forgot_password"
-            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/done"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
-            android:text="@string/forgot_password"
-            android:textColor="@color/text" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/round_edge_green_background"
+            android:text="@string/done"
+            android:textColor="@color/text"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/buttonPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/open_sign_up"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:text="@string/login_sign_up"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/forgot_password"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:text="@string/forgot_password"
+                android:textColor="@color/text" />
+
+            <Button
+                android:id="@+id/back"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:text="@string/back"
+                android:textColor="@color/text"
+                android:visibility="gone" />
+        </LinearLayout>
+
 
     </LinearLayout>
 

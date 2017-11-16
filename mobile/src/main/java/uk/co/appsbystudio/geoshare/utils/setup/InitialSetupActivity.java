@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
@@ -40,7 +41,7 @@ import uk.co.appsbystudio.geoshare.utils.setup.fragments.RadiusSetupFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.SetupProfileFragment;
 import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager;
 
-public class InitialSetupActivity extends AppCompatActivity {
+public class InitialSetupActivity extends AppCompatActivity implements RadiusSetupFragment.SetupFinishInterface {
 
     private Bitmap bitmap;
     private File imageFile;
@@ -125,6 +126,9 @@ public class InitialSetupActivity extends AppCompatActivity {
             case R.id.setPictureButton:
                 profilePictureSettings();
                 break;
+            case R.id.backButton:
+                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+                break;
         }
     }
 
@@ -198,5 +202,12 @@ public class InitialSetupActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onFinish() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
