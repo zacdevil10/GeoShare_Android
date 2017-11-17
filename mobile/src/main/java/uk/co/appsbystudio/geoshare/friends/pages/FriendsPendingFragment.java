@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.friends.pages;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,8 +16,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -38,8 +35,6 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     private FriendsRequestAdapter friendsRequestAdapter;
     private FriendsPendingAdapter friendsPendingAdapter;
 
-    SwipeRefreshLayout swipeRefresh;
-
     private final ArrayList<String> userId = new ArrayList<>();
 
     private final ArrayList<String> userIdRequests = new ArrayList<>();
@@ -58,9 +53,11 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
-        databasePendingReference = database.getReference("pending/" + auth.getCurrentUser().getUid());
-        databasePendingReference.keepSynced(true);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+
+        if (auth.getCurrentUser() != null) {
+            databasePendingReference = database.getReference("pending/" + auth.getCurrentUser().getUid());
+            databasePendingReference.keepSynced(true);
+        }
 
         RecyclerView friendsIncomingList = view.findViewById(R.id.friend_incoming_list);
         friendsIncomingList.setHasFixedSize(false);
@@ -74,7 +71,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         RecyclerView.LayoutManager layoutManagerPending = new LinearLayoutManager(getActivity());
         friendsOutgoingList.setLayoutManager(layoutManagerPending);
 
-        getRequests();
+        if (auth.getCurrentUser() != null) getRequests();
 
         friendsRequestAdapter = new FriendsRequestAdapter(getContext(), userIdRequests, databaseReference, FriendsPendingFragment.this);
         friendsPendingAdapter = new FriendsPendingAdapter(getContext(), userId, databaseReference, FriendsPendingFragment.this);
@@ -94,12 +91,14 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (!MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.put(dataSnapshot.getKey(), true);
                 AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
-                if (!addFriendsInfo.isOutgoing()) {
-                    userIdRequests.add(dataSnapshot.getKey());
-                    friendsRequestAdapter.notifyDataSetChanged();
-                } else {
-                    userId.add(dataSnapshot.getKey());
-                    friendsPendingAdapter.notifyDataSetChanged();
+                if (addFriendsInfo != null) {
+                    if (!addFriendsInfo.isOutgoing()) {
+                        userIdRequests.add(dataSnapshot.getKey());
+                        friendsRequestAdapter.notifyDataSetChanged();
+                    } else {
+                        userId.add(dataSnapshot.getKey());
+                        friendsPendingAdapter.notifyDataSetChanged();
+                    }
                 }
 
                 boolean hasUserIds = userId.size() == 0;
@@ -118,12 +117,14 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 if (MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.remove(dataSnapshot.getKey());
                 AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
-                if (!addFriendsInfo.isOutgoing()) {
-                    userIdRequests.remove(dataSnapshot.getKey());
-                    friendsRequestAdapter.notifyDataSetChanged();
-                } else {
-                    userId.remove(dataSnapshot.getKey());
-                    friendsPendingAdapter.notifyDataSetChanged();
+                if (addFriendsInfo != null) {
+                    if (!addFriendsInfo.isOutgoing()) {
+                        userIdRequests.remove(dataSnapshot.getKey());
+                        friendsRequestAdapter.notifyDataSetChanged();
+                    } else {
+                        userId.remove(dataSnapshot.getKey());
+                        friendsPendingAdapter.notifyDataSetChanged();
+                    }
                 }
 
                 boolean hasUserIds = userId.size() == 0;
@@ -147,20 +148,22 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
     @Override
     public void onAcceptReject(Boolean accept, String uid) {
-        if (accept) {
-            databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
-            databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid()).setValue(true);
-            //databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            //databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
-        } else {
-            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+        if (auth.getCurrentUser() != null) {
+            if (accept) {
+                databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
+                databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid()).setValue(true);
+            } else {
+                databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
+                databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+            }
         }
     }
 
     @Override
-    public void onReject(Boolean accept, String uid) {
-        databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-        databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+    public void onReject(String uid) {
+        if (auth.getCurrentUser() != null) {
+            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
+            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+        }
     }
 }

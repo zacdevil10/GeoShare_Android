@@ -36,7 +36,7 @@ public class FriendsManager extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title_activity_friends_manager);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -116,7 +116,6 @@ public class FriendsManager extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
             return 2;
         }
 

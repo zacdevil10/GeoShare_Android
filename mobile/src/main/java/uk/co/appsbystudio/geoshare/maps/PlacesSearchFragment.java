@@ -11,13 +11,12 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.maps.placesadapter.PlacesAdapter;
 
 public class PlacesSearchFragment extends Fragment {
 
-    ArrayList<String> locations = new ArrayList<>();
+    private final ArrayList<String> locations = new ArrayList<>();
 
     public PlacesSearchFragment() {}
 

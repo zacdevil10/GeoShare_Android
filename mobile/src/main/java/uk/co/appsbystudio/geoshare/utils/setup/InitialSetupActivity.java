@@ -99,7 +99,7 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
             }
         };
 
-        viewPager.setPagingEnabled(false);
+        viewPager.setPagingEnabled();
 
         viewPager.setAdapter(fragmentPagerAdapter);
     }

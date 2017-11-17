@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.GPSTracking;
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
@@ -75,8 +74,8 @@ public class ShareOptions extends DialogFragment {
                                 public void onSuccess(Void aVoid) {
                                     editor.putBoolean(friendId, true).apply();
                                     if (!TrackingService.isRunning) {
-                                        Intent trackingService = new Intent(Application.getAppContext(), TrackingService.class);
-                                        Application.getAppContext().startService(trackingService);
+                                        Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
+                                        Application.getContext().startService(trackingService);
                                     }
                                 }
                             })

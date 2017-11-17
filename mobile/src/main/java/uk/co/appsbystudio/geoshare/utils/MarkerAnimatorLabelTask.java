@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;

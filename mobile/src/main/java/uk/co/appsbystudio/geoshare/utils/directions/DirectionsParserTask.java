@@ -63,7 +63,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
 
             polylineOptions.addAll(points);
             polylineOptions.width(10);
-            polylineOptions.color(Application.getAppContext().getResources().getColor(R.color.colorAccent));
+            polylineOptions.color(Application.getContext().getResources().getColor(R.color.colorAccent));
         }
 
         if (polylineOptions != null) {

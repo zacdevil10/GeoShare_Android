@@ -5,25 +5,12 @@ import android.content.Context;
 public class Application extends android.app.Application {
 
     private static Application instance;
-    private static Context context;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    public Application() {
         instance = this;
-
-        this.setContext(getApplicationContext());
     }
 
-    public static Application getInstance() {
+    public static Context getContext() {
         return instance;
-    }
-
-    public static Context getAppContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
     }
 }

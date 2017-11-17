@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +39,7 @@ public class FriendInfoActivity extends AppCompatActivity {
             userId = bundle.getString("uid");
         }
 
-        ImageView backdropImage = findViewById(R.id.infoBackdropImage);
+        //ImageView backdropImage = findViewById(R.id.infoBackdropImage);
         CircleImageView profileImage = findViewById(R.id.avatar);
 
         Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");

@@ -15,7 +15,8 @@
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_search_black_24dp"/>
+        android:src="@drawable/ic_search_black_24dp"
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/search_result_text"

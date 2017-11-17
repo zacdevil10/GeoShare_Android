@@ -5,15 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,9 +26,8 @@ public class ChangePasswordDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
-        LayoutInflater inflater =  getActivity().getLayoutInflater();
 
-        View view = inflater.inflate(R.layout.dialog_change_password, null);
+        View view = View.inflate(getActivity(), R.layout.dialog_change_password, null);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 

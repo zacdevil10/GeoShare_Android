@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,7 +19,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -96,11 +94,11 @@ public class MapsFragment extends Fragment implements
 
     private Location listenerLocation;
 
-    private FirebaseUser user;
-
     private DatabaseReference databaseReference;
     private DatabaseReference shareReference;
     private DatabaseReference trackingReference;
+
+    private FirebaseUser user;
 
     private LocationListener locationListener;
     private LocationManager locationManager;
@@ -121,13 +119,13 @@ public class MapsFragment extends Fragment implements
 
     public static Polyline directions;
 
-    private static HashMap<String, Marker> friendMarkerList = new HashMap<>();
-    private HashMap<String, Long> friendLocationTime = new HashMap<>();
+    private final HashMap<String, Marker> friendMarkerList = new HashMap<>();
+    private final HashMap<String, Long> friendLocationTime = new HashMap<>();
 
-    private ValueAnimator initAnimator = ValueAnimator.ofArgb(0, 163);
-    private ValueAnimator endAnimator = ValueAnimator.ofArgb(164, 255);
+    private final ValueAnimator initAnimator = ValueAnimator.ofArgb(0, 163);
+    private final ValueAnimator endAnimator = ValueAnimator.ofArgb(164, 255);
 
-    private int standardZoomLevel = 16;
+    private final int standardZoomLevel = 16;
 
     public MapsFragment() {
     }
@@ -138,16 +136,19 @@ public class MapsFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         /* HANDLES FOR VARIOUS VIEWS */
-        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        MapFragment mapFragment = null;
+        if (getActivity() != null) {
+            mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && mapFragment != null) {
             mapFragment.setRetainInstance(true);
         }
 
         networkStateChangeListener = new OnNetworkStateChangeListener();
         networkStateChangeListener.addListener(this);
-        Application.getAppContext().registerReceiver(networkStateChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        Application.getContext().registerReceiver(networkStateChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         if (gpsTracking == null) gpsTracking = new GPSTracking(getContext());
 
@@ -160,9 +161,12 @@ public class MapsFragment extends Fragment implements
         user = auth.getCurrentUser();
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        shareReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid());
-        shareReference.keepSynced(true);
-        trackingReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid() + "/" + FirebaseHelper.TRACKING);
+        if (user != null) {
+            shareReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid());
+            shareReference.keepSynced(true);
+
+            trackingReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid() + "/" + FirebaseHelper.TRACKING);
+        }
 
         friendsNearText = view.findViewById(R.id.friendNearText);
 
@@ -216,7 +220,7 @@ public class MapsFragment extends Fragment implements
 
         /* SETTING UP LOCATION CHANGE LISTENER */
         locationListener = new LocationListener();
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
         criteria.setAltitudeRequired(false);
@@ -230,10 +234,12 @@ public class MapsFragment extends Fragment implements
 
         updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000;
 
-        SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) Application.getContext().getSystemService(Context.SENSOR_SERVICE);
 
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        if (sensorManager != null) {
+            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        }
 
         return view;
     }
@@ -243,15 +249,15 @@ public class MapsFragment extends Fragment implements
         super.onDestroy();
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         networkStateChangeListener.removeListener(this);
-        Application.getAppContext().unregisterReceiver(networkStateChangeListener);
+        Application.getContext().unregisterReceiver(networkStateChangeListener);
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -289,7 +295,7 @@ public class MapsFragment extends Fragment implements
         isTracking = true;
 
         MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
-        styleManager.addStyle(14, R.raw.map_style);
+        styleManager.addStyle(R.raw.map_style);
 
         googleMap.getUiSettings().setCompassEnabled(false);
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -375,67 +381,68 @@ public class MapsFragment extends Fragment implements
             }
         });
 
-        shareReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                    DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                    if (databaseLocations != null) {
-                        if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
-                            if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
-                                if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
-                                    addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+        if (user != null) {
+            shareReference.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                        DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                        if (databaseLocations != null) {
+                            if (dataSnapshot.child(FirebaseHelper.TRACKING).getValue(Boolean.class) != null) {
+                                if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class) != null) {
+                                    if (dataSnapshot.child(FirebaseHelper.SHOW_ON_MAP).getValue(Boolean.class)) {
+                                        addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                                    }
                                 }
                             }
+                            addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                            friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                         }
-                        addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
                     }
+
+                    nearbyFriends();
                 }
 
-                nearbyFriends();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println(dataSnapshot.getKey());
-                if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                    DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                    if (databaseLocations != null) {
-                        updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                        friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    System.out.println(dataSnapshot.getKey());
+                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                        DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                        if (databaseLocations != null) {
+                            updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                            friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                        }
                     }
+
+                    nearbyFriends();
                 }
 
-                nearbyFriends();
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                        removeFriendMarker(dataSnapshot.getKey());
+                        friendLocationTime.remove(dataSnapshot.getKey());
+                    }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                    removeFriendMarker(dataSnapshot.getKey());
-                    friendLocationTime.remove(dataSnapshot.getKey());
+                    nearbyFriends();
                 }
 
-                nearbyFriends();
-            }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
+        }
     }
 
     private void setTrackingReference() {
-        //TODO: Enable and disable tracking sync when on mobile network
-        if (mobileNetwork || Connectivity.isConnectedWifi(Application.getAppContext())) {
+        if (mobileNetwork || Connectivity.isConnectedWifi(Application.getContext())) {
             syncTrackingRef();
         } else {
             unsyncTrackingRef();
@@ -460,7 +467,7 @@ public class MapsFragment extends Fragment implements
         }
     }
 
-    private ChildEventListener trackingEventListener = new ChildEventListener() {
+    private final ChildEventListener trackingEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             final String friendId = dataSnapshot.getKey();
@@ -599,18 +606,17 @@ public class MapsFragment extends Fragment implements
     }
 
     private void removeAllFriendMarkers() {
-        //TODO: Remove all friend markers
         for (String markerId : friendMarkerList.keySet()) {
             Marker marker = friendMarkerList.get(markerId);
             marker.remove();
         }
     }
 
-    public static void findFriendOnMap(String friendId) {
+    public void findFriendOnMap(String friendId) {
         if (friendMarkerList.containsKey(friendId)) {
             Marker marker = friendMarkerList.get(friendId);
             CameraPosition cameraPosition = new CameraPosition.Builder().target(marker.getPosition()).zoom(18).build();
-            //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
     /* END OF FRIEND MARKER METHODS */
@@ -630,7 +636,6 @@ public class MapsFragment extends Fragment implements
             tempLocation.setLatitude(markerLocation.latitude);
             tempLocation.setLongitude(markerLocation.longitude);
 
-            //TODO: Shared preferences
             if (gpsTracking.getLocation().distanceTo(tempLocation) < radius) {
                 count = count + 1;
             }
@@ -646,7 +651,7 @@ public class MapsFragment extends Fragment implements
             nearbyCircle.setCenter(latLng);
             nearbyCircle.setRadius(radius);
         } else {
-            CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
+            CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
 
             nearbyCircle = googleMap.addCircle(nearbyCircleOptions);
         }
@@ -662,7 +667,7 @@ public class MapsFragment extends Fragment implements
             CircleOptions accuracyCircleOptions = new CircleOptions()
                     .center(latLng)
                     .radius(accuracy)
-                    .fillColor(Application.getAppContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent))
+                    .fillColor(Application.getContext().getResources().getColor(R.color.colorPrimaryDarkerTransparent))
                     .strokeWidth(0);
 
             accuracyCircle = googleMap.addCircle(accuracyCircleOptions);
@@ -698,8 +703,8 @@ public class MapsFragment extends Fragment implements
         switch (s) {
             case "update_frequency":
                 updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000;
-                if (ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(Application.getAppContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 locationManager.removeUpdates(locationListener);

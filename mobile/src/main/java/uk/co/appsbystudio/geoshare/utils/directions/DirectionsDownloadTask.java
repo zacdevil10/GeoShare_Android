@@ -4,13 +4,6 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 
 public class DirectionsDownloadTask extends AsyncTask<String, String, String> {

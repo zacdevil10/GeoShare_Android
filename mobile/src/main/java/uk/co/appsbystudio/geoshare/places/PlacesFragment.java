@@ -30,7 +30,9 @@ public class PlacesFragment extends Fragment {
         /* SET UP TOOLBAR */
         Toolbar toolbar = view.findViewById(R.id.toolbar);
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        }
 
         toolbar.setNavigationIcon(R.drawable.ic_menu_white_48px);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -63,7 +65,7 @@ public class PlacesFragment extends Fragment {
             }
         };
 
-        viewPager.setPagingEnabled(false);
+        viewPager.setPagingEnabled();
 
         viewPager.setAdapter(fragmentPagerAdapter);
 

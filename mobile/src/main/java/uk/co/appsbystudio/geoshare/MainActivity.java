@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -35,14 +34,10 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +50,10 @@ import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
-import uk.co.appsbystudio.geoshare.utils.dialog.ShareALocationDialog;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback {
     private static final String TAG = "MainActivity";
     private static final boolean LOCAL_LOGV = true;
 
@@ -70,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
-    private StorageReference storageReference;
 
     private DrawerLayout drawerLayout;
     private DrawerLayout rightDrawer;
@@ -89,9 +82,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private FriendsNavAdapter friendsNavAdapter;
 
-    private Bitmap bitmap;
-    private File imageFile;
-
     /*private FloatingActionButton search;
     private BottomSheetBehavior bottomSheetBehavior;*/
 
@@ -99,8 +89,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     public static File cacheDir;
 
-    public static HashMap<String, Boolean> friendsId = new HashMap<>();
-    public static HashMap<String, Boolean> pendingId = new HashMap<>();
+    public static final HashMap<String, Boolean> friendsId = new HashMap<>();
+    public static final HashMap<String, Boolean> pendingId = new HashMap<>();
 
     /*Animation animShowFab;*/
 
@@ -156,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         isTrackingRef = database.getReference("current_location/" + userId + "/tracking");
         isTrackingRef.keepSynced(true);
 
-        storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
         //sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
 
@@ -174,10 +164,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         getTrackingStatus();
 
 
-        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference);
+        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference, this);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
-        //TODO: Update from deprecated method
         rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
 
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -478,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             Uri uri = data.getData();
             CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            if (LOCAL_LOGV) Log.v(TAG, "Oppening image crop tool");
+            if (LOCAL_LOGV) Log.v(TAG, "Opening image crop tool");
             CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
             Uri uri = activityResult.getUri();
 
@@ -516,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }*/
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            imageFile = new File(cacheDir, "profile_picture.png");
+            File imageFile = new File(cacheDir, "profile_picture.png");
             Uri uri = Uri.fromFile(imageFile);
 
             CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
@@ -555,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     /* DIALOG FOR SENDING YOUR CURRENT LOCATION TO A FRIEND */
     public void sendLocationDialog(String name, String friendId) {
-        if (LOCAL_LOGV) Log.v(TAG, "Oppening send location dialog");
+        if (LOCAL_LOGV) Log.v(TAG, "Opening send location dialog");
         Bundle arguments = new Bundle();
         arguments.putString("name", name);
         arguments.putString("friendId", friendId);
@@ -565,13 +554,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         android.app.DialogFragment friendDialog = new ShareOptions();
         friendDialog.setArguments(arguments);
         friendDialog.show(fragmentManager, "");
-    }
-
-    /* DIALOG FOR SHARING A MAP LOCATION WITH A FRIEND */
-    public void shareALocation() {
-        android.app.FragmentManager fragmentManager = getFragmentManager();
-        android.app.DialogFragment shareALocationDialog = new ShareALocationDialog();
-        shareALocationDialog.show(fragmentManager, "");
     }
 
     @Override
@@ -633,5 +615,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onDestroy() {
         super.onDestroy();
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void findOnMapClicked(String friendId) {
+        mapsFragment.findFriendOnMap(friendId);
     }
 }

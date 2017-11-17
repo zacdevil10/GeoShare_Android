@@ -40,8 +40,8 @@ public class MapStyleManager implements GoogleMap.OnCameraMoveListener {
         updateMapStyle();
     }
 
-    public void addStyle(float minZoomLevel, int mapStyle) {
-        this.styleMap.put(minZoomLevel, mapStyle);
+    public void addStyle(int mapStyle) {
+        this.styleMap.put((float) 14, mapStyle);
         updateMapStyle();
     }
 

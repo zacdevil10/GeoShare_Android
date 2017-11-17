@@ -21,7 +21,8 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:id="@+id/infoBackdropImage"
-            android:src="@mipmap/background"/>
+            android:src="@mipmap/background"
+            android:contentDescription="TODO" />
 
         <TextView
             android:layout_width="wrap_content"

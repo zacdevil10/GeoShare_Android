@@ -35,10 +35,10 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
     private final DatabaseReference databaseReference;
 
     public interface Callback {
-        void onReject(Boolean accept, String uid);
+        void onReject(String uid);
     }
 
-    private Callback callback;
+    private final Callback callback;
 
     public FriendsPendingAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
@@ -99,7 +99,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onReject(false, userId.get(holder.getAdapterPosition()).toString());
+                callback.onReject(userId.get(holder.getAdapterPosition()).toString());
             }
         });
     }

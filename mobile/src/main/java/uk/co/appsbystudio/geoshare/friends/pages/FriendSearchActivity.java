@@ -59,7 +59,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         searchResults.setLayoutManager(layoutManager);
 
-        searchAdapter = new FriendsSearchAdapter(this, databaseReference, auth, names, userId, this);
+        searchAdapter = new FriendsSearchAdapter(this, names, userId, this);
         searchResults.setAdapter(searchAdapter);
 
         SearchView searchView = findViewById(R.id.searchView);

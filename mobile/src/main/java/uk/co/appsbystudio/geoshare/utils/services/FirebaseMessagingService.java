@@ -5,7 +5,6 @@ import android.preference.PreferenceManager;
 
 import com.google.firebase.messaging.RemoteMessage;
 
-import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromLatLngTask;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewShareLocationNotification;
 

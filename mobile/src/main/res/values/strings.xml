@@ -175,5 +175,7 @@
     <string name="tracking_service_notification_title_template">Tracking service is running</string>
     <string name="done">DONE</string>
     <string name="back">BACK</string>
+    <string name="stop_sharing">Stop sharing</string>
+    <string name="friendbackground">friendBackground</string>
 
 </resources>

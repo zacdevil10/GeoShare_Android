@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
 public class GPSTracking implements LocationListener {
-    private static final String TAG = "GPSTracking";
-    private static final boolean LOCAL_LOGV = true;
 
     private final Context context;
 
@@ -29,8 +27,12 @@ public class GPSTracking implements LocationListener {
     private void setLocation() {
         try {
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            boolean gpsEnabled = false;
+            boolean networkEnabled = false;
+            if (locationManager != null) {
+                gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            }
 
             if (!networkEnabled && !gpsEnabled) {
                 System.out.println("No network or gps");

@@ -12,13 +12,13 @@ import uk.co.appsbystudio.geoshare.utils.Connectivity;
 
 public class OnNetworkStateChangeListener extends BroadcastReceiver {
 
-    protected Set<NetworkStateReceiverListener> listeners;
-    protected Boolean connected;
-    protected Boolean isConnectedWifi;
-    protected Boolean isConnectedMobile;
+    private final Set<NetworkStateReceiverListener> listeners;
+    private Boolean connected;
+    private Boolean isConnectedWifi;
+    private Boolean isConnectedMobile;
 
     public OnNetworkStateChangeListener() {
-        listeners = new HashSet<NetworkStateReceiverListener>();
+        listeners = new HashSet<>();
         connected = null;
         isConnectedWifi = null;
         isConnectedMobile = null;

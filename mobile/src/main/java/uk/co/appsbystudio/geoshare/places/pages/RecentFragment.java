@@ -21,7 +21,7 @@ public class RecentFragment extends Fragment {
 
     private final ArrayList<String> cityName = new ArrayList<>();
     private final ArrayList<String> countryName = new ArrayList<>();
-    private final ArrayList<String> locationImageURL = new ArrayList<>();
+    //private final ArrayList<String> locationImageURL = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class RecentFragment extends Fragment {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 cityName.remove(viewHolder.getAdapterPosition());
-                locationImageURL.remove(viewHolder.getAdapterPosition());
+                //locationImageURL.remove(viewHolder.getAdapterPosition());
                 recentAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
             }
         };

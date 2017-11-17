@@ -38,7 +38,7 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         void onAcceptReject(Boolean accept, String uid);
     }
 
-    private Callback callback;
+    private final Callback callback;
 
     public FriendsRequestAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
@@ -98,7 +98,6 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: accept friend request
                 callback.onAcceptReject(true, userId.get(holder.getAdapterPosition()).toString());
             }
         });
@@ -106,7 +105,6 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: decline friend request
                 callback.onAcceptReject(false, userId.get(holder.getAdapterPosition()).toString());
             }
         });

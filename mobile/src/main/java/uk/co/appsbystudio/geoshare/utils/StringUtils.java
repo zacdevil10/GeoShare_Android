@@ -1,14 +1,14 @@
 package uk.co.appsbystudio.geoshare.utils;
 
-public class StringUtils {
+class StringUtils {
 
-    private final static String NON_THIN = "[^iIl1\\.,']";
+    private final static String NON_THIN = "[^iIl1.,']";
 
     private static int textWidth(String str) {
         return str.length() - str.replaceAll(NON_THIN, "").length() / 2;
     }
 
-    public static String ellipsize(String text, int max) {
+    static String ellipsize(String text, int max) {
         if (textWidth(text) <= max)
             return text;
 

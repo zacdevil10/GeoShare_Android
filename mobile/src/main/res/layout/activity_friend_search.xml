@@ -21,7 +21,8 @@
             android:src="@drawable/ic_arrow_back_white_24dp"
             android:layout_marginStart="24dp"
             android:layout_gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="TODO" />
 
         <SearchView
             android:layout_width="match_parent"

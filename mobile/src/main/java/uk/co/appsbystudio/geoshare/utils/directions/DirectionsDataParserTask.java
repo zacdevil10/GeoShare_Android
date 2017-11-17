@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.utils.directions;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import java.util.List;
 
 class DirectionsDataParserTask {
 
+    @SuppressWarnings("unchecked")
     List<List<HashMap<String,String>>> parse(JSONObject jObject){
 
         List<List<HashMap<String, String>>> routes = new ArrayList<>() ;
@@ -37,6 +37,7 @@ class DirectionsDataParserTask {
                             HashMap<String, String> hm = new HashMap<>();
                             hm.put("lat", Double.toString((list.get(l)).latitude) );
                             hm.put("lng", Double.toString((list.get(l)).longitude) );
+
                             path.add(hm);
                         }
                     }

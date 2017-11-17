@@ -42,7 +42,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
         void onRemoveFriend(String friendId);
     }
 
-    private Callback callback;
+    private final Callback callback;
 
     public FriendsAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.context = context;

@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.utils.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ public class NoSwipeViewPager extends ViewPager {
         this.enabled = true;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         return this.enabled && super.onTouchEvent(ev);
@@ -25,7 +27,7 @@ public class NoSwipeViewPager extends ViewPager {
         return this.enabled && super.onInterceptTouchEvent(ev);
     }
 
-    public void setPagingEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setPagingEnabled() {
+        this.enabled = false;
     }
 }

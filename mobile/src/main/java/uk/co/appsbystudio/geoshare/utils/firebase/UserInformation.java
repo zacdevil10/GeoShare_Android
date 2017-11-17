@@ -4,31 +4,14 @@ public class UserInformation {
 
     private String name;
     private String caseFoldedName;
-    private String email;
-
-    public UserInformation() {}
 
     public UserInformation(String name, String caseFoldedName) {
         this.name = name;
         this.caseFoldedName = caseFoldedName;
     }
 
-    public UserInformation(String name, String caseFoldedName, String email) {
-        this.name = name;
-        this.caseFoldedName = caseFoldedName;
-        this.email = email;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setCaseFoldedName(String caseFoldedName) {
-        this.caseFoldedName = caseFoldedName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getName() {
@@ -39,7 +22,7 @@ public class UserInformation {
         return caseFoldedName;
     }
 
-    public String getEmail() {
-        return email;
+    public void setCaseFoldedName(String caseFoldedName) {
+        this.caseFoldedName = caseFoldedName;
     }
 }

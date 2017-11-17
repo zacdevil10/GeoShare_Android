@@ -10,9 +10,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import java.io.File;
-import java.net.URI;
 
-import uk.co.appsbystudio.geoshare.Application;
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class ProfilePictureOptions extends DialogFragment {
@@ -29,7 +28,7 @@ public class ProfilePictureOptions extends DialogFragment {
                     selectPicture.setAction(Intent.ACTION_GET_CONTENT);
                     getActivity().startActivityForResult(Intent.createChooser(selectPicture, "Select Picture"), 2);
                 } if (which == 1) {
-                    File imageFile = new File(Application.getAppContext().getCacheDir() + "/profile_picture.png");
+                    File imageFile = new File(MainActivity.cacheDir + "/profile_picture.png");
                     Uri uri = Uri.fromFile(imageFile);
                     Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     takePicture.putExtra(MediaStore.EXTRA_OUTPUT, uri);

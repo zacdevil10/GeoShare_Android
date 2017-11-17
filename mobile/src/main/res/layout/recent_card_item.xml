@@ -21,7 +21,8 @@
             android:background="@drawable/dash_card_header_effect"
             android:divider="@drawable/cardviewline"
             android:showDividers="end"
-            android:id="@+id/cardHeader">
+            android:id="@+id/cardHeader"
+            android:focusable="true">
 
             <TextView
                 android:layout_width="match_parent"
@@ -57,7 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
-                android:id="@+id/mapImage"/>
+                android:id="@+id/mapImage"
+                android:contentDescription="TODO" />
 
         </RelativeLayout>
 
@@ -69,7 +71,8 @@
             android:divider="@drawable/cardviewline"
             android:orientation="vertical"
             android:layout_below="@+id/dashCardHolder"
-            android:id="@+id/showMore">
+            android:id="@+id/showMore"
+            android:focusable="true">
 
             <TextView
                 android:layout_width="wrap_content"

@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,6 +36,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     private LocationListener locationListener;
     private LocationManager locationManager;
     private String bestProvider;
+
+    private FirebaseUser user;
 
     private boolean hasTrue;
 
@@ -55,6 +58,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     @Override
     public void onCreate() {
         super.onCreate();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         isRunning = false;
 
@@ -139,8 +144,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
             String userId = null;
-            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            if (user != null) {
+                userId = user.getUid();
             }
 
             for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {

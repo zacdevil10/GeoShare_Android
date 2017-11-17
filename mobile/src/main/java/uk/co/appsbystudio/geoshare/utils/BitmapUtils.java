@@ -20,7 +20,7 @@ public class BitmapUtils {
         Bitmap bmp = Bitmap.createBitmap(w, h, config);
         Canvas canvas = new Canvas(bmp);
 
-        Bitmap mapMarker = BitmapFactory.decodeResource(Application.getAppContext().getResources(), R.drawable.map_marker_point_shadow);
+        Bitmap mapMarker = BitmapFactory.decodeResource(Application.getContext().getResources(), R.drawable.map_marker_point_shadow);
         Bitmap scaledMarker = Bitmap.createScaledBitmap(mapMarker, 116, 155, false);
 
         if (selected) {
@@ -38,7 +38,7 @@ public class BitmapUtils {
             String[] split = address.split("\n");
 
             Paint greenPaint = new Paint();
-            greenPaint.setColor(Application.getAppContext().getResources().getColor(R.color.colorPrimary));
+            greenPaint.setColor(Application.getContext().getResources().getColor(R.color.colorPrimary));
             greenPaint.setStyle(Paint.Style.FILL);
             greenPaint.setTextSize(32);
             greenPaint.setAlpha(alpha);

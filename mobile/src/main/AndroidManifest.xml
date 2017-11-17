@@ -35,7 +35,6 @@
             android:theme="@style/LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -58,12 +57,15 @@
         <activity
             android:name=".friends.FriendsManager"
             android:label="@string/title_activity_friends_manager"
-            android:launchMode="singleTask"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".login.LoginActivity"
             android:theme="@style/FriendsTheme">
+            <intent-filter>
+                <action android:name="FRIEND_MANAGER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uk.co.appsbystudio.geoshare.MainActivity" />
+                android:value=".login.LoginActivity" />
         </activity>
         <activity
             android:name=".friends.pages.FriendInfoActivity"

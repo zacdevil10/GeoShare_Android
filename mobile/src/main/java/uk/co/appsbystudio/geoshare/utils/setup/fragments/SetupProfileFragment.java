@@ -1,7 +1,5 @@
 package uk.co.appsbystudio.geoshare.utils.setup.fragments;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,13 +13,9 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 
 public class SetupProfileFragment extends Fragment {

@@ -12,7 +12,8 @@
         android:src="@drawable/title"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageView"
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/dummyText"

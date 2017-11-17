@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,20 +33,15 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
     private final ArrayList namesArray;
     private final ArrayList userId;
 
-    private final DatabaseReference databaseReference;
-    private final FirebaseAuth firebaseAuth;
-
     public interface Callback{
         void onSendRequest(String friendId);
     }
 
-    private Callback callback;
+    private final Callback callback;
 
-    public FriendsSearchAdapter(Context context, DatabaseReference databaseReference, FirebaseAuth firebaseAuth, ArrayList namesArray, ArrayList userId, Callback callback) {
+    public FriendsSearchAdapter(Context context, ArrayList namesArray, ArrayList userId, Callback callback) {
         this.context = context;
         this.namesArray = namesArray;
-        this.databaseReference = databaseReference;
-        this.firebaseAuth = firebaseAuth;
         this.userId = userId;
         this.callback = callback;
     }

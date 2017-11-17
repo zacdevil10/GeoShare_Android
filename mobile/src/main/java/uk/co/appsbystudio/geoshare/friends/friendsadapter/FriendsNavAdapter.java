@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +38,6 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
@@ -48,16 +48,22 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     private final DatabaseReference databaseReference;
 
     private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
 
     private int expandedPosition = -1;
 
-    public FriendsNavAdapter(Context context, RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, DatabaseReference databaseReference) {
+    public interface Callback {
+        void findOnMapClicked(String friendId);
+    }
+
+    private final Callback callback;
+
+    public FriendsNavAdapter(Context context, RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, DatabaseReference databaseReference, Callback callback) {
         this.context = context;
         this.recyclerView = recyclerView;
         this.userId = userId;
         this.hasTracking = hasTracking;
         this.databaseReference = databaseReference;
+        this.callback = callback;
     }
 
     @Override
@@ -65,7 +71,6 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_nav_item, viewGroup, false);
 
         sharedPreferences = context.getSharedPreferences("tracking", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
 
         return new FriendsNavAdapter.ViewHolder(view);
     }
@@ -148,33 +153,39 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.showOnMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                databaseReference.child("current_location").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("showOnMap").setValue(b);
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    databaseReference.child("current_location").child(user.getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("showOnMap").setValue(b);
+                }
             }
         });
 
         if (sharedPreferences.getBoolean(userId.get(position).toString(), false)) {
-            holder.sendLocationText.setText("Stop sharing");
+            holder.sendLocationText.setText(R.string.stop_sharing);
             holder.sendLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    databaseReference.child("current_location").child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeValue()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                editor.putBoolean(userId.get(holder.getAdapterPosition()).toString(), false).apply();
-                                notifyDataSetChanged();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                //TODO: Show a message (with "try again?" ?)
-                            }
-                        });
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        databaseReference.child("current_location").child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").child(user.getUid()).removeValue()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    sharedPreferences.edit().putBoolean(userId.get(holder.getAdapterPosition()).toString(), false).apply();
+                                    notifyDataSetChanged();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    //TODO: Show a message (with "try again?" ?)
+                                }
+                            });
+                    }
                 }
             });
         } else {
-            holder.sendLocationText.setText("Share current location");
+            holder.sendLocationText.setText(R.string.share_current_location);
             holder.sendLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -191,7 +202,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.findLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MapsFragment.findFriendOnMap(userId.get(holder.getAdapterPosition()).toString());
+                callback.findOnMapClicked(userId.get(holder.getAdapterPosition()).toString());
             }
         });
     }
