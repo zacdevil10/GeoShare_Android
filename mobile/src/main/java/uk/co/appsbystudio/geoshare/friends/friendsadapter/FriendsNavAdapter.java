@@ -38,6 +38,7 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
@@ -83,31 +84,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         if (MainActivity.friendNames.containsKey(userId.get(position).toString())) holder.friend_name.setText(MainActivity.friendNames.get(userId.get(position).toString()));
 
         //Set friends profile picture
-        if (!userId.isEmpty()) {
-            File fileCheck = new File(context.getCacheDir() + "/" + userId.get(position) + ".png");
-
-            if (fileCheck.exists()) {
-                Bitmap imageBitmap = BitmapFactory.decodeFile(context.getCacheDir() + "/" + userId.get(position) + ".png");
-                holder.friends_pictures.setImageBitmap(imageBitmap);
-            } else {
-                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                StorageReference profileRef = storageReference.child("profile_pictures/" + userId.get(position) + ".png");
-                profileRef.getFile(Uri.fromFile(new File(context.getCacheDir() + "/" + userId.get(position) + ".png")))
-                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                Bitmap imageBitmap = BitmapFactory.decodeFile(context.getCacheDir() + "/" + userId.get(holder.getAdapterPosition()) + ".png");
-                                holder.friends_pictures.setImageBitmap(imageBitmap);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                holder.friends_pictures.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_profile_picture));
-                            }
-                        });
-            }
-        }
+        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
 
         if (hasTracking.containsKey(userId.get(position).toString()) && hasTracking.get(userId.get(position).toString())) {
             holder.trackingIndicator.setVisibility(View.VISIBLE);

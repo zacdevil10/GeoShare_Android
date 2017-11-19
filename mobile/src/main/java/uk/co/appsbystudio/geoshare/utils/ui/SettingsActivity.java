@@ -28,13 +28,11 @@ import java.io.IOException;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private Bitmap bitmap;
-    private File imageFile;
     private String userId;
-    private StorageReference storageReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,65 +50,10 @@ public class SettingsActivity extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             userId = auth.getCurrentUser().getUid();
         }
-        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case 1:
-                    String imageFileName = "profile_picture";
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = new File(storageDir, imageFileName + ".png");
-
-                    CropImage.activity(Uri.fromFile(image))
-                            .setGuidelines(CropImageView.Guidelines.ON)
-                            .setAspectRatio(1, 1)
-                            .setFixAspectRatio(true)
-                            .start(this);
-                    break;
-                case 2:
-                    Uri uri = data.getData();
-                    if (uri != null)
-                        CropImage.activity(uri)
-                                .setGuidelines(CropImageView.Guidelines.ON)
-                                .setAspectRatio(1, 1)
-                                .setFixAspectRatio(true).start(this);
-                    break;
-            }
-        }
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
-            if (resultCode == RESULT_OK) {
-                final Uri resultUri = result.getUri();
-
-                StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-                profileRef.putFile(resultUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(SettingsActivity.this, "Picture uploaded", Toast.LENGTH_SHORT).show();
-                                try {
-                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
-                                    File file = new File(getCacheDir(), userId + ".png");
-                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(SettingsActivity.this, "Hmm...Something went wrong.\nPlease check your internet connection and try again.", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-
+        new ProfileSelectionResult().profilePictureResult(this, requestCode, resultCode, data, userId);
     }
 }

@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.GetStartedFragment;
@@ -44,12 +45,11 @@ import uk.co.appsbystudio.geoshare.utils.setup.fragments.RadiusSetupFragment;
 import uk.co.appsbystudio.geoshare.utils.setup.fragments.SetupProfileFragment;
 import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager;
 
-public class InitialSetupActivity extends AppCompatActivity implements RadiusSetupFragment.SetupFinishInterface {
+public class InitialSetupActivity extends AppCompatActivity implements RadiusSetupFragment.SetupFinishInterface, ProfileSelectionResult.Callback {
 
     private Bitmap bitmap;
     private File imageFile;
     private String userId;
-    private StorageReference storageReference;
 
     private static final int GET_PERMS = 1;
 
@@ -67,7 +67,6 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
         if (auth.getCurrentUser() != null) {
             userId = auth.getCurrentUser().getUid();
         }
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         //FCM Token
         String token = FirebaseInstanceId.getInstance().getToken();
@@ -153,63 +152,7 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case 1:
-                    String imageFileName = "profile_picture";
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = new File(storageDir, imageFileName + ".png");
-
-                    CropImage.activity(Uri.fromFile(image))
-                            .setGuidelines(CropImageView.Guidelines.ON)
-                            .setAspectRatio(1, 1)
-                            .setFixAspectRatio(true)
-                            .start(this);
-                    break;
-                case 2:
-                    Uri uri = data.getData();
-                    if (uri != null)
-                        CropImage.activity(uri)
-                                .setGuidelines(CropImageView.Guidelines.ON)
-                                .setAspectRatio(1, 1)
-                                .setFixAspectRatio(true).start(this);
-                    break;
-            }
-        }
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
-            if (resultCode == RESULT_OK) {
-                final Uri resultUri = result.getUri();
-
-                StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-                profileRef.putFile(resultUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                //TODO: SHOW PROGRESS DIALOG
-                                try {
-                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
-                                    File file = new File(getCacheDir(), userId + ".png");
-                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-
-                                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(InitialSetupActivity.this, "Hmm...Something went wrong.\nPlease check your internet connection and try again.", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-
+        new ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, userId);
     }
 
     @Override
@@ -217,5 +160,10 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void profileUploadSuccess() {
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }
 }

@@ -134,6 +134,8 @@ public class MapsFragment extends Fragment implements
 
     private View view;
 
+    private static final int GET_PERMS = 1;
+
     public MapsFragment() {
     }
 
@@ -267,6 +269,7 @@ public class MapsFragment extends Fragment implements
 
         if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, GET_PERMS);
             return;
         }
 
@@ -439,6 +442,11 @@ public class MapsFragment extends Fragment implements
                 }
             });
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void setTrackingReference() {

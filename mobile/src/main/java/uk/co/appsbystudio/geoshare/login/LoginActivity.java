@@ -57,8 +57,6 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     private Bitmap error;
 
-    private Intent intent;
-
     private SharedPreferences sharedPreferences;
 
     private boolean showingSignUp = false;
@@ -154,18 +152,23 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
-                    if (sharedPreferences.getBoolean("first_run", true)) {
-                        intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
-                    } else {
-                        intent = new Intent(LoginActivity.this, MainActivity.class);
-                    }
-                    startActivity(intent);
-                    finish();
-                }
+                login(firebaseAuth);
             }
         };
+    }
+
+    private void login(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
+            Intent intent;
+            if (sharedPreferences.getBoolean("first_run", true)) {
+                intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
+            } else {
+                intent = new Intent(LoginActivity.this, MainActivity.class);
+            }
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void setSignUpView() {
@@ -329,16 +332,7 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     @Override
     public void networkAvailable() {
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
-            if (sharedPreferences.getBoolean("first_run", true)) {
-                intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
-            } else {
-                intent = new Intent(LoginActivity.this, MainActivity.class);
-            }
-            startActivity(intent);
-            finish();
-        }
+        login(firebaseAuth);
     }
 
     @Override

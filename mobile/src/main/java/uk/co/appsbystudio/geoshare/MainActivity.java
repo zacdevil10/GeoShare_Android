@@ -59,13 +59,15 @@ import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
+import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
+import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
     private static final String TAG = "MainActivity";
     private static final boolean LOCAL_LOGV = true;
 
@@ -270,37 +272,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (LOCAL_LOGV) Log.v(TAG, "Clicked on profile picture");
                 profilePictureSettings();
             }
         });
 
         setDisplayName();
 
-        //Check if users profile picture is stored in the cache
-        File fileCheck = new File(getCacheDir() + "/" + userId + ".png");
-
-        if (fileCheck.exists()) {
-            //If file exists, set image view image as profile picture from storage
-            //TODO: Allow for updating picture on different devices
-            /* Could mean that this method will not work without getting the picture every time
-                or adding a last updated section to the users profile picture
-                and comparing with the date of the file created.
-             */
-            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
-            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
-        } else {
-            //If the file doesn't exist, download from Firebase
-            StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-            profileRef.getFile(Uri.fromFile(fileCheck))
-                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
-                            ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
-                        }
-            });
-        }
+        ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
 
         /*CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
         search = findViewById(R.id.searchLocationShare);
@@ -393,6 +371,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         };
     }
 
+    private void setProfilePicture() {
+        Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
+        ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+    }
+
     private void setDisplayName() {
         if (firebaseUser != null) {
             String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseUser.getDisplayName());
@@ -458,11 +441,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         isTrackingRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Boolean tracking = dataSnapshot.child("tracking").getValue(Boolean.class);
-                if (tracking != null) {
-                    hasTracking.put(dataSnapshot.getKey(), tracking);
-                    friendsNavAdapter.notifyDataSetChanged();
-                }
+                onChildChanged(dataSnapshot, s);
             }
 
             @Override
@@ -506,63 +485,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case 1:
-                    String imageFileName = "profile_picture";
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = new File(storageDir, imageFileName + ".png");
-
-                    CropImage.activity(Uri.fromFile(image))
-                            .setGuidelines(CropImageView.Guidelines.ON)
-                            .setAspectRatio(1, 1)
-                            .setFixAspectRatio(true)
-                            .start(this);
-                    break;
-                case 2:
-                    Uri uri = data.getData();
-                    if (uri != null)
-                        CropImage.activity(uri)
-                                .setGuidelines(CropImageView.Guidelines.ON)
-                                .setAspectRatio(1, 1)
-                                .setFixAspectRatio(true).start(this);
-                    break;
-            }
-        }
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
-            if (resultCode == RESULT_OK) {
-                final Uri resultUri = result.getUri();
-
-                StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-                profileRef.putFile(resultUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(MainActivity.this, "Picture uploaded", Toast.LENGTH_SHORT).show();
-                                try {
-                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
-                                    File file = new File(cacheDir, userId + ".png");
-                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-
-                                    ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(bitmap);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Hmm...Something went wrong.\nPlease check your internet connection and try again.", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-
+        new ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, userId);
     }
 
     @Override
@@ -678,5 +601,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public void findOnMapClicked(String friendId) {
         mapsFragment.findFriendOnMap(friendId);
+    }
+
+    @Override
+    public void updateProfilePicture() {
+        setProfilePicture();
     }
 }
