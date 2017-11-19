@@ -132,7 +132,6 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "tracking_channel")
                     .setSmallIcon(R.drawable.icon_white)
                     .setContentTitle("Tracking service is running")
-                    .setDefaults(Notification.DEFAULT_ALL)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setTicker("Tracking service is running")
                     .setNumber(1)

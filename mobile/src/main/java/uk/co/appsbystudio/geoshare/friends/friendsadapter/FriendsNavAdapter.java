@@ -48,10 +48,12 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     private final DatabaseReference databaseReference;
 
     private SharedPreferences sharedPreferences;
+    private SharedPreferences showOnMapPreference;
 
     private int expandedPosition = -1;
 
     public interface Callback {
+        void setMarkerHidden(String friendId, boolean visible);
         void findOnMapClicked(String friendId);
     }
 
@@ -71,25 +73,14 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_nav_item, viewGroup, false);
 
         sharedPreferences = context.getSharedPreferences("tracking", Context.MODE_PRIVATE);
+        showOnMapPreference = context.getSharedPreferences("showOnMap", Context.MODE_PRIVATE);
 
         return new FriendsNavAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final FriendsNavAdapter.ViewHolder holder, int position) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInformation userInformation = dataSnapshot.child("users").child(userId.get(holder.getAdapterPosition()).toString()).getValue(UserInformation.class);
-                assert userInformation != null;
-                holder.friend_name.setText(userInformation.getName());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        if (MainActivity.friendNames.containsKey(userId.get(position).toString())) holder.friend_name.setText(MainActivity.friendNames.get(userId.get(position).toString()));
 
         //Set friends profile picture
         if (!userId.isEmpty()) {
@@ -143,6 +134,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             }
         });
 
+        holder.showOnMapCheckBox.setChecked(showOnMapPreference.getBoolean(userId.get(position).toString(), true));
+
         holder.showOnMapLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,10 +146,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.showOnMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null) {
-                    databaseReference.child("current_location").child(user.getUid()).child("tracking").child(userId.get(holder.getAdapterPosition()).toString()).child("showOnMap").setValue(b);
-                }
+                callback.setMarkerHidden(userId.get(holder.getAdapterPosition()).toString(), b);
             }
         });
 

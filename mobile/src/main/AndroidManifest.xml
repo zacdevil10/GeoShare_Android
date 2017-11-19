@@ -86,7 +86,8 @@
 
         <service
             android:name=".utils.services.TrackingService"
-            android:exported="false" />
+            android:exported="false"
+            android:stopWithTask="false"/>
         <service
             android:name=".utils.services.FirebaseMessagingService"
             android:exported="false">
@@ -101,6 +102,16 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <provider
+            android:authorities="uk.co.appsbystudio.geoshare.fileProvider"
+            android:name="android.support.v4.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
+        </provider>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

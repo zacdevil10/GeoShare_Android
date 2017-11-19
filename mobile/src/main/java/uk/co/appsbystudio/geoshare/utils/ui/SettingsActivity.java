@@ -4,13 +4,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -19,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -49,51 +57,60 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            bitmap = (Bitmap) data.getExtras().get("data");
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case 1:
+                    String imageFileName = "profile_picture";
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = new File(storageDir, imageFileName + ".png");
 
-            imageFile = new File(this.getCacheDir(), userId + ".png");
-
-            try {
-                FileOutputStream stream = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            Uri uri = Uri.fromFile(imageFile);
-
-            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
-
-        } else if (requestCode == 2 && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).start(this);
-        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            CropImage.ActivityResult activityResult = CropImage.getActivityResult(data);
-            Uri uri = activityResult.getUri();
-
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageFile = new File(this.getCacheDir(), userId + ".png");
-            } catch (IOException e) {
-                e.printStackTrace();
+                    CropImage.activity(Uri.fromFile(image))
+                            .setGuidelines(CropImageView.Guidelines.ON)
+                            .setAspectRatio(1, 1)
+                            .setFixAspectRatio(true)
+                            .start(this);
+                    break;
+                case 2:
+                    Uri uri = data.getData();
+                    if (uri != null)
+                        CropImage.activity(uri)
+                                .setGuidelines(CropImageView.Guidelines.ON)
+                                .setAspectRatio(1, 1)
+                                .setFixAspectRatio(true).start(this);
+                    break;
             }
         }
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                if (bitmap != null) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                }
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
-                fileOutputStream.close();
+            if (resultCode == RESULT_OK) {
+                final Uri resultUri = result.getUri();
 
                 StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-                profileRef.putFile(Uri.fromFile(imageFile));
-            } catch (IOException e) {
-                e.printStackTrace();
+                profileRef.putFile(resultUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(SettingsActivity.this, "Picture uploaded", Toast.LENGTH_SHORT).show();
+                                try {
+                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                                    File file = new File(getCacheDir(), userId + ".png");
+                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(SettingsActivity.this, "Hmm...Something went wrong.\nPlease check your internet connection and try again.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         }
+
     }
 }

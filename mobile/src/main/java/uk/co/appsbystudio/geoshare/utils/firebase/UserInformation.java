@@ -5,6 +5,8 @@ public class UserInformation {
     private String name;
     private String caseFoldedName;
 
+    public UserInformation() {}
+
     public UserInformation(String name, String caseFoldedName) {
         this.name = name;
         this.caseFoldedName = caseFoldedName;

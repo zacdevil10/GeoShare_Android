@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -342,7 +343,8 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     @Override
     public void networkUnavailable() {
-
+        Snackbar.make(findViewById(R.id.startup_layout_parent), "No network connection detected", Snackbar.LENGTH_LONG)
+                .show();
     }
 
     @Override
