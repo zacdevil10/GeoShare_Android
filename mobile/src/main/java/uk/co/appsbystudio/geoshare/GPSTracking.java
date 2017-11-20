@@ -14,6 +14,7 @@ public class GPSTracking implements LocationListener {
     private final Context context;
 
     private Location location;
+    private LocationManager locationManager;
     private double latitude;
     private double longitude;
 
@@ -25,10 +26,9 @@ public class GPSTracking implements LocationListener {
         setLocation();
     }
 
-    @SuppressLint("MissingPermission")
     private void setLocation() {
         try {
-            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             boolean gpsEnabled = false;
             boolean networkEnabled = false;
             if (locationManager != null) {
@@ -36,31 +36,26 @@ public class GPSTracking implements LocationListener {
                 networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             }
 
-            if (!networkEnabled && !gpsEnabled) {
-                System.out.println("No network or gps");
-            } else {
-                if (networkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, this);
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-                if (gpsEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, this);
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
+            if (networkEnabled) {
+                setLocationManager(LocationManager.NETWORK_PROVIDER);
+            }
+            if (gpsEnabled) {
+                if (location == null) {
+                    setLocationManager(LocationManager.GPS_PROVIDER);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setLocationManager(String provider) {
+        locationManager.requestLocationUpdates(provider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, this);
+        location = locationManager.getLastKnownLocation(provider);
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
         }
     }
 
