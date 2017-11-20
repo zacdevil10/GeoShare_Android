@@ -1,5 +1,7 @@
 package uk.co.appsbystudio.geoshare.utils;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class ProfileUtils {
 
@@ -52,5 +55,14 @@ public class ProfileUtils {
                         }
                     });
         }
+    }
+
+    public static void resetDeviceSettings(SharedPreferences settingsSharedPreferences, SharedPreferences trackingPreferences, SharedPreferences showOnMapPreferences) {
+        settingsSharedPreferences.edit().clear().apply();
+        trackingPreferences.edit().clear().apply();
+        showOnMapPreferences.edit().clear().apply();
+
+        Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
+        Application.getContext().stopService(trackingService);
     }
 }

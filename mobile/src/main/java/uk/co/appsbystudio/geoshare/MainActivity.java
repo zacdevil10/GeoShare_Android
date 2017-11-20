@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -63,93 +64,58 @@ import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
-    private static final String TAG = "MainActivity";
-    private static final boolean LOCAL_LOGV = true;
 
+    public static File cacheDir;
+
+    //FIREBASE
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
-
     private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
 
-    private StorageReference storageReference;
-
-    private DrawerLayout drawerLayout;
-    private DrawerLayout rightDrawer;
-    private View header;
     private String userId;
 
-    private TextView usernameTextView;
+    private DrawerLayout drawerLayout;
+    private View header;
+
+    private final MapsFragment mapsFragment = new MapsFragment();
+
+    private DrawerLayout rightDrawer;
+    private FriendsNavAdapter friendsNavAdapter;
 
     private final ArrayList<String> uid = new ArrayList<>();
     private final HashMap<String, Boolean> hasTracking = new HashMap<>();
-
-    private final MapsFragment mapsFragment = new MapsFragment();
-    /*private final PlacesFragment placesFragment = new PlacesFragment();*/
-
-    /*private final PlacesSearchFragment placesSearchFragment = new PlacesSearchFragment();*/
-
-    private FriendsNavAdapter friendsNavAdapter;
-
-    /*private FloatingActionButton search;
-    private BottomSheetBehavior bottomSheetBehavior;*/
 
     private SharedPreferences settingsSharedPreferences;
     private SharedPreferences trackingPreferences;
     private SharedPreferences showOnMapPreferences;
 
-    public static File cacheDir;
-
     public static final HashMap<String, Boolean> friendsId = new HashMap<>();
     public static final HashMap<String, Boolean> pendingId = new HashMap<>();
-
     public static final HashMap<String, String> friendNames = new HashMap<>();
-
-    /*Animation animShowFab;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        cacheDir = this.getCacheDir();
+
+        //SharedPreferences
         settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         settingsSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         trackingPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
         showOnMapPreferences = getSharedPreferences("showOnMap", MODE_PRIVATE);
 
-        boolean mobileNetwork = settingsSharedPreferences.getBoolean("mobile_network", true);
-
-        if (mobileNetwork || Connectivity.isConnectedWifi(this)) {
-            //Start tracking service if needed
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    SharedPreferences sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
-                    Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
-
-                    for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
-                        if (hasShared.getValue()) {
-                            Intent trackingService = new Intent(MainActivity.this, TrackingService.class);
-                            startService(trackingService);
-                            break;
-                        }
-                    }
-                }
-            };
-
-            if (!TrackingService.isRunning) {
-                thread.start();
-            }
-        }
-
-        cacheDir = this.getCacheDir();
+        setTracking();
 
         //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance();
@@ -158,118 +124,43 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         databaseReference = database.getReference();
-
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
-
         isTrackingRef = database.getReference("current_location/" + userId + "/tracking");
         isTrackingRef.keepSynced(true);
 
-        storageReference = FirebaseStorage.getInstance().getReference();
-
-        //sharedPreferences = getSharedPreferences("tracking", MODE_PRIVATE);
-
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = findViewById(R.id.drawer_layout);
-        rightDrawer = findViewById(R.id.right_nav_drawer);
+
         NavigationView navigationView = findViewById(R.id.left_nav_view);
-        RecyclerView rightNavigationView = findViewById(R.id.right_friends_drawer);
-        if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
-
-        //Get friends and populate right nav drawer
-        getFriends();
-        getTrackingStatus();
-
-
-        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference, this);
-        if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
-
-        rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
-
-        navigationView.getMenu().getItem(0).setChecked(true);
-        header = navigationView.getHeaderView(0);
-        CircleImageView profilePicture = header.findViewById(R.id.profile_image);
-
-        usernameTextView = header.findViewById(R.id.username);
-
-        /* RECENT APPS COLOR */
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            ActivityManager.TaskDescription taskDesc;
-            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, ContextCompat.getColor(this, R.color.recent_color));
-            this.setTaskDescription(taskDesc);
-        }
-
-        /* BOTTOM SHEET FRAGMENT SWAPPING */
-        //getSupportFragmentManager().beginTransaction().add(R.id.bottom_sheet_container, placesSearchFragment).commit();
-
-        /* LEFT NAV DRAWER FUNCTIONALITY/FRAGMENT SWAPPING */
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.content_frame_map, mapsFragment).commit();
         } else {
             getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
         }
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                drawerLayout.closeDrawers();
+        setupDrawerContent(navigationView);
 
-                switch (item.getItemId()) {
-                    case R.id.maps:
-                        if (LOCAL_LOGV) Log.v(TAG, "Add maps fragment");
-                        getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
-                        return true;
-                    case R.id.friends:
-                        if (LOCAL_LOGV) Log.v(TAG, "Opening friends manager");
-                        item.setChecked(false);
-                        Intent intent = new Intent(MainActivity.this, FriendsManager.class);
-                        startActivity(intent);
-                        return true;
-                    /*
-                    case R.id.places:
-                        if (LOCAL_LOGV) Log.v(TAG, "Add places fragment");
-                        getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                        getFragmentManager().executePendingTransactions();
-                        if(!placesFragment.isAdded()) getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, placesFragment).commit();
-                        return true;
-                    //*/
-                    case R.id.settings:
-                        if (LOCAL_LOGV) Log.v(TAG, "Add settings fragment");
-                        item.setChecked(false);
-                        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivity(settingsIntent);
-                        return true;
-                    case R.id.logout:
-                        if (LOCAL_LOGV) Log.v(TAG, "Calling logout()");
-                        item.setChecked(false);
-                        logout();
-                        return true;
-                    case R.id.feedback:
-                        if (LOCAL_LOGV) Log.v(TAG, "Sending feedback");
-                        item.setChecked(false);
-                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                        emailIntent.setType("text/plain");
-                        emailIntent.setData(Uri.parse("mailto:support@appsbystudio.co.uk"));
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback");
-                        if (emailIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(Intent.createChooser(emailIntent, "Send email via"));
-                        } else {
-                            //TODO: Make toast.
-                            if (LOCAL_LOGV) Log.v(TAG, "No email applications found on this device!");
-                        }
-                        return true;
-                }
-                return true;
-            }
-        });
+        rightDrawer = findViewById(R.id.right_nav_drawer);
+
+        RecyclerView rightNavigationView = findViewById(R.id.right_friends_drawer);
+        if (rightNavigationView != null) rightNavigationView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        if (rightNavigationView != null) rightNavigationView.setLayoutManager(layoutManager);
+
+        rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
+
+        //Get friends and populate right nav drawer
+        getFriends();
+        getTrackingStatus();
+
+        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference, this);
+        if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
+
+        header = navigationView.getHeaderView(0);
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        profilePicture.setOnClickListener(new View.OnClickListener() {
+        header.findViewById(R.id.profile_image).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 profilePictureSettings();
@@ -277,92 +168,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         });
 
         setDisplayName();
-
         ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
 
-        /*CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
-        search = findViewById(R.id.searchLocationShare);
+        findViewById(R.id.show_all_button).setOnClickListener(new ToggleAllMarkersVisibility(true));
 
-        //Set the animation for the FAB when the bottom sheet is made in/visible
-        final Animation animHideFab = AnimationUtils.loadAnimation(this, R.anim.scale_down);
-        animShowFab = AnimationUtils.loadAnimation(this, R.anim.scale_up);
-
-        animHideFab.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                search.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        animShowFab.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                search.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                search.startAnimation(animHideFab);
-                //getSupportFragmentManager().beginTransaction().hide(mapsFragment).commit();
-                getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.enter_up, R.anim.exit_down).replace(R.id.content_frame, placesSearchFragment).addToBackStack("").commit();
-                //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });*/
-
-        Button showAllButton = findViewById(R.id.show_all_button);
-        Button hideAllButton = findViewById(R.id.hide_all_button);
-
-        showAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapsFragment.setAllMarkersVisibility(true);
-            }
-        });
-
-        hideAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapsFragment.setAllMarkersVisibility(false);
-            }
-        });
+        findViewById(R.id.hide_all_button).setOnClickListener(new ToggleAllMarkersVisibility(false));
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser == null) {
-                    settingsSharedPreferences.edit().clear().apply();
-                    trackingPreferences.edit().clear().apply();
-                    showOnMapPreferences.edit().clear().apply();
-
-                    Intent trackingService = new Intent(MainActivity.this, TrackingService.class);
-                    stopService(trackingService);
-
+                    ProfileUtils.resetDeviceSettings(settingsSharedPreferences, trackingPreferences, showOnMapPreferences);
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
@@ -371,16 +188,67 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         };
     }
 
-    private void setProfilePicture() {
-        Bitmap imageBitmap = BitmapFactory.decodeFile(getCacheDir() + "/" + userId + ".png");
-        ((CircleImageView) header.findViewById(R.id.profile_image)).setImageBitmap(imageBitmap);
+    private void setTracking() {
+        boolean mobileNetwork = settingsSharedPreferences.getBoolean("mobile_network", true);
+
+        //Tracking
+        if (mobileNetwork || Connectivity.isConnectedWifi(this)) {
+            Thread startTrackingService = new StartTrackingService();
+            if (!TrackingService.isRunning) {
+                startTrackingService.start();
+            }
+        }
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                drawerLayout.closeDrawers();
+
+                switch (item.getItemId()) {
+                    case R.id.maps:
+                        getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
+                        return true;
+                    case R.id.friends:
+                        item.setChecked(false);
+                        Intent intent = new Intent(MainActivity.this, FriendsManager.class);
+                        startActivity(intent);
+                        return true;
+                    case R.id.settings:
+                        item.setChecked(false);
+                        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(settingsIntent);
+                        return true;
+                    case R.id.logout:
+                        item.setChecked(false);
+                        logout();
+                        return true;
+                    case R.id.feedback:
+                        item.setChecked(false);
+                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                        emailIntent.setType("text/plain");
+                        emailIntent.setData(Uri.parse("mailto:support@appsbystudio.co.uk"));
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback");
+                        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(Intent.createChooser(emailIntent, "Send email via"));
+                        } else {
+                            Toast.makeText(MainActivity.this, "No email applications found on this device!", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                }
+                return true;
+            }
+        });
     }
 
     private void setDisplayName() {
         if (firebaseUser != null) {
             String welcome = String.format(getResources().getString(R.string.welcome_user_header), firebaseUser.getDisplayName());
-            usernameTextView.setText(welcome);
-
+            ((TextView) header.findViewById(R.id.username)).setText(welcome);
             settingsSharedPreferences.edit().putString("display_name", firebaseUser.getDisplayName()).apply();
         }
     }
@@ -441,16 +309,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         isTrackingRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                onChildChanged(dataSnapshot, s);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Boolean tracking = dataSnapshot.child("tracking").getValue(Boolean.class);
                 if (tracking != null) {
                     hasTracking.put(dataSnapshot.getKey(), tracking);
                     friendsNavAdapter.notifyDataSetChanged();
                 }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                onChildAdded(dataSnapshot, s);
             }
 
             @Override
@@ -470,18 +338,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         });
     }
-
-    /*public void showMapFragment() {
-        if (LOCAL_LOGV) Log.v(TAG, "Showing map activity");
-        getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
-        navigationView.getMenu().getItem(0).setChecked(true);
-    }*/
-
-    /*public void backFromSearch() {
-        if (LOCAL_LOGV) Log.v(TAG, "Back from searching");
-        getSupportFragmentManager().beginTransaction().remove(placesSearchFragment).commit();
-        search.startAnimation(animShowFab);
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -515,12 +371,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void profilePictureSettings() {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment profileDialog = new ProfilePictureOptions();
-        profileDialog.show(fragmentManager, "");
+        profileDialog.show(fragmentManager, "profile_dialog");
     }
 
     /* DIALOG FOR SENDING YOUR CURRENT LOCATION TO A FRIEND */
     public void sendLocationDialog(String name, String friendId) {
-        if (LOCAL_LOGV) Log.v(TAG, "Opening send location dialog");
         Bundle arguments = new Bundle();
         arguments.putString("name", name);
         arguments.putString("friendId", friendId);
@@ -529,35 +384,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.DialogFragment friendDialog = new ShareOptions();
         friendDialog.setArguments(arguments);
-        friendDialog.show(fragmentManager, "");
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (rightDrawer.isDrawerOpen(GravityCompat.END)) {
-            if (LOCAL_LOGV) Log.v(TAG, "Drawer closed");
-            rightDrawer.closeDrawer(GravityCompat.END);
-        } else {
-            if (LOCAL_LOGV) Log.v(TAG, "Closing app");
-            super.onBackPressed();
-        }
-    }
-
-    /* FIREBASE AUTH LOG OUT */
-    private void logout() {
-        if (FirebaseAuth.getInstance() != null) {
-            if (LOCAL_LOGV) Log.v(TAG, "Logging out");
-            String token = FirebaseInstanceId.getInstance().getToken();
-            if (token != null) {
-                databaseReference.child("token").child(userId).child(token).removeValue();
-            }
-            FirebaseAuth.getInstance().signOut();
-        } else {
-            if (LOCAL_LOGV) Log.v(TAG, "Could not log out");
-        }
+        friendDialog.show(fragmentManager, "location_dialog");
     }
 
     @Override
@@ -587,12 +414,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        settingsSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
     public void setMarkerHidden(String friendId, boolean visible) {
         mapsFragment.setMarkerVisibility(friendId, visible);
         showOnMapPreferences.edit().putBoolean(friendId, visible).apply();
@@ -605,6 +426,57 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void updateProfilePicture() {
-        setProfilePicture();
+        ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (rightDrawer.isDrawerOpen(GravityCompat.END)) {
+            rightDrawer.closeDrawer(GravityCompat.END);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /* FIREBASE AUTH LOG OUT */
+    private void logout() {
+        if (FirebaseAuth.getInstance() != null) {
+            String token = FirebaseInstanceId.getInstance().getToken();
+            if (token != null) {
+                databaseReference.child("token").child(userId).child(token).removeValue();
+            }
+            FirebaseAuth.getInstance().signOut();
+        } else {
+            Snackbar.make(findViewById(R.id.coordinator), "Could not log out!", Snackbar.LENGTH_SHORT)
+                    .setAction("RETRY?", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            FirebaseAuth.getInstance().signOut();
+                        }
+                    }).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        settingsSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private class ToggleAllMarkersVisibility implements View.OnClickListener {
+
+        boolean isVisible;
+
+        ToggleAllMarkersVisibility(boolean isVisible) {
+            this.isVisible = isVisible;
+        }
+
+        @Override
+        public void onClick(View view) {
+            mapsFragment.setAllMarkersVisibility(isVisible);
+        }
+
     }
 }
