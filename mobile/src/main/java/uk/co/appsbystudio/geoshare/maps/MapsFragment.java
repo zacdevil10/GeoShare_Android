@@ -78,7 +78,7 @@ import uk.co.appsbystudio.geoshare.utils.ui.MapStyleManager;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener, SensorEventListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         OnNetworkStateChangeListener.NetworkStateReceiverListener {
 
     private View view;
@@ -190,13 +190,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         });
 
         trackingButton = view.findViewById(R.id.trackingFab);
-
-        SensorManager sensorManager = (SensorManager) Application.getContext().getSystemService(Context.SENSOR_SERVICE);
-
-        if (sensorManager != null) {
-            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
-        }
 
         return view;
     }
@@ -397,38 +390,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private final ChildEventListener staticLocationListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                if (databaseLocations != null) {
-                    addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                }
-            }
-
-            nearbyFriends();
+            DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+            if (databaseLocations != null) addFriendMarker(dataSnapshot.getKey(), databaseLocations);
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) || !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                if (databaseLocations != null) {
-                    updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                }
-            }
-
-            nearbyFriends();
+            DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+            if (databaseLocations != null) updateFriendMarker(dataSnapshot.getKey(), databaseLocations);
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                removeFriendMarker(dataSnapshot.getKey());
-                friendLocationTime.remove(dataSnapshot.getKey());
-            }
-
-            nearbyFriends();
+            removeFriendMarker(dataSnapshot.getKey());
         }
 
         @Override
@@ -445,39 +419,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private final ChildEventListener trackingEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            final String friendId = dataSnapshot.getKey();
-            TrackingInfo trackingInfo = dataSnapshot.getValue(TrackingInfo.class);
-
-            if (trackingInfo != null) {
-                if (trackingInfo.isTracking()) {
-                    getTrackingFriends(friendId);
-                }
-            }
-
-            nearbyFriends();
+            onChildChanged(dataSnapshot, s);
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             final String friendId = dataSnapshot.getKey();
             TrackingInfo trackingInfo = dataSnapshot.getValue(TrackingInfo.class);
-
-            if (trackingInfo != null) {
-                if (trackingInfo.isTracking()) {
-                    getTrackingFriends(friendId);
-                } else {
-                    if (friendMarkerList.containsKey(friendId)) removeFriendMarker(friendId);
-                }
+            if (trackingInfo != null && trackingInfo.isTracking()) {
+                getTrackingFriends(friendId);
             }
-
-            nearbyFriends();
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             removeFriendMarker(dataSnapshot.getKey());
-            friendLocationTime.remove(dataSnapshot.getKey());
-            nearbyFriends();
         }
 
         @Override
@@ -492,18 +448,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     };
 
     private void getTrackingFriends(final String friendId) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child(FirebaseHelper.LOCATION)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DatabaseLocations databaseLocations = dataSnapshot.child(FirebaseHelper.TRACKING).child(friendId).child(FirebaseHelper.LOCATION).getValue(DatabaseLocations.class);
+                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
                 if (databaseLocations != null) {
                     if (friendMarkerList.containsKey(friendId)) {
-                        updateFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
+                        updateFriendMarker(friendId, databaseLocations);
                     } else {
-                        addFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
+                        addFriendMarker(friendId, databaseLocations);
                     }
-                    friendLocationTime.put(friendId, databaseLocations.getTimestamp());
-                    nearbyFriends();
                 }
             }
 
@@ -515,55 +470,57 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     /* FRIEND MARKER METHODS */
-    private void addFriendMarker(final String friendId, final Double longitude, final Double latitude) {
-        if (this.googleMap != null) {
-            if (friendId != null) {
-                File fileCheck = new File(MainActivity.cacheDir + "/" + friendId + ".png");
-                if (fileCheck.exists()) {
-                    Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
-                    Marker friendMarker = googleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(latitude, longitude))
-                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)))
-                            .visible(showOnMapPreferences.getBoolean(friendId, true)));
-                    friendMarker.setTag(friendId);
-                    friendMarkerList.put(friendId, friendMarker);
-                } else {
-                    final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                    StorageReference profileRef = storageReference.child(FirebaseHelper.PROFILE_PICTURE + "/" + friendId + ".png");
-                    profileRef.getFile(Uri.fromFile(new File(MainActivity.cacheDir + "/" + friendId + ".png")))
-                            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                    Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
-                                    Marker friendMarker = googleMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(latitude, longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)))
-                                            .visible(showOnMapPreferences.getBoolean(friendId, true)));
-                                    friendMarker.setTag(friendId);
-                                    friendMarkerList.put(friendId, friendMarker);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Marker friendMarker = googleMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(latitude, longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)))
-                                            .visible(showOnMapPreferences.getBoolean(friendId, true)));
-                                    friendMarker.setTag(friendId);
-                                    friendMarkerList.put(friendId, friendMarker);
-                                }
-                            });
-                }
+    private void addFriendMarker(final String friendId, final DatabaseLocations databaseLocations) {
+        if (this.googleMap != null && friendId != null) {
+            File fileCheck = new File(MainActivity.cacheDir + "/" + friendId + ".png");
+            if (fileCheck.exists()) {
+                Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
+                Marker friendMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(databaseLocations.getLat(), databaseLocations.getLongitude()))
+                        .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)))
+                        .visible(showOnMapPreferences.getBoolean(friendId, true)));
+                friendMarker.setTag(friendId);
+                friendMarkerList.put(friendId, friendMarker);
+            } else {
+                final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                StorageReference profileRef = storageReference.child(FirebaseHelper.PROFILE_PICTURE + "/" + friendId + ".png");
+                profileRef.getFile(Uri.fromFile(new File(MainActivity.cacheDir + "/" + friendId + ".png")))
+                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
+                                Marker friendMarker = googleMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(databaseLocations.getLat(), databaseLocations.getLongitude()))
+                                        .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)))
+                                        .visible(showOnMapPreferences.getBoolean(friendId, true)));
+                                friendMarker.setTag(friendId);
+                                friendMarkerList.put(friendId, friendMarker);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Marker friendMarker = googleMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(databaseLocations.getLat(), databaseLocations.getLongitude()))
+                                        .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)))
+                                        .visible(showOnMapPreferences.getBoolean(friendId, true)));
+                                friendMarker.setTag(friendId);
+                                friendMarkerList.put(friendId, friendMarker);
+                            }
+                        });
             }
+            friendLocationTime.put(friendId, databaseLocations.getTimestamp());
+            nearbyFriends();
         }
     }
 
-    private void updateFriendMarker(String friendId, final Double longitude, final Double latitude) {
+    private void updateFriendMarker(String friendId, final DatabaseLocations databaseLocations) {
         Marker friendMarker = friendMarkerList.get(friendId);
         if (friendMarker != null) {
-            friendMarker.setPosition(new LatLng(latitude, longitude));
+            friendMarker.setPosition(new LatLng(databaseLocations.getLat(), databaseLocations.getLongitude()));
             friendMarkerList.put(friendId, friendMarker);
+            friendLocationTime.put(friendId, databaseLocations.getTimestamp());
+            nearbyFriends();
         }
     }
 
@@ -571,6 +528,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         Marker friendMarker = friendMarkerList.get(friendId);
         if (friendMarker != null) friendMarker.remove();
         friendMarkerList.remove(friendId);
+        friendLocationTime.remove(friendId);
+        nearbyFriends();
     }
 
     public void setMarkerVisibility(String friendId, boolean visible) {
@@ -664,6 +623,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             nearbyCircle = googleMap.addCircle(nearbyCircleOptions);
         }
+
+        nearbyFriends();
     }
 
     /* END OF NEARBY METHODS */
@@ -728,59 +689,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 nearbyRadius(new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude()));
                 break;
         }
-    }
-
-    /*float[] inR = new float[16];
-    float[] I = new float[16];
-    float[] gravity = new float[3];
-    float[] magneticField = new float[3];
-    float[] orientVals = new float[3];
-
-    double azimuth = 0;
-    double pitch = 0;
-    double roll = 0;*/
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        /*if (sensorEvent.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
-
-        switch (sensorEvent.sensor.getType()) {
-            case Sensor.TYPE_ACCELEROMETER:
-                gravity = sensorEvent.values.clone();
-                break;
-            case Sensor.TYPE_MAGNETIC_FIELD:
-                magneticField = sensorEvent.values.clone();
-                break;
-        }
-
-        if (gravity != null && magneticField != null) {
-            boolean success = SensorManager.getRotationMatrix(inR, I, gravity, magneticField);
-
-            GeomagneticField geoField = new GeomagneticField(
-                    (float) gpsTracking.getLatitude(),
-                    (float) gpsTracking.getLongitude(),
-                    (float) gpsTracking.getLocation().getAltitude(),
-                    System.currentTimeMillis()
-            );
-
-            if (success) {
-                SensorManager.getOrientation(inR, orientVals);
-                azimuth = Math.toDegrees(orientVals[0]);
-                pitch = Math.toDegrees(orientVals[1]);
-                roll = Math.toDegrees(orientVals[2]);
-
-                azimuth -= geoField.getDeclination();
-
-                if (myLocation != null) {
-                    myLocation.setRotation((float) azimuth);
-                }
-            }
-        }*/
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     /* NETWORK CHANGE EVENTS */
