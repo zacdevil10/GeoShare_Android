@@ -49,10 +49,6 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     private String name, email, password;
 
-    private Bitmap error;
-
-    private SharedPreferences sharedPreferences;
-
     private boolean showingSignUp = false;
     private boolean showingForgotPassword = false;
 
@@ -82,10 +78,6 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         done = findViewById(R.id.done);
         back = findViewById(R.id.back);
         forgotPassword = findViewById(R.id.forgot_password);
-
-        error = BitmapFactory.decodeResource(LoginActivity.this.getResources(), R.drawable.ic_close_white_48px);
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         signUpShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +147,7 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null && Connectivity.isConnected(LoginActivity.this)) {
             Intent intent;
-            if (sharedPreferences.getBoolean("first_run", true)) {
+            if (PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).getBoolean("first_run", true)) {
                 intent = new Intent(LoginActivity.this, InitialSetupActivity.class);
             } else {
                 intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -258,9 +250,6 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
                             if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            if (error != null) {
-                                login.doneLoadingAnimation(Color.WHITE, error);
-                            }
                             login.revertAnimation();
                         }
                     }
