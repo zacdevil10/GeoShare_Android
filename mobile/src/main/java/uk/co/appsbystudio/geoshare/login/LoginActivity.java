@@ -39,21 +39,15 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     private OnNetworkStateChangeListener networkStateChangeListener;
 
-    private EditText nameEntry;
+    protected EditText nameEntry;
     private EditText emailEntry;
     private EditText passwordEntry;
 
-    private Button signUp;
-    private Button signUpShow;
-    private Button forgotPassword;
-    private Button done;
-    private Button back;
+    private Button signUp, signUpShow, forgotPassword, done, back;
 
     private CircularProgressButton login;
 
-    private String name;
-    private String email;
-    private String password;
+    private String name, email, password;
 
     private Bitmap error;
 
