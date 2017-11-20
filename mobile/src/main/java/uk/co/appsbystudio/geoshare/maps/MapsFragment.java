@@ -2,6 +2,7 @@ package uk.co.appsbystudio.geoshare.maps;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -76,32 +77,30 @@ import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
 import uk.co.appsbystudio.geoshare.utils.ui.MapStyleManager;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
-public class MapsFragment extends Fragment implements
-        OnMapReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        SensorEventListener,
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener, SensorEventListener,
         OnNetworkStateChangeListener.NetworkStateReceiverListener {
 
-    private OnNetworkStateChangeListener networkStateChangeListener;
+    private View view;
 
-    private boolean isTracking;
-    private FloatingActionButton trackingButton;
-    private Marker selectedMarker;
-
-    private boolean mobileNetwork;
-    private GoogleMap googleMap;
-
-    private GPSTracking gpsTracking;
-
-    private Location listenerLocation;
+    private FirebaseUser user;
 
     private DatabaseReference databaseReference;
     private DatabaseReference shareReference;
     private DatabaseReference trackingReference;
 
-    private FirebaseUser user;
+    private GoogleMap googleMap;
 
+    private OnNetworkStateChangeListener networkStateChangeListener;
+
+    private boolean isTracking;
+    private FloatingActionButton trackingButton;
+
+    private boolean mobileNetwork;
+
+    private GPSTracking gpsTracking;
+
+    private Location listenerLocation;
     private LocationListener locationListener;
     private LocationManager locationManager;
 
@@ -116,23 +115,22 @@ public class MapsFragment extends Fragment implements
     private TextView friendsNearText;
 
     private Marker myLocation;
+    private Marker selectedMarker;
 
     private Circle nearbyCircle;
     private Circle accuracyCircle;
 
     public static Polyline directions;
 
-    private final HashMap<String, Marker> friendMarkerList = new HashMap<>();
-    private final HashMap<String, Long> friendLocationTime = new HashMap<>();
+    private Snackbar snackbar;
 
     private final ValueAnimator initAnimator = ValueAnimator.ofArgb(0, 163);
     private final ValueAnimator endAnimator = ValueAnimator.ofArgb(164, 255);
 
+    private final HashMap<String, Marker> friendMarkerList = new HashMap<>();
+    private final HashMap<String, Long> friendLocationTime = new HashMap<>();
+
     private final int standardZoomLevel = 16;
-
-    private Snackbar snackbar;
-
-    private View view;
 
     private static final int GET_PERMS = 1;
 
@@ -141,10 +139,8 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /* INFLATE LAYOUT */
         view = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        /* HANDLES FOR VARIOUS VIEWS */
         MapFragment mapFragment = null;
         if (getActivity() != null) {
             mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
@@ -158,8 +154,6 @@ public class MapsFragment extends Fragment implements
         networkStateChangeListener = new OnNetworkStateChangeListener();
         networkStateChangeListener.addListener(this);
         Application.getContext().registerReceiver(networkStateChangeListener, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-        if (gpsTracking == null) gpsTracking = new GPSTracking(getContext());
 
         settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         settingsSharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -203,47 +197,17 @@ public class MapsFragment extends Fragment implements
                 if (!isTracking) {
                     isTracking = true;
                     trackingButton.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
-                    CameraPosition cameraPosition;
+
                     if (listenerLocation != null) {
-                        cameraPosition = new CameraPosition.Builder().target(new LatLng(listenerLocation.getLatitude(), listenerLocation.getLongitude())).zoom(standardZoomLevel).build();
+                        setCameraPosition(listenerLocation.getLatitude(), listenerLocation.getLongitude(), standardZoomLevel, true);
                     } else {
-                        cameraPosition = new CameraPosition.Builder().target(new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude())).zoom(standardZoomLevel).build();
+                        setCameraPosition(gpsTracking.getLatitude(), gpsTracking.getLongitude(), standardZoomLevel, true);
                     }
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                    //if (selectedMarker != null) selectedMarker.hideInfoWindow();
-                    if (selectedMarker != null) {
-                        if (initAnimator.isRunning()) initAnimator.cancel();
-                        if (endAnimator.isRunning()) endAnimator.cancel();
-                        File fileCheck = new File(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                        if (fileCheck.exists()) {
-                            Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                            selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
-                            selectedMarker.setAnchor(0.5f, 1);
-                        } else {
-                            selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
-                            selectedMarker.setAnchor(0.5f, 1);
-                        }
-                        selectedMarker = null;
-                    }
+
+                    if (selectedMarker != null) resetMarkerIcon(selectedMarker);
                 }
             }
         });
-
-        /* SETTING UP LOCATION CHANGE LISTENER */
-        locationListener = new LocationListener();
-        locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
-
-        Criteria criteria = new Criteria();
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(true);
-        criteria.setSpeedRequired(false);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setCostAllowed(true);
-
-        bestProvider = locationManager.getBestProvider(criteria, false);
-
-        updateFrequency = Integer.parseInt(settingsSharedPreferences.getString("update_frequency", "5")) * 1000;
 
         SensorManager sensorManager = (SensorManager) Application.getContext().getSystemService(Context.SENSOR_SERVICE);
 
@@ -267,70 +231,17 @@ public class MapsFragment extends Fragment implements
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, GET_PERMS);
-            return;
-        }
-
-        googleMap.setMyLocationEnabled(false);
-        googleMap.setBuildingsEnabled(false);
-
-        /* FIREBASE TRACKING SETUP */
-        setTrackingReference();
-
-        /* USING CUSTOM GPS TRACKING MARKER */
-        LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
-
-        Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
-        Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
-
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(standardZoomLevel).build();
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        myLocation = googleMap.addMarker(
-                new MarkerOptions()
-                        .position(currentLocation)
-                        .flat(true)
-                        .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
-                        .anchor(0.5f, 0.5f)
-        );
-
-        myLocation.setTag(0);
-
-        locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
-
-        nearbyRadius(currentLocation);
-        accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
-
-        //TODO: Get bearings
-
-        isTracking = true;
-
-        MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
+        MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), this.googleMap);
         styleManager.addStyle(R.raw.map_style);
 
-        googleMap.getUiSettings().setCompassEnabled(false);
-        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
+        setup();
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if (selectedMarker != null) {
-                    if (initAnimator.isRunning()) initAnimator.cancel();
-                    if (endAnimator.isRunning()) endAnimator.cancel();
-                    File fileCheck = new File(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                    if (fileCheck.exists()) {
-                        Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
-                        selectedMarker.setAnchor(0.5f, 1);
-                    } else {
-                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
-                        selectedMarker.setAnchor(0.5f, 1);
-                    }
-                    CameraPosition cameraPosition = new CameraPosition.Builder().target(selectedMarker.getPosition()).zoom(standardZoomLevel).build();
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                    selectedMarker = null;
+                    resetMarkerIcon(selectedMarker);
+                    setCameraPosition(selectedMarker.getPosition().latitude, selectedMarker.getPosition().longitude, standardZoomLevel, true);
                 }
             }
         });
@@ -349,17 +260,7 @@ public class MapsFragment extends Fragment implements
                         System.out.println("Already clicked");
                         return true;
                     }
-                    if (initAnimator.isRunning()) initAnimator.cancel();
-                    if (endAnimator.isRunning()) endAnimator.cancel();
-                    File fileCheck = new File(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                    if (fileCheck.exists()) {
-                        Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
-                        selectedMarker.setAnchor(0.5f, 1);
-                    } else {
-                        selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
-                        selectedMarker.setAnchor(0.5f, 1);
-                    }
+                    resetMarkerIcon(selectedMarker);
                 }
 
                 selectedMarker = marker;
@@ -377,8 +278,7 @@ public class MapsFragment extends Fragment implements
                     directionsDownloadTask.execute(url);
                 }
 
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(destination).zoom(18).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                setCameraPosition(destination.latitude, destination.longitude, 18, true);
 
                 new MarkerAnimatorLabelTask(marker, initAnimator, endAnimator, marker.getPosition().latitude, marker.getPosition().longitude, friendLocationTime.get(friendId)).execute();
 
@@ -387,66 +287,88 @@ public class MapsFragment extends Fragment implements
                     trackingButton.setImageTintList(ColorStateList.valueOf(getResources().getColor(android.R.color.darker_gray)));
                 }
 
-                //marker.showInfoWindow();
-
                 return true;
             }
         });
+    }
+
+    private void setup() {
+        if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, GET_PERMS);
+            return;
+        }
+
+        isTracking = true;
+
+        if (gpsTracking == null) {
+            gpsTracking = new GPSTracking(getContext());
+        }
+
+        googleMap.setMyLocationEnabled(false);
+        googleMap.setBuildingsEnabled(false);
+        googleMap.getUiSettings().setCompassEnabled(false);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+        /* FIREBASE TRACKING SETUP */
+        setTrackingReference();
+
+        /* USING CUSTOM GPS TRACKING MARKER */
+        LatLng currentLocation = new LatLng(gpsTracking.getLatitude(), gpsTracking.getLongitude());
+
+        Bitmap myLocationMarker = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
+        Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
+
+        setCameraPosition(gpsTracking.getLatitude(), gpsTracking.getLongitude(), standardZoomLevel, false);
+        myLocation = googleMap.addMarker(
+                new MarkerOptions()
+                        .position(currentLocation)
+                        .flat(true)
+                        .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
+                        .anchor(0.5f, 0.5f)
+        );
+        myLocation.setTag(0);
+
+        nearbyRadius(currentLocation);
+        accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
+
+        setupLocationChangeListener();
 
         if (user != null) {
-            shareReference.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                        DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                        if (databaseLocations != null) {
-                            addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                            friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                        }
-                    }
-
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) || !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                        DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
-                        if (databaseLocations != null) {
-                            updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
-                            friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
-                        }
-                    }
-
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
-                        removeFriendMarker(dataSnapshot.getKey());
-                        friendLocationTime.remove(dataSnapshot.getKey());
-                    }
-
-                    nearbyFriends();
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            shareReference.addChildEventListener(staticLocationListener);
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setupLocationChangeListener() {
+    /* SETTING UP LOCATION CHANGE LISTENER */
+        locationListener = new LocationListener();
+        locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(true);
+        criteria.setSpeedRequired(false);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setCostAllowed(true);
+
+        bestProvider = locationManager.getBestProvider(criteria, false);
+
+        updateFrequency = Integer.parseInt(settingsSharedPreferences.getString("update_frequency", "5")) * 1000;
+
+        locationManager.requestLocationUpdates(bestProvider, updateFrequency, 0, locationListener);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case GET_PERMS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setup();
+                }
+        }
     }
 
     private void setTrackingReference() {
@@ -459,7 +381,6 @@ public class MapsFragment extends Fragment implements
 
     private void unsyncTrackingRef() {
         if (isSynced) {
-            System.out.println("REMOVE SYNC AND LISTENER");
             trackingReference.keepSynced(false);
             trackingReference.removeEventListener(trackingEventListener);
             isSynced = false;
@@ -468,12 +389,59 @@ public class MapsFragment extends Fragment implements
 
     private void syncTrackingRef() {
         if (!isSynced) {
-            System.out.println("ADD SYNC AND LISTENER");
             trackingReference.keepSynced(true);
             trackingReference.addChildEventListener(trackingEventListener);
             isSynced = true;
         }
     }
+
+    private final ChildEventListener staticLocationListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                if (databaseLocations != null) {
+                    addFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                }
+            }
+
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) || !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                DatabaseLocations databaseLocations = dataSnapshot.getValue(DatabaseLocations.class);
+                if (databaseLocations != null) {
+                    updateFriendMarker(dataSnapshot.getKey(), databaseLocations.getLongitude(), databaseLocations.getLat());
+                    friendLocationTime.put(dataSnapshot.getKey(), databaseLocations.getTimestamp());
+                }
+            }
+
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            if (!dataSnapshot.getKey().equals(FirebaseHelper.TRACKING) && !dataSnapshot.getKey().equals(FirebaseHelper.LOCATION)) {
+                removeFriendMarker(dataSnapshot.getKey());
+                friendLocationTime.remove(dataSnapshot.getKey());
+            }
+
+            nearbyFriends();
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     private final ChildEventListener trackingEventListener = new ChildEventListener() {
         @Override
@@ -637,6 +605,31 @@ public class MapsFragment extends Fragment implements
         }
     }
     /* END OF FRIEND MARKER METHODS */
+
+    private void setCameraPosition(double latitude, double longitude, int zoom, boolean animate) {
+        LatLng latLng = new LatLng(latitude, longitude);
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(zoom).build();
+        if (animate) {
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        } else {
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
+
+    private void resetMarkerIcon(Marker marker) {
+        if (initAnimator.isRunning()) initAnimator.cancel();
+        if (endAnimator.isRunning()) endAnimator.cancel();
+        File fileCheck = new File(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
+        if (fileCheck.exists()) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
+            marker.setAnchor(0.5f, 1);
+        } else {
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
+            marker.setAnchor(0.5f, 1);
+        }
+        selectedMarker = null;
+    }
 
     /* NEARBY METHODS */
 
