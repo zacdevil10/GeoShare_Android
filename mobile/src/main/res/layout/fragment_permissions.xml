@@ -16,10 +16,9 @@
         android:contentDescription="TODO" />
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Need Your Location"
+        android:text="@string/need_your_location"
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -31,7 +30,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This app requires access to your GPS Location"
+        android:text="@string/this_app_requires_access_to_your_gps_location"
         android:textSize="16sp"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
@@ -51,7 +50,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:onClick="onButtonPressed"
-        android:text="ALLOW"
+        android:text="@string/allow"
         android:textColor="#FFF"
         app:layout_constraintBottom_toTopOf="@+id/notNowButton"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -62,7 +61,7 @@
         android:layout_height="48dp"
         android:layout_width="0dp"
         android:id="@+id/notNowButton"
-        android:text="NOT NOW"
+        android:text="@string/not_now"
         android:onClick="onButtonPressed"
         android:background="@color/colorPrimaryDark"
         android:textColor="@android:color/white"

@@ -9,7 +9,6 @@
     tools:context="uk.co.appsbystudio.geoshare.login.LoginActivity">
 
     <ImageView
-        android:id="@+id/imageView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"

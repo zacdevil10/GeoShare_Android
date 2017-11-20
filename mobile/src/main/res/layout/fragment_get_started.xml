@@ -34,7 +34,7 @@
         android:background="@drawable/round_edge_green_background"
         android:backgroundTint="@color/colorAccent"
         android:onClick="onButtonPressed"
-        android:text="GET STARTED"
+        android:text="@string/get_started"
         android:textColor="#FFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

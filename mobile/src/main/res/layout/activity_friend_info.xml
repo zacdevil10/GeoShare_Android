@@ -7,7 +7,6 @@
     tools:context="uk.co.appsbystudio.geoshare.friends.pages.FriendInfoActivity">
 
     <com.github.florent37.diagonallayout.DiagonalLayout
-        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         app:diagonal_angle="10"
@@ -20,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:id="@+id/infoBackdropImage"
             android:src="@mipmap/background"
             android:contentDescription="TODO" />
 

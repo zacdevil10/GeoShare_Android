@@ -13,16 +13,13 @@ import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import uk.co.appsbystudio.geoshare.BuildConfig;
-import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class ProfilePictureOptions extends DialogFragment {
 
-    String currentPhotoPath;
+    private String currentPhotoPath;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

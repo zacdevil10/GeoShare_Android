@@ -8,6 +8,7 @@ public class Connectivity {
 
     private static NetworkInfo getNetworkInfo(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
         return connectivityManager.getActiveNetworkInfo();
     }
 

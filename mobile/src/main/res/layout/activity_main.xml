@@ -98,7 +98,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="SHOW ALL"
+                    android:text="@string/show_all"
                     android:textColor="@color/colorAccent"/>
 
                 <Button
@@ -107,7 +107,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="HIDE ALL"
+                    android:text="@string/hide_all"
                     android:textColor="@color/colorAccent"/>
 
             </LinearLayout>

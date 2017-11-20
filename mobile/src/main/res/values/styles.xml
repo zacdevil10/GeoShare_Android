@@ -18,10 +18,6 @@
         <item name="android:textColorHint">@color/text</item>
     </style>
 
-    <style name="StyledTilEditTextFloatingLabel" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/text</item>
-    </style>
-
     <style name="MainTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
@@ -32,8 +28,6 @@
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="TutorialTheme" parent="@style/Theme.AppCompat.Light.NoActionBar" />
 
     <style name="FriendsTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
@@ -58,28 +52,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="fragment_theme" parent="@style/Theme.AppCompat.Light">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="LoadingTheme" parent="Theme.AppCompat.Dialog">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">#FFF</item>
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
-
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog" >
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme" parent="Theme.AppCompat.Light" />
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

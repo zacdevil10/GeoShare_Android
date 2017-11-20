@@ -48,7 +48,7 @@
             android:layout_width="12dp"
             android:layout_height="12dp"
             android:id="@+id/trackingIndicator"
-            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
             app:layout_constraintRight_toRightOf="@+id/friend_profile_image"
             app:layout_constraintBottom_toBottomOf="@+id/friend_profile_image"
             android:layout_marginBottom="5dp"
@@ -117,7 +117,6 @@
         android:background="?android:attr/selectableItemBackgroundBorderless">
 
             <TextView
-                android:id="@+id/showOnMapText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
