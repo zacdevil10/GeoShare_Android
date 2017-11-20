@@ -21,6 +21,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment;
 import uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UserSignedOutListener;
 
 public class FriendsManager extends AppCompatActivity {
 
@@ -65,15 +66,7 @@ public class FriendsManager extends AppCompatActivity {
             }
         });
 
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if (currentUser == null) {
-                    finish();
-                }
-            }
-        };
+        authStateListener = new UserSignedOutListener(this);
     }
 
     @Override

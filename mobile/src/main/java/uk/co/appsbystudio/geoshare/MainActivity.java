@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         getFriends();
         getTrackingStatus();
 
-        friendsNavAdapter = new FriendsNavAdapter(this, rightNavigationView, uid, hasTracking, databaseReference, this);
+        friendsNavAdapter = new FriendsNavAdapter(rightNavigationView, uid, hasTracking, this);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
         header = navigationView.getHeaderView(0);
@@ -357,19 +358,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         profileDialog.show(fragmentManager, "profile_dialog");
     }
 
-    /* DIALOG FOR SENDING YOUR CURRENT LOCATION TO A FRIEND */
-    public void sendLocationDialog(String name, String friendId) {
-        Bundle arguments = new Bundle();
-        arguments.putString("name", name);
-        arguments.putString("friendId", friendId);
-        arguments.putString("uid", userId);
-
-        android.app.FragmentManager fragmentManager = getFragmentManager();
-        android.app.DialogFragment friendDialog = new ShareOptions();
-        friendDialog.setArguments(arguments);
-        friendDialog.show(fragmentManager, "location_dialog");
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals("mobile_network")) {
@@ -405,6 +393,37 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public void findOnMapClicked(String friendId) {
         mapsFragment.findFriendOnMap(friendId);
+    }
+
+    @Override
+    public void sendLocationDialog(String name, String friendId) {
+        Bundle arguments = new Bundle();
+        arguments.putString("name", name);
+        arguments.putString("friendId", friendId);
+        arguments.putString("uid", userId);
+
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.DialogFragment friendDialog = new ShareOptions();
+        friendDialog.setArguments(arguments);
+        friendDialog.show(fragmentManager, "location_dialog");
+    }
+
+    @Override
+    public void stopSharing(FirebaseUser user, final String friendId) {
+        databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(user.getUid()).removeValue()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        trackingPreferences.edit().putBoolean(friendId, false).apply();
+                        friendsNavAdapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //TODO: Show a message (with "try again?" ?)
+                    }
+                });
     }
 
     @Override

@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.utils.services;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
+import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
@@ -36,6 +38,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     private LocationListener locationListener;
     private LocationManager locationManager;
     private String bestProvider;
+
+    private SharedPreferences sharedPreferences;
 
     private FirebaseUser user;
 
@@ -65,14 +69,25 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         TrackingServiceNotification.notify(this, 1);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-        TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "60")) * 1000;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //TODO: Check for permissions before starting service
+            return;
+        }
+
+        setupLocationListener();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setupLocationListener() {
         locationListener = new LocationListener();
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "60")) * 1000;
 
         Criteria criteria = new Criteria();
         criteria.setAltitudeRequired(false);
@@ -83,9 +98,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         criteria.setCostAllowed(true);
 
         bestProvider = locationManager.getBestProvider(criteria, false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+
         locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
     }
 
@@ -102,6 +115,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         isRunning = false;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals("sync_frequency")) {
@@ -109,11 +123,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
             if (locationManager != null) {
                 locationManager.removeUpdates(locationListener);
+                locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
             }
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.requestLocationUpdates(bestProvider, TIME_TO_UPDATE, DISTANCE_TO_CHANGE, locationListener);
         }
     }
 
@@ -194,35 +205,4 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         }
     }
-
-    /*@Override
-    public void onTaskRemoved(Intent rootIntent) {
-        Intent restartService = new Intent(getApplicationContext(), this.getClass());
-        restartService.setPackage(getPackageName());
-        PendingIntent restartServicePI = PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);
-
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        if (alarmManager != null) {
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 100, restartServicePI);
-        }
-    }*/
-
-    /*private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
-
-    public class TrackingBinder extends Binder {
-
-        public TrackingService getService() {
-            return TrackingService.this;
-        }
-    }*/
 }

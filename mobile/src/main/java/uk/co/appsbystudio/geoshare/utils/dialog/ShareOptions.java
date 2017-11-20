@@ -25,7 +25,10 @@ import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class ShareOptions extends DialogFragment {
 
-    private SharedPreferences.Editor editor;
+    private SharedPreferences sharedPreferences;
+
+    String friendId;
+    String uid;
 
     private GPSTracking gpsTracking;
 
@@ -33,14 +36,13 @@ public class ShareOptions extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Bundle args = getArguments();
-        final String name = args.getString("name");
-        final String friendId = args.getString("friendId");
-        final String uid = args.getString("uid");
+        String name = args.getString("name");
+        friendId = args.getString("friendId");
+        uid = args.getString("uid");
 
         gpsTracking = new GPSTracking(getActivity());
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("tracking", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        sharedPreferences = getActivity().getSharedPreferences("tracking", Context.MODE_PRIVATE);
 
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
 
@@ -56,26 +58,31 @@ public class ShareOptions extends DialogFragment {
                         break;
                 }
             }
-        }).setPositiveButton("Share", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
-                    DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
+        }).setPositiveButton("Share", new OnPositiveButtonClick()).setNegativeButton("Cancel", null);
 
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    if (uid != null && friendId != null) {
-                        databaseReference.child("current_location").child(friendId).child(uid).setValue(databaseLocations);
-                        editor.putBoolean(friendId, false).apply();
-                    }
-                } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    if (uid != null && friendId != null) {
-                        TrackingInfo trackingInfo = new TrackingInfo(true, System.currentTimeMillis());
-                        databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(uid).setValue(trackingInfo)
+        return optionsMenu.create();
+    }
+
+    private class OnPositiveButtonClick implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int i) {
+            if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && !((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
+                DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
+
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                if (uid != null && friendId != null) {
+                    databaseReference.child("current_location").child(friendId).child(uid).setValue(databaseLocations);
+                    sharedPreferences.edit().putBoolean(friendId, false).apply();
+                }
+            } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                if (uid != null && friendId != null) {
+                    TrackingInfo trackingInfo = new TrackingInfo(true, System.currentTimeMillis());
+                    databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(uid).setValue(trackingInfo)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    editor.putBoolean(friendId, true).apply();
+                                    sharedPreferences.edit().putBoolean(friendId, true).apply();
                                     if (!TrackingService.isRunning) {
                                         Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
                                         Application.getContext().startService(trackingService);
@@ -89,16 +96,13 @@ public class ShareOptions extends DialogFragment {
                                 }
                             });
 
-                        DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
+                    DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
 
-                        databaseReference.child(FirebaseHelper.TRACKING).child(uid).child("location").setValue(databaseLocations);
+                    databaseReference.child(FirebaseHelper.TRACKING).child(uid).child("location").setValue(databaseLocations);
 
-                        databaseReference.child("current_location").child(friendId).child(uid).removeValue();
-                    }
+                    databaseReference.child("current_location").child(friendId).child(uid).removeValue();
                 }
             }
-        }).setNegativeButton("Cancel", null);
-
-        return optionsMenu.create();
+        }
     }
 }

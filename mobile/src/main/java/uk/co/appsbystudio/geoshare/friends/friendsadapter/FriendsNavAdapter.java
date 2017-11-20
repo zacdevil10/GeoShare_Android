@@ -26,17 +26,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
-    private final Context context;
     private final RecyclerView recyclerView;
     private final ArrayList userId;
     private final HashMap<String, Boolean> hasTracking;
-    private final DatabaseReference databaseReference;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences showOnMapPreference;
@@ -46,16 +45,17 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     public interface Callback {
         void setMarkerHidden(String friendId, boolean visible);
         void findOnMapClicked(String friendId);
+        void sendLocationDialog(String name, String friendId);
+
+        void stopSharing(FirebaseUser user, String friendId);
     }
 
     private final Callback callback;
 
-    public FriendsNavAdapter(Context context, RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, DatabaseReference databaseReference, Callback callback) {
-        this.context = context;
+    public FriendsNavAdapter(RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, Callback callback) {
         this.recyclerView = recyclerView;
         this.userId = userId;
         this.hasTracking = hasTracking;
-        this.databaseReference = databaseReference;
         this.callback = callback;
     }
 
@@ -63,8 +63,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
     public FriendsNavAdapter.ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.friends_nav_item, viewGroup, false);
 
-        sharedPreferences = context.getSharedPreferences("tracking", Context.MODE_PRIVATE);
-        showOnMapPreference = context.getSharedPreferences("showOnMap", Context.MODE_PRIVATE);
+        sharedPreferences = Application.getContext().getSharedPreferences("tracking", Context.MODE_PRIVATE);
+        showOnMapPreference = Application.getContext().getSharedPreferences("showOnMap", Context.MODE_PRIVATE);
 
         return new FriendsNavAdapter.ViewHolder(view);
     }
@@ -87,9 +87,9 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.nameItem.setActivated(isExpanded);
 
         if (isExpanded) {
-            holder.friend_name.setTextColor(context.getResources().getColor(R.color.colorAccent));
+            holder.friend_name.setTextColor(Application.getContext().getResources().getColor(R.color.colorAccent));
         } else {
-            holder.friend_name.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.friend_name.setTextColor(Application.getContext().getResources().getColor(R.color.colorPrimary));
         }
 
         holder.nameItem.setOnClickListener(new View.OnClickListener() {
@@ -124,20 +124,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 public void onClick(View view) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
-                        databaseReference.child(FirebaseHelper.TRACKING).child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").child(user.getUid()).removeValue()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    sharedPreferences.edit().putBoolean(userId.get(holder.getAdapterPosition()).toString(), false).apply();
-                                    notifyDataSetChanged();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    //TODO: Show a message (with "try again?" ?)
-                                }
-                            });
+                        callback.stopSharing(user, userId.get(holder.getAdapterPosition()).toString());
                     }
                 }
             });
@@ -146,7 +133,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
             holder.sendLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((MainActivity) context).sendLocationDialog((String) holder.friend_name.getText(), userId.get(holder.getAdapterPosition()).toString());
+                    callback.sendLocationDialog((String) holder.friend_name.getText(), userId.get(holder.getAdapterPosition()).toString());
 
                     expandedPosition = isExpanded ? -1:holder.getAdapterPosition();
                     TransitionManager.beginDelayedTransition(recyclerView);

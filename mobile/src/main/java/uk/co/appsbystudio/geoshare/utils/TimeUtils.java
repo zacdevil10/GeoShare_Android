@@ -28,6 +28,10 @@ class TimeUtils {
         SimpleDateFormat lessThanSevenDays = new SimpleDateFormat("EEEE", Locale.getDefault());
         SimpleDateFormat moreThanSevenDays = new SimpleDateFormat("MMM dd", Locale.getDefault());
 
+        return getString(dateMilli, currentTime, date, currentDate, lessThanSevenDays, moreThanSevenDays);
+    }
+
+    private static String getString(Long dateMilli, long currentTime, Date date, Date currentDate, SimpleDateFormat lessThanSevenDays, SimpleDateFormat moreThanSevenDays) {
         final long diff = currentTime - dateMilli;
         if (diff < MINUTE_MILLIS) {
             return "Just now";

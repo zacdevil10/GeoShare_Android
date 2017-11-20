@@ -19,9 +19,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
 public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
-    private final Context context;
     private final ArrayList userId;
     private final DatabaseReference databaseReference;
 
@@ -31,8 +31,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
     private final Callback callback;
 
-    public FriendsPendingAdapter(Context context, ArrayList userId, DatabaseReference databaseReference, Callback callback) {
-        this.context = context;
+    public FriendsPendingAdapter(ArrayList userId, DatabaseReference databaseReference, Callback callback) {
         this.userId = userId;
         this.databaseReference = databaseReference;
         this.callback = callback;
@@ -46,19 +45,7 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInformation userInformation = dataSnapshot.child("users").child(userId.get(holder.getAdapterPosition()).toString()).getValue(UserInformation.class);
-                assert userInformation != null;
-                holder.friend_name.setText(userInformation.getName());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
 
         if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
 

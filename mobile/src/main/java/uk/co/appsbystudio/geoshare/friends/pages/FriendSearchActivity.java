@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UserSignedOutListener;
 
 public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
 
@@ -43,7 +44,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReferenceFromUrl("https://modular-decoder-118720.firebaseio.com/");
+        databaseReference = database.getReference();
 
         if (auth.getCurrentUser() != null) uid = auth.getCurrentUser().getUid();
 
@@ -64,55 +65,9 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
         SearchView searchView = findViewById(R.id.searchView);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
+        searchView.setOnQueryTextListener(new SearchInputListener());
 
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (s.length() == 0) {
-                    searchAdapter.notifyItemRangeRemoved(0, names.size());
-                    names.clear();
-                    userId.clear();
-                    searchAdapter.notifyDataSetChanged();
-                } else {
-                    Query query = databaseReference.child("users").orderByChild("caseFoldedName").startAt(s.toLowerCase()).endAt(s.toLowerCase() + "~");
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            searchAdapter.notifyItemRangeRemoved(0, names.size());
-                            names.clear();
-                            userId.clear();
-                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                if (!ds.getKey().equals(uid)) {
-                                    names.add(ds.child("name").getValue(String.class));
-                                    userId.add(ds.getKey());
-                                    searchAdapter.notifyDataSetChanged();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-                return false;
-            }
-        });
-
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                if (currentUser == null) {
-                    finish();
-                }
-            }
-        };
+        authStateListener = new UserSignedOutListener(this);
     }
 
     @Override
@@ -131,7 +86,52 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
     @Override
     public void onSendRequest(String friendId) {
-        databaseReference.child("pending").child(uid).child(friendId).child("outgoing").setValue(true);
-        databaseReference.child("pending").child(friendId).child(uid).child("outgoing").setValue(false);
+        databaseReference.child("pending").child(uid).child(friendId).child("outgoing")
+                .setValue(true);
+        databaseReference.child("pending").child(friendId).child(uid).child("outgoing")
+                .setValue(false);
+    }
+
+    private class SearchInputListener implements SearchView.OnQueryTextListener {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            if (s.length() == 0) {
+                searchAdapter.notifyItemRangeRemoved(0, names.size());
+                names.clear();
+                userId.clear();
+                searchAdapter.notifyDataSetChanged();
+            } else {
+                Query query = databaseReference
+                        .child("users")
+                        .orderByChild("caseFoldedName")
+                        .startAt(s.toLowerCase()).endAt(s.toLowerCase() + "~");
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        searchAdapter.notifyItemRangeRemoved(0, names.size());
+                        names.clear();
+                        userId.clear();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (!ds.getKey().equals(uid)) {
+                                names.add(ds.child("name").getValue(String.class));
+                                userId.add(ds.getKey());
+                                searchAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+            return false;
+        }
     }
 }

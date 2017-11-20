@@ -73,8 +73,8 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         if (auth.getCurrentUser() != null) getRequests();
 
-        friendsRequestAdapter = new FriendsRequestAdapter(getContext(), userIdRequests, databaseReference, FriendsPendingFragment.this);
-        friendsPendingAdapter = new FriendsPendingAdapter(getContext(), userId, databaseReference, FriendsPendingFragment.this);
+        friendsRequestAdapter = new FriendsRequestAdapter(userIdRequests, databaseReference, FriendsPendingFragment.this);
+        friendsPendingAdapter = new FriendsPendingAdapter(userId, databaseReference, FriendsPendingFragment.this);
 
         friendsIncomingList.setAdapter(friendsRequestAdapter);
         friendsOutgoingList.setAdapter(friendsPendingAdapter);
@@ -92,20 +92,10 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
                 if (!MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.put(dataSnapshot.getKey(), true);
                 AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
                 if (addFriendsInfo != null) {
-                    if (!addFriendsInfo.isOutgoing()) {
-                        userIdRequests.add(dataSnapshot.getKey());
-                        friendsRequestAdapter.notifyDataSetChanged();
-                    } else {
-                        userId.add(dataSnapshot.getKey());
-                        friendsPendingAdapter.notifyDataSetChanged();
-                    }
+                    addRequests(dataSnapshot, addFriendsInfo);
                 }
 
-                boolean hasUserIds = userId.size() == 0;
-                boolean hasUserIdsRequests = userIdRequests.size() == 0;
-
-                noPending.setVisibility(hasUserIds ? View.VISIBLE : View.GONE);
-                noRequests.setVisibility(hasUserIdsRequests ? View.VISIBLE : View.GONE);
+                resetIsEmptyMessage();
             }
 
             @Override
@@ -118,20 +108,10 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
                 if (MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.remove(dataSnapshot.getKey());
                 AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
                 if (addFriendsInfo != null) {
-                    if (!addFriendsInfo.isOutgoing()) {
-                        userIdRequests.remove(dataSnapshot.getKey());
-                        friendsRequestAdapter.notifyDataSetChanged();
-                    } else {
-                        userId.remove(dataSnapshot.getKey());
-                        friendsPendingAdapter.notifyDataSetChanged();
-                    }
+                    removeRequests(dataSnapshot, addFriendsInfo);
                 }
 
-                boolean hasUserIds = userId.size() == 0;
-                boolean hasUserIdsRequests = userIdRequests.size() == 0;
-
-                noPending.setVisibility(hasUserIds ? View.VISIBLE : View.GONE);
-                noRequests.setVisibility(hasUserIdsRequests ? View.VISIBLE : View.GONE);
+                resetIsEmptyMessage();
             }
 
             @Override
@@ -146,15 +126,47 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         });
     }
 
+    private void removeRequests(DataSnapshot dataSnapshot, AddFriendsInfo addFriendsInfo) {
+        if (!addFriendsInfo.isOutgoing()) {
+            userIdRequests.remove(dataSnapshot.getKey());
+            friendsRequestAdapter.notifyDataSetChanged();
+        } else {
+            userId.remove(dataSnapshot.getKey());
+            friendsPendingAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void addRequests(DataSnapshot dataSnapshot, AddFriendsInfo addFriendsInfo) {
+        if (!addFriendsInfo.isOutgoing()) {
+            userIdRequests.add(dataSnapshot.getKey());
+            friendsRequestAdapter.notifyDataSetChanged();
+        } else {
+            userId.add(dataSnapshot.getKey());
+            friendsPendingAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void resetIsEmptyMessage() {
+        boolean hasUserIds = userId.size() == 0;
+        boolean hasUserIdsRequests = userIdRequests.size() == 0;
+
+        noPending.setVisibility(hasUserIds ? View.VISIBLE : View.GONE);
+        noRequests.setVisibility(hasUserIdsRequests ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     public void onAcceptReject(Boolean accept, String uid) {
         if (auth.getCurrentUser() != null) {
             if (accept) {
-                databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid).setValue(true);
-                databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid()).setValue(true);
+                databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(uid)
+                        .setValue(true);
+                databaseReference.child("friends").child(uid).child(auth.getCurrentUser().getUid())
+                        .setValue(true);
             } else {
-                databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-                databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+                databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid)
+                        .removeValue();
+                databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid())
+                        .removeValue();
             }
         }
     }
@@ -162,8 +174,10 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     @Override
     public void onReject(String uid) {
         if (auth.getCurrentUser() != null) {
-            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
-            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+            databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid)
+                    .removeValue();
+            databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid())
+                    .removeValue();
         }
     }
 }
