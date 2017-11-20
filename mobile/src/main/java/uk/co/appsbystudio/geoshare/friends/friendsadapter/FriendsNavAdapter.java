@@ -39,6 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
@@ -134,7 +135,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 public void onClick(View view) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
-                        databaseReference.child("current_location").child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").child(user.getUid()).removeValue()
+                        databaseReference.child(FirebaseHelper.TRACKING).child(userId.get(holder.getAdapterPosition()).toString()).child("tracking").child(user.getUid()).removeValue()
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

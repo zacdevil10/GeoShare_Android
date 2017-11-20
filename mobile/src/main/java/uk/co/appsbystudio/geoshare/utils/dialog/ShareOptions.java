@@ -19,6 +19,7 @@ import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.GPSTracking;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
@@ -70,7 +71,7 @@ public class ShareOptions extends DialogFragment {
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     if (uid != null && friendId != null) {
                         TrackingInfo trackingInfo = new TrackingInfo(true, System.currentTimeMillis());
-                        databaseReference.child("current_location").child(friendId).child("tracking").child(uid).setValue(trackingInfo)
+                        databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(uid).setValue(trackingInfo)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -90,7 +91,7 @@ public class ShareOptions extends DialogFragment {
 
                         DatabaseLocations databaseLocations = new DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis());
 
-                        databaseReference.child("current_location").child(uid).child("location").setValue(databaseLocations);
+                        databaseReference.child(FirebaseHelper.TRACKING).child(uid).child("location").setValue(databaseLocations);
 
                         databaseReference.child("current_location").child(friendId).child(uid).removeValue();
                     }

@@ -63,13 +63,16 @@ import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
+import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
+        FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
 
     public static File cacheDir;
 
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
-        isTrackingRef = database.getReference("current_location/" + userId + "/tracking");
+        isTrackingRef = database.getReference(FirebaseHelper.TRACKING + "/" + userId + "/" + FirebaseHelper.TRACKING);
         isTrackingRef.keepSynced(true);
 
         /* HANDLES FOR VARIOUS VIEWS */
@@ -309,9 +312,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         isTrackingRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Boolean tracking = dataSnapshot.child("tracking").getValue(Boolean.class);
-                if (tracking != null) {
-                    hasTracking.put(dataSnapshot.getKey(), tracking);
+                TrackingInfo trackingInfo = dataSnapshot.getValue(TrackingInfo.class);
+                if (trackingInfo != null && trackingInfo.isTracking()) {
+                    hasTracking.put(dataSnapshot.getKey(), trackingInfo.isTracking());
                     friendsNavAdapter.notifyDataSetChanged();
                 }
             }

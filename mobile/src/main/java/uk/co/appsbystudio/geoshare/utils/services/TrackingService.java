@@ -26,6 +26,7 @@ import java.util.Map;
 
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.TrackingServiceNotification;
 
 public class TrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -154,7 +155,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                 } else {
                     hasTrue = false;
                     if (userId != null) {
-                        databaseReference.child("current_location").child(userId).child("location").removeValue();
+                        databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").removeValue();
                     }
                 }
             }
@@ -162,11 +163,11 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
             if (hasTrue) {
                 DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
                 if (userId != null) {
-                    databaseReference.child("current_location").child(userId).child("location").setValue(databaseLocations);
+                    databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").setValue(databaseLocations);
                     for (Map.Entry<String, Boolean> id : shares.entrySet()) {
                         if (id.getValue()) {
                             inboxStyle.addLine(id.getKey());
-                            databaseReference.child("current_location").child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                            databaseReference.child(FirebaseHelper.TRACKING).child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
                         }
                     }
                 }

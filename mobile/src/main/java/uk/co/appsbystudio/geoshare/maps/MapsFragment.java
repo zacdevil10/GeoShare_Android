@@ -170,7 +170,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             shareReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid());
             shareReference.keepSynced(true);
 
-            trackingReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/" + user.getUid() + "/" + FirebaseHelper.TRACKING);
+            trackingReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.TRACKING + "/" + user.getUid() + "/" + FirebaseHelper.TRACKING);
         }
 
         friendsNearText = view.findViewById(R.id.friendNearText);
@@ -190,24 +190,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         });
 
         trackingButton = view.findViewById(R.id.trackingFab);
-
-        trackingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isTracking) {
-                    isTracking = true;
-                    trackingButton.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
-
-                    if (listenerLocation != null) {
-                        setCameraPosition(listenerLocation.getLatitude(), listenerLocation.getLongitude(), standardZoomLevel, true);
-                    } else {
-                        setCameraPosition(gpsTracking.getLatitude(), gpsTracking.getLongitude(), standardZoomLevel, true);
-                    }
-
-                    if (selectedMarker != null) resetMarkerIcon(selectedMarker);
-                }
-            }
-        });
 
         SensorManager sensorManager = (SensorManager) Application.getContext().getSystemService(Context.SENSOR_SERVICE);
 
@@ -240,8 +222,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onMapClick(LatLng latLng) {
                 if (selectedMarker != null) {
-                    resetMarkerIcon(selectedMarker);
                     setCameraPosition(selectedMarker.getPosition().latitude, selectedMarker.getPosition().longitude, standardZoomLevel, true);
+                    resetMarkerIcon(selectedMarker);
                 }
             }
         });
@@ -321,12 +303,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         Bitmap scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false);
 
         setCameraPosition(gpsTracking.getLatitude(), gpsTracking.getLongitude(), standardZoomLevel, false);
-        myLocation = googleMap.addMarker(
-                new MarkerOptions()
-                        .position(currentLocation)
-                        .flat(true)
-                        .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
-                        .anchor(0.5f, 0.5f)
+        myLocation = googleMap.addMarker(new MarkerOptions()
+                .position(currentLocation)
+                .flat(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
+                .anchor(0.5f, 0.5f)
         );
         myLocation.setTag(0);
 
@@ -334,6 +315,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
 
         setupLocationChangeListener();
+
+        trackingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isTracking) {
+                    isTracking = true;
+                    trackingButton.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+                    if (listenerLocation != null) {
+                        setCameraPosition(listenerLocation.getLatitude(), listenerLocation.getLongitude(), standardZoomLevel, true);
+                    } else {
+                        setCameraPosition(gpsTracking.getLatitude(), gpsTracking.getLongitude(), standardZoomLevel, true);
+                    }
+
+                    if (selectedMarker != null) resetMarkerIcon(selectedMarker);
+                }
+            }
+        });
 
         if (user != null) {
             shareReference.addChildEventListener(staticLocationListener);
@@ -496,7 +495,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DatabaseLocations databaseLocations = dataSnapshot.child(FirebaseHelper.CURRENT_LOCATION).child(friendId).child(FirebaseHelper.LOCATION).getValue(DatabaseLocations.class);
+                DatabaseLocations databaseLocations = dataSnapshot.child(FirebaseHelper.TRACKING).child(friendId).child(FirebaseHelper.LOCATION).getValue(DatabaseLocations.class);
                 if (databaseLocations != null) {
                     if (friendMarkerList.containsKey(friendId)) {
                         updateFriendMarker(friendId, databaseLocations.getLongitude(), databaseLocations.getLat());
