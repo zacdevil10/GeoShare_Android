@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);

@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -189,6 +190,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         return view;
     }
+
+    /*@Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("marker_list", friendMarkerList);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            friendMarkerList = savedInstanceState
+        }
+    }*/
 
     @Override
     public void onDestroy() {
@@ -468,7 +483,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     /* FRIEND MARKER METHODS */
     private void addFriendMarker(final String friendId, final DatabaseLocations databaseLocations) {
-        if (this.googleMap != null && friendId != null) {
+        if (this.googleMap != null && friendId != null && !friendMarkerList.containsKey(friendId)) {
             File fileCheck = new File(MainActivity.cacheDir + "/" + friendId + ".png");
             if (fileCheck.exists()) {
                 Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + friendId + ".png");
@@ -600,7 +615,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
         }
 
-        friendsNearText.setText((count != 1) ? String.format(Locale.getDefault(), "Nearby\n%d Friends", count) : String.format(Locale.getDefault(), "Nearby\n%d Friend", count));
+        friendsNearText
+                .setText((count != 1) ? String.format(Locale.getDefault(), "Nearby\n%d Friends", count) : String.format(Locale.getDefault(), "Nearby\n%d Friend", count));
     }
 
     private void nearbyRadius(LatLng latLng) {
@@ -610,7 +626,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             nearbyCircle.setCenter(latLng);
             nearbyCircle.setRadius(radius);
         } else {
-            CircleOptions nearbyCircleOptions = new CircleOptions().center(latLng).radius(radius).fillColor(Application.getContext().getResources().getColor(R.color.colorPrimaryTransparent)).strokeWidth(0);
+            CircleOptions nearbyCircleOptions = new CircleOptions()
+                    .center(latLng)
+                    .radius(radius)
+                    .fillColor(Application.getContext().getResources().getColor(R.color.colorPrimaryTransparent))
+                    .strokeWidth(0);
 
             nearbyCircle = googleMap.addCircle(nearbyCircleOptions);
         }

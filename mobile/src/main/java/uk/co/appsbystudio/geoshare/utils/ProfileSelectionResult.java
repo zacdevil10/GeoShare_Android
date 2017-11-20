@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -20,10 +22,14 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
 
 public class ProfileSelectionResult {
+
+    private FirebaseDatabase database;
+    private DatabaseReference pictureNotifyRef;
 
     public ProfileSelectionResult() {}
 
@@ -40,10 +46,14 @@ public class ProfileSelectionResult {
 
     public ProfileSelectionResult(Callback.Main main) {
         this.main = main;
+        database = FirebaseDatabase.getInstance();
+        pictureNotifyRef = database.getReference("picture");
     }
 
     public ProfileSelectionResult(Callback callback) {
         this.callback = callback;
+        database = FirebaseDatabase.getInstance();
+        pictureNotifyRef = database.getReference("picture");
     }
 
     public void profilePictureResult(final Activity activity, int requestCode, int resultCode, Intent data, final String userId) {
@@ -83,6 +93,7 @@ public class ProfileSelectionResult {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                pictureNotifyRef.child(userId).setValue(new Date().getTime());
                                 Thread thread = new Thread() {
                                     @Override
                                     public void run() {

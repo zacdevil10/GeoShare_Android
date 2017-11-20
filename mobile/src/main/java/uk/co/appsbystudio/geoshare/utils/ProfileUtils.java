@@ -9,6 +9,11 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -26,13 +31,9 @@ public class ProfileUtils {
     public static void setProfilePicture(final String userId, final CircleImageView view) {
         File fileCheck = new File(MainActivity.cacheDir + "/" + userId + ".png");
 
+        getLatestProfilePicture(userId);
+
         if (fileCheck.exists()) {
-            //If file exists, set image view image as profile picture from storage
-            //TODO: Allow for updating picture on different devices
-            /* Could mean that this method will not work without getting the picture every time
-                or adding a last updated section to the users profile picture
-                and comparing with the date of the file created.
-             */
             Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + userId + ".png");
             view.setImageBitmap(imageBitmap);
         } else {
@@ -54,6 +55,39 @@ public class ProfileUtils {
                         }
                     });
         }
+    }
+
+    private static void getLatestProfilePicture(String uid) {
+        final File file = new File(MainActivity.cacheDir + "/" + uid + ".png");
+        DatabaseReference picturesNotifyRef = FirebaseDatabase.getInstance().getReference("picture");
+        picturesNotifyRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                onChildChanged(dataSnapshot, s);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue(Long.class) != null && dataSnapshot.getValue(Long.class) > file.lastModified()) {
+                    file.delete();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public static void resetDeviceSettings(SharedPreferences settingsSharedPreferences, SharedPreferences trackingPreferences, SharedPreferences showOnMapPreferences) {
