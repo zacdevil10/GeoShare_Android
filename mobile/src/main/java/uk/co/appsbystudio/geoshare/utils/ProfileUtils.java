@@ -31,7 +31,7 @@ public class ProfileUtils {
     public static void setProfilePicture(final String userId, final CircleImageView view) {
         File fileCheck = new File(MainActivity.cacheDir + "/" + userId + ".png");
 
-        getLatestProfilePicture(userId);
+        //getLatestProfilePicture(userId);
 
         if (fileCheck.exists()) {
             Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + userId + ".png");
@@ -68,8 +68,8 @@ public class ProfileUtils {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot.getValue(Long.class) != null && dataSnapshot.getValue(Long.class) > file.lastModified()) {
-                    file.delete();
+                if (file.exists() && dataSnapshot.getValue(Long.class) != null && dataSnapshot.getValue(Long.class) > file.lastModified()) {
+                    boolean fileDeleted = file.delete();
                 }
             }
 

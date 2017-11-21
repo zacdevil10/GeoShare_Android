@@ -24,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;

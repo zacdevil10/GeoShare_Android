@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -17,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
@@ -24,6 +24,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification;
 
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {
@@ -68,6 +69,9 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         friendsRequestAdapter = new FriendsRequestAdapter(userIdRequests, databaseReference, FriendsPendingFragment.this);
         friendsPendingAdapter = new FriendsPendingAdapter(userId, databaseReference, FriendsPendingFragment.this);
+
+        databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsRequestAdapter));
+        databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsPendingAdapter));
 
         friendsIncomingList.setAdapter(friendsRequestAdapter);
         friendsOutgoingList.setAdapter(friendsPendingAdapter);
@@ -114,6 +118,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         view.findViewById(R.id.friends_no_requests).setVisibility(hasUserIdsRequests ? View.VISIBLE : View.GONE);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onAcceptReject(Boolean accept, String uid) {
         if (auth.getCurrentUser() != null) {
@@ -123,15 +128,20 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
             } else {
                 databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
                 databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+
+                new File(MainActivity.cacheDir + "/" + uid + ".png").delete();
             }
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onReject(String uid) {
         if (auth.getCurrentUser() != null) {
             databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
             databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
+
+            new File(MainActivity.cacheDir + "/" + uid + ".png").delete();
         }
     }
 

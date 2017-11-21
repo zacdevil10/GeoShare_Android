@@ -47,6 +47,7 @@ import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener;
 import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         setDisplayName();
         ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
+        databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsNavAdapter));
 
         findViewById(R.id.show_all_button).setOnClickListener(new ToggleAllMarkersVisibility(true));
 
