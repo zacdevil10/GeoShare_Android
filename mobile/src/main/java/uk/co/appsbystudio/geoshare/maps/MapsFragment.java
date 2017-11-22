@@ -546,6 +546,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 marker.setVisible(visible);
                 showOnMapPreferences.edit().putBoolean(markerId, visible).apply();
             }
+            showOnMapPreferences.edit().putBoolean("all", visible).apply();
         }
     }
 

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -92,7 +93,7 @@ public class ShareOptions extends DialogFragment {
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    //TODO: Show error message (with "try again?" ?)
+                                    Toast.makeText(getActivity(), "Sharing location failed!", Toast.LENGTH_LONG).show();
                                 }
                             });
 

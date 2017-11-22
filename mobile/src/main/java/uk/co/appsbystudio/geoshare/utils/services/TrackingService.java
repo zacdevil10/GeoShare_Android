@@ -2,6 +2,8 @@ package uk.co.appsbystudio.geoshare.utils.services;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
@@ -43,6 +46,8 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     private FirebaseUser user;
 
     private boolean hasTrue;
+
+    private PendingIntent stopServiceIntent;
 
     public static boolean isRunning;
 
@@ -71,6 +76,9 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        Intent receiver = new Intent(this, StopTrackingService.class);
+        stopServiceIntent = PendingIntent.getBroadcast(this, 1, receiver, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -147,7 +155,9 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                     .setNumber(1)
                     .setAutoCancel(false)
                     .setOngoing(true)
-                    .setLocalOnly(true);
+                    .setLocalOnly(true)
+                    .addAction(R.drawable.ic_close_white_48px,"Stop tracking", stopServiceIntent)
+                    .setPriority(Notification.PRIORITY_LOW);
             NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -175,7 +185,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                     databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").setValue(databaseLocations);
                     for (Map.Entry<String, Boolean> id : shares.entrySet()) {
                         if (id.getValue()) {
-                            inboxStyle.addLine(id.getKey());
+                            if (MainActivity.friendNames.containsKey(id.getKey())) inboxStyle.addLine(MainActivity.friendNames.get(id.getKey()));
                             databaseReference.child(FirebaseHelper.TRACKING).child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
                         }
                     }

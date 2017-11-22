@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -19,14 +20,20 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
+import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class FriendsFragment extends Fragment implements FriendsAdapter.Callback {
 
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
+
+    private SharedPreferences trackingPreferences;
+    private SharedPreferences showOnMapPreferences;
 
     private FriendsAdapter friendsAdapter;
 
@@ -40,13 +47,18 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
+        trackingPreferences = Application.getContext().getSharedPreferences("tracking", MODE_PRIVATE);
+        showOnMapPreferences = Application.getContext().getSharedPreferences("showOnMap", MODE_PRIVATE);
+
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
+
         if (auth.getCurrentUser() != null) {
             databaseFriendsRef = database.getReference("friends/" + auth.getCurrentUser().getUid());
             databaseFriendsRef.keepSynced(true);
         }
+
         RecyclerView friendsList = view.findViewById(R.id.friend_list);
         friendsList.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -105,6 +117,8 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
     public void onRemoveFriend(String friendId) {
         if (auth.getCurrentUser() != null) {
             databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
+            if (trackingPreferences.contains(friendId)) trackingPreferences.edit().remove(friendId).apply();
+            if (trackingPreferences.contains(friendId)) showOnMapPreferences.edit().remove(friendId).apply();
         }
     }
 }

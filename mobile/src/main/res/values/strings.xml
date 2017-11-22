@@ -171,5 +171,6 @@
     <string name="upload_photo">UPLOAD PHOTO</string>
     <string name="subtitle">Subtitle</string>
     <string name="title">Title</string>
+    <string name="show_markers">SHOW MARKERS</string>
 
 </resources>

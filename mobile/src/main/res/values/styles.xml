@@ -29,6 +29,10 @@
         <item name="android:colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SwitchTheme">
+        <item name="android:colorControlActivated">@color/colorAccent</item>
+    </style>
+
     <style name="FriendsTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="colorPrimary">@color/colorPrimary</item>

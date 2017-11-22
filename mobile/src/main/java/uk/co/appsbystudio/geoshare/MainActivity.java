@@ -15,6 +15,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public static final HashMap<String, Boolean> friendsId = new HashMap<>();
     public static final HashMap<String, Boolean> pendingId = new HashMap<>();
     public static final HashMap<String, String> friendNames = new HashMap<>();
+    private CircleImageView profileImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         header = navigationView.getHeaderView(0);
 
+        profileImageView = header.findViewById(R.id.profile_image);
+
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
         header.findViewById(R.id.profile_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,9 +162,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
         databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsNavAdapter));
 
-        findViewById(R.id.show_all_button).setOnClickListener(new ToggleAllMarkersVisibility(true));
+        ((Switch) findViewById(R.id.show_hide_markers)).setChecked(showOnMapPreferences.getBoolean("all", true));
 
-        findViewById(R.id.hide_all_button).setOnClickListener(new ToggleAllMarkersVisibility(false));
+        ((Switch) findViewById(R.id.show_hide_markers)).setOnCheckedChangeListener(new ToggleAllMarkersVisibility());
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -259,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 uid.remove(dataSnapshot.getKey());
                 if (friendsId.containsKey(dataSnapshot.getKey())) friendsId.remove(dataSnapshot.getKey());
+                if (friendNames.containsKey(dataSnapshot.getKey())) friendNames.remove(dataSnapshot.getKey());
                 friendsNavAdapter.notifyDataSetChanged();
             }
 
@@ -431,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void updateProfilePicture() {
-        ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
+        ProfileUtils.setProfilePicture(userId, profileImageView);
     }
 
     @Override
@@ -470,18 +476,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         settingsSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    private class ToggleAllMarkersVisibility implements View.OnClickListener {
-
-        final boolean isVisible;
-
-        ToggleAllMarkersVisibility(boolean isVisible) {
-            this.isVisible = isVisible;
-        }
+    private class ToggleAllMarkersVisibility implements CompoundButton.OnCheckedChangeListener {
 
         @Override
-        public void onClick(View view) {
-            mapsFragment.setAllMarkersVisibility(isVisible);
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            mapsFragment.setAllMarkersVisibility(b);
         }
-
     }
 }
