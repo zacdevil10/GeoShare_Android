@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -70,7 +71,6 @@ import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
-import uk.co.appsbystudio.geoshare.utils.ui.MapStyleManager;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener,
@@ -216,8 +216,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), this.googleMap);
-        styleManager.addStyle(R.raw.map_style);
+        /*MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
+        styleManager.addStyle(R.raw.map_style);*/
 
         setup();
 
@@ -279,6 +279,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     private void setup() {
+        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(Application.getContext(), R.raw.map_style);
+        this.googleMap.setMapStyle(style);
+
         if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, GET_PERMS);

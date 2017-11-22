@@ -86,6 +86,7 @@
                 android:weightSum="1.0"
                 android:id="@+id/show_hide_button_bar"
                 android:layout_gravity="bottom"
+                android:gravity="end"
                 android:orientation="horizontal"
                 style="?android:attr/buttonBarStyle"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -97,7 +98,7 @@
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.35"
                     android:text="@string/show_all"
                     android:textColor="@color/colorAccent"/>
 
@@ -106,7 +107,7 @@
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.35"
                     android:text="@string/hide_all"
                     android:textColor="@color/colorAccent"/>
 
