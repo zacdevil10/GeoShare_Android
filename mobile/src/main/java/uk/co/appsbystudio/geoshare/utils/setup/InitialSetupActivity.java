@@ -100,11 +100,13 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
                 }
                 break;
             case R.id.getPermsButton:
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) + ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, GET_PERMS);
                     }
+                    return;
                 }
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 break;
             case R.id.setPictureButton:
                 profilePictureSettings();
@@ -120,7 +122,7 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
         switch (requestCode) {
             case GET_PERMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    viewPager.setCurrentItem(2);
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 }
         }
     }

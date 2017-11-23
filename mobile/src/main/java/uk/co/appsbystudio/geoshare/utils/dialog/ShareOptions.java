@@ -76,13 +76,13 @@ public class ShareOptions extends DialogFragment {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Application.getContext(), "Success", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getActivity(), "Failed", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Application.getContext(), "Failed", Toast.LENGTH_LONG).show();
                                 }
                             });
                     sharedPreferences.edit().putBoolean(friendId, false).apply();
@@ -100,13 +100,13 @@ public class ShareOptions extends DialogFragment {
                                         Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
                                         Application.getContext().startService(trackingService);
                                     }
-                                    Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Application.getContext(), "Success", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getActivity(), "Failed", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Application.getContext(), "Failed", Toast.LENGTH_LONG).show();
                                 }
                             });
 
