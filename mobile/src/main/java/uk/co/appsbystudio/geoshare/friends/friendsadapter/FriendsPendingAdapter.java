@@ -17,7 +17,7 @@ import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
 public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>{
-    private final ArrayList userId;
+    private final ArrayList userOutgoing;
     private final DatabaseReference databaseReference;
 
     public interface Callback {
@@ -26,8 +26,8 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
     private final Callback callback;
 
-    public FriendsPendingAdapter(ArrayList userId, DatabaseReference databaseReference, Callback callback) {
-        this.userId = userId;
+    public FriendsPendingAdapter(ArrayList userOutgoing, DatabaseReference databaseReference, Callback callback) {
+        this.userOutgoing = userOutgoing;
         this.databaseReference = databaseReference;
         this.callback = callback;
     }
@@ -40,21 +40,21 @@ public class FriendsPendingAdapter extends RecyclerView.Adapter<FriendsPendingAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
+        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userOutgoing.get(position).toString(), holder.friend_name));
 
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
+        if (!userOutgoing.isEmpty()) ProfileUtils.setProfilePicture(userOutgoing.get(position).toString(), holder.friends_pictures);
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onReject(userId.get(holder.getAdapterPosition()).toString());
+                callback.onReject(userOutgoing.get(holder.getAdapterPosition()).toString());
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return userId.size();
+        return userOutgoing.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

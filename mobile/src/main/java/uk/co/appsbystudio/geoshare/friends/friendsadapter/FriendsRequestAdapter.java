@@ -17,7 +17,7 @@ import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
-    private final ArrayList userId;
+    private final ArrayList userIncoming;
     private final DatabaseReference databaseReference;
 
     public interface Callback {
@@ -26,8 +26,8 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
     private final Callback callback;
 
-    public FriendsRequestAdapter(ArrayList userId, DatabaseReference databaseReference, Callback callback) {
-        this.userId = userId;
+    public FriendsRequestAdapter(ArrayList userIncoming, DatabaseReference databaseReference, Callback callback) {
+        this.userIncoming = userIncoming;
         this.callback = callback;
         this.databaseReference = databaseReference;
     }
@@ -40,28 +40,28 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
+        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userIncoming.get(position).toString(), holder.friend_name));
 
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
+        if (!userIncoming.isEmpty()) ProfileUtils.setProfilePicture(userIncoming.get(position).toString(), holder.friends_pictures);
 
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onAcceptReject(true, userId.get(holder.getAdapterPosition()).toString());
+                callback.onAcceptReject(true, userIncoming.get(holder.getAdapterPosition()).toString());
             }
         });
 
         holder.decline_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onAcceptReject(false, userId.get(holder.getAdapterPosition()).toString());
+                callback.onAcceptReject(false, userIncoming.get(holder.getAdapterPosition()).toString());
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return userId.size();
+        return userIncoming.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

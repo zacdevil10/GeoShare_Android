@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -116,7 +118,13 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
     @Override
     public void onRemoveFriend(String friendId) {
         if (auth.getCurrentUser() != null) {
-            databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(friendId).removeValue();
+            databaseReference.child("friends").child(auth.getCurrentUser().getUid()).child(friendId).removeValue()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Could not remove friend", Toast.LENGTH_SHORT).show();
+                    }
+                });
             if (trackingPreferences.contains(friendId)) trackingPreferences.edit().remove(friendId).apply();
             if (trackingPreferences.contains(friendId)) showOnMapPreferences.edit().remove(friendId).apply();
         }

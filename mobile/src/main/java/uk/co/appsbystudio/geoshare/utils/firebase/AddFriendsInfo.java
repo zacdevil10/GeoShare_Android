@@ -10,6 +10,10 @@ public class AddFriendsInfo {
         this.isOutgoing = isOutgoing;
     }
 
+    public void setOutgoing(boolean outgoing) {
+        isOutgoing = outgoing;
+    }
+
     public boolean isOutgoing() {
         return isOutgoing;
     }

@@ -33,12 +33,11 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     private DatabaseReference databaseReference;
     private DatabaseReference databasePendingReference;
 
-    private FriendsRequestAdapter friendsRequestAdapter;
-    private FriendsPendingAdapter friendsPendingAdapter;
+    private FriendsRequestAdapter friendsIncomingAdapter;
+    private FriendsPendingAdapter friendsOutgoingAdapter;
 
-    private final ArrayList<String> userId = new ArrayList<>();
-
-    private final ArrayList<String> userIdRequests = new ArrayList<>();
+    private final ArrayList<String> userIdIncoming = new ArrayList<>();
+    private final ArrayList<String> userIdOutgoing = new ArrayList<>();
 
     private View view;
 
@@ -67,23 +66,20 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         if (auth.getCurrentUser() != null) getRequests();
 
-        friendsRequestAdapter = new FriendsRequestAdapter(userIdRequests, databaseReference, FriendsPendingFragment.this);
-        friendsPendingAdapter = new FriendsPendingAdapter(userId, databaseReference, FriendsPendingFragment.this);
+        friendsIncomingAdapter = new FriendsRequestAdapter(userIdIncoming, databaseReference, FriendsPendingFragment.this);
+        friendsOutgoingAdapter = new FriendsPendingAdapter(userIdOutgoing, databaseReference, FriendsPendingFragment.this);
 
-        databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsRequestAdapter));
-        databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsPendingAdapter));
-
-        friendsIncomingList.setAdapter(friendsRequestAdapter);
-        friendsOutgoingList.setAdapter(friendsPendingAdapter);
+        friendsIncomingList.setAdapter(friendsIncomingAdapter);
+        friendsOutgoingList.setAdapter(friendsOutgoingAdapter);
 
         return view;
     }
 
-    private void setupRecycler(RecyclerView friendsIncomingList) {
-        friendsIncomingList.setHasFixedSize(false);
-        friendsIncomingList.setNestedScrollingEnabled(false);
+    private void setupRecycler(RecyclerView friendsLists) {
+        friendsLists.setHasFixedSize(false);
+        friendsLists.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager layoutManagerRequests = new LinearLayoutManager(getActivity());
-        friendsIncomingList.setLayoutManager(layoutManagerRequests);
+        friendsLists.setLayoutManager(layoutManagerRequests);
     }
 
     private void getRequests() {
@@ -92,30 +88,30 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
     private void removeRequests(DataSnapshot dataSnapshot, AddFriendsInfo addFriendsInfo) {
         if (!addFriendsInfo.isOutgoing()) {
-            userIdRequests.remove(dataSnapshot.getKey());
-            friendsRequestAdapter.notifyDataSetChanged();
+            userIdIncoming.remove(dataSnapshot.getKey());
+            friendsIncomingAdapter.notifyDataSetChanged();
         } else {
-            userId.remove(dataSnapshot.getKey());
-            friendsPendingAdapter.notifyDataSetChanged();
+            userIdOutgoing.remove(dataSnapshot.getKey());
+            friendsOutgoingAdapter.notifyDataSetChanged();
         }
     }
 
     private void addRequests(DataSnapshot dataSnapshot, AddFriendsInfo addFriendsInfo) {
         if (!addFriendsInfo.isOutgoing()) {
-            userIdRequests.add(dataSnapshot.getKey());
-            friendsRequestAdapter.notifyDataSetChanged();
+            userIdIncoming.add(dataSnapshot.getKey());
+            friendsIncomingAdapter.notifyDataSetChanged();
         } else {
-            userId.add(dataSnapshot.getKey());
-            friendsPendingAdapter.notifyDataSetChanged();
+            userIdOutgoing.add(dataSnapshot.getKey());
+            friendsOutgoingAdapter.notifyDataSetChanged();
         }
     }
 
     private void resetIsEmptyMessage() {
-        boolean hasUserIds = userId.size() == 0;
-        boolean hasUserIdsRequests = userIdRequests.size() == 0;
+        boolean hasUserIdsOutgoing = userIdOutgoing.size() == 0;
+        boolean hasUserIdsIncoming = userIdIncoming.size() == 0;
 
-        view.findViewById(R.id.friends_no_requests).setVisibility(hasUserIds ? View.VISIBLE : View.GONE);
-        view.findViewById(R.id.friends_no_requests).setVisibility(hasUserIdsRequests ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.friends_no_pending).setVisibility(hasUserIdsOutgoing ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.friends_no_requests).setVisibility(hasUserIdsIncoming ? View.VISIBLE : View.GONE);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

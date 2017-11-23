@@ -62,8 +62,8 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
                 @Override
                 public void onClick(View view) {
                     callback.onSendRequest(userId.get(holder.getAdapterPosition()).toString());
-                    holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
-                    holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));
+                    /*holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
+                    holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));*/
                 }
             });
         }

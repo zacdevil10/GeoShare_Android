@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -560,6 +561,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 isTracking = false;
                 trackingButton.setImageTintList(ColorStateList.valueOf(getResources().getColor(android.R.color.darker_gray)));
             }
+        } else {
+            Toast.makeText(getActivity(), "This person has not shared a location with you.", Toast.LENGTH_SHORT).show();
         }
     }
     /* END OF FRIEND MARKER METHODS */

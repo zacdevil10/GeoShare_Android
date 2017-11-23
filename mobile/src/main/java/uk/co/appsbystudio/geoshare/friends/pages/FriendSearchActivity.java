@@ -1,12 +1,17 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,9 +22,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
+import uk.co.appsbystudio.geoshare.utils.DeleteUnusedImagesFromCache;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UserSignedOutListener;
+
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
 
@@ -34,6 +43,11 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
     private final ArrayList<String> names = new ArrayList<>();
     private final ArrayList<String> userId = new ArrayList<>();
+
+    private String oldestUserName;
+    private String currentSearchRequest;
+
+    private final ArrayList<String> imageCacheId = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +71,39 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         searchResults.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         searchResults.setLayoutManager(layoutManager);
+        searchResults.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (!recyclerView.canScrollVertically(1) && !currentSearchRequest.equals("")) {
+                    Query query = databaseReference
+                            .child("users")
+                            .orderByChild("caseFoldedName")
+                            .startAt(oldestUserName.toLowerCase()).endAt(currentSearchRequest.toLowerCase() + "~")
+                            .limitToFirst(20);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (!ds.getKey().equals(uid) && !userId.contains(ds.getKey())) {
+                                    addUsersToView(ds);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+        });
 
         searchAdapter = new FriendsSearchAdapter(this, names, userId, this);
         searchResults.setAdapter(searchAdapter);
@@ -66,6 +113,17 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
         searchView.setOnQueryTextListener(new SearchInputListener());
 
         authStateListener = new UserSignedOutListener(this);
+    }
+
+    private void addUsersToView(DataSnapshot ds) {
+        names.add(ds.child("name").getValue(String.class));
+        userId.add(ds.getKey());
+        if (!imageCacheId.contains(ds.getKey())
+                && !MainActivity.friendsId.containsKey(ds.getKey())
+                && !MainActivity.pendingId.containsKey(ds.getKey())) imageCacheId.add(ds.getKey());
+        searchAdapter.notifyDataSetChanged();
+
+        oldestUserName = ds.child("name").getValue(String.class);
     }
 
     @Override
@@ -84,10 +142,24 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
     @Override
     public void onSendRequest(String friendId) {
-        databaseReference.child("pending").child(uid).child(friendId).child("outgoing")
-                .setValue(true);
-        databaseReference.child("pending").child(friendId).child(uid).child("outgoing")
-                .setValue(false);
+        databaseReference.child("pending").child(uid).child(friendId).child("outgoing").setValue(true)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        success();
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        success();
+                    }
+                });
+        databaseReference.child("pending").child(friendId).child(uid).child("outgoing").setValue(false);
+    }
+
+    public void success() {
+        searchAdapter.notifyDataSetChanged();
     }
 
     private class SearchInputListener implements SearchView.OnQueryTextListener {
@@ -98,27 +170,23 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
         @Override
         public boolean onQueryTextChange(String s) {
+            currentSearchRequest = s;
             if (s.length() == 0) {
-                searchAdapter.notifyItemRangeRemoved(0, names.size());
-                names.clear();
-                userId.clear();
+                clearList();
                 searchAdapter.notifyDataSetChanged();
             } else {
                 Query query = databaseReference
                         .child("users")
                         .orderByChild("caseFoldedName")
-                        .startAt(s.toLowerCase()).endAt(s.toLowerCase() + "~");
+                        .startAt(s.toLowerCase()).endAt(s.toLowerCase() + "~")
+                        .limitToFirst(20);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        searchAdapter.notifyItemRangeRemoved(0, names.size());
-                        names.clear();
-                        userId.clear();
+                        clearList();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             if (!ds.getKey().equals(uid)) {
-                                names.add(ds.child("name").getValue(String.class));
-                                userId.add(ds.getKey());
-                                searchAdapter.notifyDataSetChanged();
+                                addUsersToView(ds);
                             }
                         }
                     }
@@ -131,5 +199,17 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
             }
             return false;
         }
+    }
+
+    private void clearList() {
+        searchAdapter.notifyItemRangeRemoved(0, names.size());
+        names.clear();
+        userId.clear();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new DeleteUnusedImagesFromCache(imageCacheId).run();
     }
 }

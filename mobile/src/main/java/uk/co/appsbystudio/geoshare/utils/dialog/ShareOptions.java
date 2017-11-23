@@ -72,7 +72,19 @@ public class ShareOptions extends DialogFragment {
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                 if (uid != null && friendId != null) {
-                    databaseReference.child("current_location").child(friendId).child(uid).setValue(databaseLocations);
+                    databaseReference.child("current_location").child(friendId).child(uid).setValue(databaseLocations)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity(), "Failed", Toast.LENGTH_LONG).show();
+                                }
+                            });
                     sharedPreferences.edit().putBoolean(friendId, false).apply();
                 }
             } else if (((AlertDialog) dialog).getListView().getCheckedItemPositions().get(0) && ((AlertDialog) dialog).getListView().getCheckedItemPositions().get(1)) {
@@ -88,12 +100,13 @@ public class ShareOptions extends DialogFragment {
                                         Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
                                         Application.getContext().startService(trackingService);
                                     }
+                                    Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getActivity(), "Sharing location failed!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "Failed", Toast.LENGTH_LONG).show();
                                 }
                             });
 
