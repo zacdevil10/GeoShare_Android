@@ -172,5 +172,6 @@
     <string name="subtitle">Subtitle</string>
     <string name="title">Title</string>
     <string name="show_markers">SHOW MARKERS</string>
+    <string name="next">NEXT</string>
 
 </resources>

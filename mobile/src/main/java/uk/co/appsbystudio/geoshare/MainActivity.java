@@ -334,7 +334,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        new ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, userId);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 213) {
+                mapsFragment.setup();
+            } else {
+                new ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, userId);
+            }
+        }
     }
 
     @Override

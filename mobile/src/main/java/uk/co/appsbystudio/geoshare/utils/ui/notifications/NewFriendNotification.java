@@ -51,7 +51,7 @@ public class NewFriendNotification {
                 .setTicker(message)
                 .setNumber(number)
                 .setContentIntent(pendingIntent)
-                .addAction(
+                /*.addAction(
                         R.drawable.ic_close_white_48px,
                         "Stop tracking",
                         PendingIntent.getActivity(
@@ -60,7 +60,7 @@ public class NewFriendNotification {
                                 Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                         .setType("text/plain")
                                         .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
+                                PendingIntent.FLAG_UPDATE_CURRENT))*/
                 /*.addAction(
                         R.drawable.ic_close_white_48px,
                         res.getString(R.string.action_decline),

@@ -93,7 +93,7 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
                 viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 break;
             case R.id.getStartedButton:
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) + ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     viewPager.setCurrentItem(1);
                 } else {
                     viewPager.setCurrentItem(2);
@@ -106,7 +106,6 @@ public class InitialSetupActivity extends AppCompatActivity implements RadiusSet
                     }
                     return;
                 }
-                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 break;
             case R.id.setPictureButton:
                 profilePictureSettings();

@@ -45,9 +45,11 @@ public class SetupProfileFragment extends Fragment {
                 public void onSuccess(Uri uri) {
                     TextView descProfile = view.findViewById(R.id.descriptionProfile);
                     Button setPictureButton = view.findViewById(R.id.setPictureButton);
+                    Button nextButton = view.findViewById(R.id.notNowButton);
 
                     descProfile.setText(R.string.desc_picture_is_set);
                     setPictureButton.setText(R.string.upload_new_picture);
+                    nextButton.setText(R.string.next);
                 }
             });
         }

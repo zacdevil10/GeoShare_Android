@@ -48,6 +48,7 @@ public class BitmapUtils {
             canvas.drawText(StringUtils.ellipsize(split[1], 22), 120, 84, greenPaint);
             canvas.drawText(StringUtils.ellipsize(split[2], 22), 120, 122, greenPaint);
         }
+
         canvas.drawBitmap(scaledMarker, 0, 0, null);
         if (profileImage != null) canvas.drawBitmap(getCroppedBitmap(profileImage), 18, 22, null);
 

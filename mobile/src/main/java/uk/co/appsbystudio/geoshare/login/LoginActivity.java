@@ -53,6 +53,8 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
     private FirebaseUser user;
     private DatabaseReference ref;
 
+    public static boolean hasAccepted;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -164,6 +166,10 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         back.setVisibility(View.VISIBLE);
 
         nameEntry.requestFocus();
+
+        if (!hasAccepted) {
+            //TODO: Show privacy policy dialog
+        }
 
         showingSignUp = true;
     }

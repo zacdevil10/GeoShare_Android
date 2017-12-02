@@ -4,7 +4,9 @@ import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -15,6 +17,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -28,6 +31,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -74,6 +86,8 @@ import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
 
+import static android.app.Activity.RESULT_OK;
+
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         OnNetworkStateChangeListener.NetworkStateReceiverListener {
@@ -100,6 +114,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private Location listenerLocation;
     private LocationListener locationListener;
     private LocationManager locationManager;
+    private boolean locationServiceEnabled;
 
     private String bestProvider;
     private int updateFrequency;
@@ -116,6 +131,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private Circle nearbyCircle;
     private Circle accuracyCircle;
+
+    private AsyncTask markerTask;
 
     public static Polyline directions;
 
@@ -258,16 +275,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
                 if (directions != null) directions.remove();
 
-                if (destination != myLocationLatLng) {
-                    String url = UrlUtil.getDirectionsUrl(myLocationLatLng, destination);
-                    DirectionsDownloadTask directionsDownloadTask = new DirectionsDownloadTask(googleMap);
-                    directionsDownloadTask.execute(url);
+                if (Connectivity.isConnected(Application.getContext())) {
+                    if (destination != myLocationLatLng) {
+                        String url = UrlUtil.getDirectionsUrl(myLocationLatLng, destination);
+                        DirectionsDownloadTask directionsDownloadTask = new DirectionsDownloadTask(googleMap);
+                        directionsDownloadTask.execute(url);
+                    }
+
+                    markerTask = new MarkerAnimatorLabelTask(marker, initAnimator, endAnimator, marker.getPosition().latitude, marker.getPosition().longitude, friendLocationTime.get(friendId))
+                            .execute();
                 }
 
                 setCameraPosition(destination.latitude, destination.longitude, 18, true);
-
-                new MarkerAnimatorLabelTask(marker, initAnimator, endAnimator, marker.getPosition().latitude, marker.getPosition().longitude, friendLocationTime.get(friendId))
-                        .execute();
 
                 if (isTracking) {
                     isTracking = false;
@@ -279,13 +298,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         });
     }
 
-    private void setup() {
+    public void setup() {
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(Application.getContext(), R.raw.map_style);
         this.googleMap.setMapStyle(style);
 
         if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, GET_PERMS);
+            return;
+        }
+
+        setupLocationChangeListener();
+
+        if (!locationServiceEnabled) {
+            locationSettingsRequest(Application.getContext());
             return;
         }
 
@@ -320,9 +346,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         myLocation.setTag(0);
 
         nearbyRadius(currentLocation);
-        accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
-
-        setupLocationChangeListener();
+        //accuracyCircle(currentLocation, gpsTracking.getLocation().getAccuracy());
 
         trackingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -347,11 +371,49 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         }
     }
 
+    private void locationSettingsRequest(Context context) {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000/2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        System.out.println("ALL LOCATION SETTINGS ARE SATISFIED");
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            status.startResolutionForResult(getActivity(), 213);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        System.out.println("STUFF");
+                        break;
+                }
+            }
+        });
+    }
+
     @SuppressLint("MissingPermission")
     private void setupLocationChangeListener() {
     /* SETTING UP LOCATION CHANGE LISTENER */
         locationListener = new LocationListener();
         locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
+        locationServiceEnabled = locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         Criteria criteria = new Criteria();
         criteria.setAltitudeRequired(false);
@@ -526,7 +588,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private void removeFriendMarker(String friendId) {
         Marker friendMarker = friendMarkerList.get(friendId);
-        if (friendMarker != null) friendMarker.remove();
+        if (friendMarker != null) {
+            if (Objects.equals(friendMarker.getTag(), selectedMarker.getTag())) {
+                selectedMarker = null;
+            }
+            friendMarker.remove();
+        }
         friendMarkerList.remove(friendId);
         friendLocationTime.remove(friendId);
         nearbyFriends();
@@ -537,7 +604,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             Marker marker = friendMarkerList.get(friendId);
             marker.setVisible(visible);
         }
-        showOnMapPreferences.edit().putBoolean(friendId, visible).apply();
+        if (showOnMapPreferences != null) showOnMapPreferences.edit().putBoolean(friendId, visible).apply();
     }
 
     public void setAllMarkersVisibility(boolean visible) {
@@ -587,18 +654,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     private void resetMarkerIcon(Marker marker) {
-        if (initAnimator.isRunning()) initAnimator.cancel();
-        if (endAnimator.isRunning()) endAnimator.cancel();
-        File fileCheck = new File(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
-        if (fileCheck.exists()) {
-            Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
-            marker.setAnchor(0.5f, 1);
-        } else {
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
-            marker.setAnchor(0.5f, 1);
+        if (marker != null) {
+            if (!markerTask.isCancelled()) markerTask.cancel(true);
+            if (endAnimator.isRunning()) endAnimator.cancel();
+            if (initAnimator.isRunning()) initAnimator.cancel();
+            File fileCheck = new File(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
+            if (fileCheck.exists()) {
+                Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
+                marker.setAnchor(0.5f, 1);
+            } else {
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
+                marker.setAnchor(0.5f, 1);
+            }
+            selectedMarker = null;
         }
-        selectedMarker = null;
     }
 
     /* NEARBY METHODS */
@@ -647,7 +717,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     /* END OF NEARBY METHODS */
 
     /* LOCATION ACCURACY */
-    private void accuracyCircle(LatLng latLng, float accuracy) {
+    /*private void accuracyCircle(LatLng latLng, float accuracy) {
         if (accuracyCircle != null) {
             accuracyCircle.setCenter(latLng);
         } else {
@@ -659,24 +729,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             accuracyCircle = googleMap.addCircle(accuracyCircleOptions);
         }
-    }
+    }*/
 
     @Override
     public void onCameraMoveStarted(int i) {
         //If the user moves the map view, don't centre myLocation marker when location changes
         if (i == 1 && selectedMarker != null) {
-            if (initAnimator.isRunning()) initAnimator.cancel();
-            if (endAnimator.isRunning()) endAnimator.cancel();
-            File fileCheck = new File(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-            if (fileCheck.exists()) {
-                Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + selectedMarker.getTag() + ".png");
-                selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 116, 155, false, 0, null)));
-                selectedMarker.setAnchor(0.5f, 1);
-            } else {
-                selectedMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 116, 155, false, 0, null)));
-                selectedMarker.setAnchor(0.5f, 1);
-            }
-            selectedMarker = null;
+            resetMarkerIcon(selectedMarker);
         }
 
         if (i == 1 && isTracking) {
@@ -748,20 +807,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 //Will only move the camera if the users current location is in focus
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(location.getLatitude(), location.getLongitude())).zoom(standardZoomLevel).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                /*System.out.println(azimuth);*/
             }
 
             listenerLocation = location;
 
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-            myLocation.setPosition(latLng);
+            if (myLocation != null) myLocation.setPosition(latLng);
 
             /* GET NUMBER OF FRIENDS WITHIN A GIVEN RADIUS */
             nearbyFriends();
             nearbyRadius(latLng);
-            accuracyCircle(latLng, location.getAccuracy());
+            //accuracyCircle(latLng, location.getAccuracy());
         }
 
         @Override

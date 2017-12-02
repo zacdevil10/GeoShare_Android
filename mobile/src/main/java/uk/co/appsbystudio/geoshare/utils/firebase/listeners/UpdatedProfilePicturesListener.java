@@ -49,7 +49,7 @@ public class UpdatedProfilePicturesListener implements ChildEventListener {
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        onChildChanged(dataSnapshot, null);
     }
 
     @Override

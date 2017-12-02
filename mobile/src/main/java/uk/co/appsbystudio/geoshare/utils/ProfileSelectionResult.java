@@ -66,7 +66,7 @@ public class ProfileSelectionResult {
 
                     CropImage.activity(Uri.fromFile(image))
                             .setGuidelines(CropImageView.Guidelines.ON)
-                            .setAspectRatio(1, 1)
+                            .setAspectRatio(1, 1).setRequestedSize(256, 256)
                             .setFixAspectRatio(true)
                             .start(activity);
                     break;
@@ -75,7 +75,7 @@ public class ProfileSelectionResult {
                     if (uri != null)
                         CropImage.activity(uri)
                                 .setGuidelines(CropImageView.Guidelines.ON)
-                                .setAspectRatio(1, 1)
+                                .setAspectRatio(1, 1).setRequestedSize(256, 256)
                                 .setFixAspectRatio(true).start(activity);
                     break;
             }
@@ -94,24 +94,27 @@ public class ProfileSelectionResult {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 pictureNotifyRef.child(userId).setValue(new Date().getTime());
-                                Thread thread = new Thread() {
+                                if (callback != null) callback.profileUploadSuccess();
+
+                                try {
+                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), resultUri);
+                                    File file = new File(activity.getCacheDir(), userId + ".png");
+                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+
+                                    if (main != null) main.updateProfilePicture();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                /*Thread thread = new Thread() {
                                     @Override
                                     public void run() {
-                                        try {
-                                            if (callback != null) callback.profileUploadSuccess();
-                                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), resultUri);
-                                            File file = new File(activity.getCacheDir(), userId + ".png");
-                                            FileOutputStream fileOutputStream = new FileOutputStream(file);
-                                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
 
-                                            if (main != null) main.updateProfilePicture();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
                                     }
                                 };
 
-                                thread.start();
+                                thread.start();*/
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

@@ -45,8 +45,9 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
     private FirebaseUser user;
 
-    private boolean hasTrue;
+    private boolean hasTrue = false;
 
+    private Intent receiver;
     private PendingIntent stopServiceIntent;
 
     public static boolean isRunning;
@@ -77,7 +78,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        Intent receiver = new Intent(this, StopTrackingService.class);
+        receiver = new Intent(this, StopTrackingService.class);
         stopServiceIntent = PendingIntent.getBroadcast(this, 1, receiver, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -167,31 +168,43 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                 userId = user.getUid();
             }
 
-            for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
-                if (hasShared.getValue()) {
-                    hasTrue = true;
-                    break;
-                } else {
-                    hasTrue = false;
-                    if (userId != null) {
-                        databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").removeValue();
-                    }
-                }
-            }
-
-            if (hasTrue) {
-                DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
-                if (userId != null) {
-                    databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").setValue(databaseLocations);
-                    for (Map.Entry<String, Boolean> id : shares.entrySet()) {
-                        if (id.getValue()) {
-                            if (MainActivity.friendNames.containsKey(id.getKey())) inboxStyle.addLine(MainActivity.friendNames.get(id.getKey()));
-                            databaseReference.child(FirebaseHelper.TRACKING).child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+            if (!shares.entrySet().isEmpty()) {
+                for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
+                    if (hasShared.getValue()) {
+                        hasTrue = true;
+                        break;
+                    } else {
+                        hasTrue = false;
+                        if (userId != null) {
+                            databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").removeValue();
                         }
                     }
                 }
+
+                if (hasTrue) {
+                    DatabaseLocations databaseLocations = new DatabaseLocations(location.getLongitude(), location.getLatitude(), System.currentTimeMillis());
+                    if (userId != null) {
+                        databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").setValue(databaseLocations);
+                        for (Map.Entry<String, Boolean> id : shares.entrySet()) {
+                            if (id.getValue()) {
+                                if (MainActivity.friendNames.containsKey(id.getKey())) inboxStyle.addLine(MainActivity.friendNames.get(id.getKey()));
+                                databaseReference.child(FirebaseHelper.TRACKING).child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        stopServiceIntent.send(TrackingService.this, 1, receiver);
+                    } catch (PendingIntent.CanceledException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
-                stopService();
+                try {
+                    stopServiceIntent.send(TrackingService.this, 1, receiver);
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
             }
 
             builder.setStyle(inboxStyle);
