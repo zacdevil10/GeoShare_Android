@@ -40,20 +40,21 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
+import uk.co.appsbystudio.geoshare.friends.pages.Profile;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions;
+import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper;
 import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener;
 import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService;
-import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
-import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
+import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
         FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
@@ -162,6 +163,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
         databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsNavAdapter));
 
+        /*findViewById(R.id.add_friends).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent manager = new Intent(MainActivity.this, FriendsManager.class);
+                startActivity(manager);
+            }
+        });*/
+
         ((Switch) findViewById(R.id.show_hide_markers)).setChecked(showOnMapPreferences.getBoolean("all", true));
 
         ((Switch) findViewById(R.id.show_hide_markers)).setOnCheckedChangeListener(new ToggleAllMarkersVisibility());
@@ -253,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 uid.add(dataSnapshot.getKey());
                 if (!friendsId.containsKey(dataSnapshot.getKey())) friendsId.put(dataSnapshot.getKey(), true);
                 getFriendsName(dataSnapshot.getKey());
+                findViewById(R.id.add_friends).setVisibility(View.GONE);
             }
 
             @Override
@@ -266,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 if (friendsId.containsKey(dataSnapshot.getKey())) friendsId.remove(dataSnapshot.getKey());
                 if (friendNames.containsKey(dataSnapshot.getKey())) friendNames.remove(dataSnapshot.getKey());
                 friendsNavAdapter.notifyDataSetChanged();
+                if (friendsId.isEmpty()) findViewById(R.id.add_friends).setVisibility(View.VISIBLE);
             }
 
             @Override

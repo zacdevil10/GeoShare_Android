@@ -20,8 +20,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:resizeableActivity="false"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -36,15 +36,8 @@
             android:theme="@style/LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                    android:host="geoshare.appsbystudio.co.uk" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -70,8 +63,10 @@
             android:theme="@style/FriendsTheme">
             <intent-filter>
                 <action android:name="FRIEND_MANAGER" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".login.LoginActivity" />
@@ -85,6 +80,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
+        <activity android:name=".friends.pages.Profile"
+            android:theme="@style/FriendsInfoTheme"/>
         <activity
             android:name=".utils.ui.SettingsActivity"
             android:theme="@style/SettingsTheme">
@@ -96,7 +93,7 @@
         <service
             android:name=".utils.services.TrackingService"
             android:exported="false"
-            android:stopWithTask="false"/>
+            android:stopWithTask="false" />
         <service
             android:name=".utils.services.FirebaseMessagingService"
             android:exported="false">
@@ -111,15 +108,17 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <receiver android:name=".utils.services.StopTrackingService"
+
+        <receiver
+            android:name=".utils.services.StopTrackingService"
             android:enabled="true"
             android:process=":remote" />
 
         <provider
-            android:authorities="uk.co.appsbystudio.geoshare.fileProvider"
             android:name="android.support.v4.content.FileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:authorities="uk.co.appsbystudio.geoshare.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />

@@ -49,7 +49,9 @@ public class PlacesFragment extends Fragment {
             public Fragment getItem(int position) {
                 switch (position) {
                     case 0:
-                        return new RecentFragment();
+                        RecentFragment recentFragment = new RecentFragment();
+                        recentFragment.setArguments(null);
+                        return recentFragment;
                     case 1:
                         return new FavouritesFragment();
                     case 2:

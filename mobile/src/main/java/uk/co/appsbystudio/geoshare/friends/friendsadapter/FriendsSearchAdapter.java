@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,17 +11,21 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
+import uk.co.appsbystudio.geoshare.friends.pages.Profile;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
 public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
 
     private final Context context;
-    private final ArrayList namesArray;
+    private final DatabaseReference databaseReference;
     private final ArrayList userId;
 
     public interface Callback{
@@ -29,9 +34,9 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
 
     private final Callback callback;
 
-    public FriendsSearchAdapter(Context context, ArrayList namesArray, ArrayList userId, Callback callback) {
+    public FriendsSearchAdapter(Context context, DatabaseReference databaseReference, ArrayList userId, Callback callback) {
         this.context = context;
-        this.namesArray = namesArray;
+        this.databaseReference = databaseReference;
         this.userId = userId;
         this.callback = callback;
     }
@@ -45,7 +50,7 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.friend_name.setText(namesArray.get(position).toString());
+        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
 
         if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
 
@@ -71,7 +76,7 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
 
     @Override
     public int getItemCount() {
-        return namesArray.size();
+        return userId.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

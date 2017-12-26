@@ -70,7 +70,7 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Callback
 
         getFriends();
 
-        friendsAdapter = new FriendsAdapter(getContext(),userId, databaseReference, this);
+        friendsAdapter = new FriendsAdapter(getContext(), userId, databaseReference, this);
         friendsList.setAdapter(friendsAdapter);
 
         return view;

@@ -144,8 +144,15 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
     private final ChildEventListener newPendingItemListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            if (!MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.put(dataSnapshot.getKey(), true);
             AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
+            if (!MainActivity.pendingId.containsKey(dataSnapshot.getKey()) && addFriendsInfo != null) {
+                if (addFriendsInfo.isOutgoing()) {
+                    MainActivity.pendingId.put(dataSnapshot.getKey(), true);
+                } else {
+                    MainActivity.pendingId.put(dataSnapshot.getKey(), false);
+                }
+            }
+
             if (addFriendsInfo != null) {
                 addRequests(dataSnapshot, addFriendsInfo);
             }

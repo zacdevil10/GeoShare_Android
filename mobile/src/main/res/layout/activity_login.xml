@@ -127,6 +127,32 @@
             app:initialCornerAngle="50dp"
             app:finalCornerAngle="50dp"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/agree_container"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:orientation="horizontal"
+            android:background="#98000000"
+            android:visibility="gone">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/agree_check"
+                android:text="I agree to the "
+                android:textColor="@android:color/white"/>
+
+            <TextView
+                android:id="@+id/terms_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy"
+                android:textColor="@android:color/holo_blue_dark"/>
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/sign_up"
             android:layout_width="match_parent"

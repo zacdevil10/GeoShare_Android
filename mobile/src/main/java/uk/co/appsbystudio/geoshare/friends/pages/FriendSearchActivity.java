@@ -41,7 +41,6 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
     private FriendsSearchAdapter searchAdapter;
 
-    private final ArrayList<String> names = new ArrayList<>();
     private final ArrayList<String> userId = new ArrayList<>();
 
     private String oldestUserName;
@@ -105,7 +104,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
             }
         });
 
-        searchAdapter = new FriendsSearchAdapter(this, names, userId, this);
+        searchAdapter = new FriendsSearchAdapter(this, databaseReference, userId, this);
         searchResults.setAdapter(searchAdapter);
 
         SearchView searchView = findViewById(R.id.searchView);
@@ -116,7 +115,6 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
     }
 
     private void addUsersToView(DataSnapshot ds) {
-        names.add(ds.child("name").getValue(String.class));
         userId.add(ds.getKey());
         if (!imageCacheId.contains(ds.getKey())
                 && !MainActivity.friendsId.containsKey(ds.getKey())
@@ -202,8 +200,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
     }
 
     private void clearList() {
-        searchAdapter.notifyItemRangeRemoved(0, names.size());
-        names.clear();
+        searchAdapter.notifyItemRangeRemoved(0, userId.size());
         userId.clear();
     }
 

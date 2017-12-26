@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="uk.co.appsbystudio.geoshare.friends.pages.Profile">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/background"
+        android:contentDescription="TODO"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/background_low"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#65000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/summary_container"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/back"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_back_white_24dp"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:contentDescription="TODO" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:id="@+id/avatar"
+            android:src="@drawable/ic_profile_picture"
+            android:layout_marginTop="16dp"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="4dp"
+            android:paddingBottom="2dp"
+            android:paddingEnd="1dp"
+            android:background="@drawable/drop_shadow"
+            app:layout_constraintTop_toBottomOf="@id/action_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/name"
+            android:text="This is dummy text"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_remove_friend"
+            android:background="@drawable/round_edge_green_outline"
+            android:text="ADD FRIEND"
+            android:textColor="@android:color/white"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/profile_view_pager"
+        app:layout_constraintTop_toBottomOf="@id/summary_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

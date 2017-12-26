@@ -13,7 +13,7 @@ public class NoSwipeViewPager extends ViewPager {
 
     public NoSwipeViewPager(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        this.enabled = true;
+        this.enabled = false;
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -770,7 +770,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     /* NETWORK CHANGE EVENTS */
     @Override
     public void networkAvailable() {
-        if (snackbar.isShown()) {
+        if (snackbar != null && snackbar.isShown()) {
             snackbar.dismiss();
         }
     }

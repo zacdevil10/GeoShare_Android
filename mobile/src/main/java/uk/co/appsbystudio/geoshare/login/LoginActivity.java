@@ -3,6 +3,7 @@ package uk.co.appsbystudio.geoshare.login;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -11,7 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,6 +45,8 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
 
     private Button signUp, signUpShow, forgotPassword, done, back;
 
+    private LinearLayout agreeContainer;
+
     private CircularProgressButton login;
 
     private String name, email, password;
@@ -53,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
     private FirebaseUser user;
     private DatabaseReference ref;
 
-    public static boolean hasAccepted;
+    private boolean hasAccepted;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +82,8 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         done = findViewById(R.id.done);
         back = findViewById(R.id.back);
         forgotPassword = findViewById(R.id.forgot_password);
+
+        agreeContainer = findViewById(R.id.agree_container);
 
         signUpShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +141,22 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
             }
         });
 
+        ((CheckBox) findViewById(R.id.agree_check)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                compoundButton.setError(null);
+                hasAccepted = b;
+            }
+        });
+
+        findViewById(R.id.terms_link).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent terms = new Intent(Intent.ACTION_VIEW, Uri.parse("https://geoshare.appsbystudio.co.uk/terms"));
+                startActivity(terms);
+            }
+        });
+
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -163,13 +187,11 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         forgotPassword.setVisibility(View.GONE);
         signUpShow.setVisibility(View.GONE);
 
+        agreeContainer.setVisibility(View.VISIBLE);
+
         back.setVisibility(View.VISIBLE);
 
         nameEntry.requestFocus();
-
-        if (!hasAccepted) {
-            //TODO: Show privacy policy dialog
-        }
 
         showingSignUp = true;
     }
@@ -201,6 +223,8 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
         forgotPassword.setVisibility(View.VISIBLE);
         signUpShow.setVisibility(View.VISIBLE);
         back.setVisibility(View.GONE);
+
+        agreeContainer.setVisibility(View.GONE);
 
         emailEntry.requestFocus();
 
@@ -240,7 +264,6 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
             login.startAnimation();
             login();
         } else {
-            showingSignUp = false;
             signUp();
         }
     }
@@ -259,29 +282,34 @@ public class LoginActivity extends AppCompatActivity implements OnNetworkStateCh
     }
 
     private void signUp() {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        } else {
-                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(name)
-                                    .build();
+        if (hasAccepted) {
+            showingSignUp = false;
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                if (task.getException() != null) Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name)
+                                        .build();
 
-                            user = firebaseAuth.getCurrentUser();
-                            UserInformation userInformation = new UserInformation(name, name.toLowerCase());
-                            if (user != null) {
-                                user.updateProfile(profileChangeRequest);
-                                String userId = user.getUid();
-                                ref.child("users").child(userId).setValue(userInformation);
+                                user = firebaseAuth.getCurrentUser();
+                                UserInformation userInformation = new UserInformation(name, name.toLowerCase());
+                                if (user != null) {
+                                    user.updateProfile(profileChangeRequest);
+                                    String userId = user.getUid();
+                                    ref.child("users").child(userId).setValue(userInformation);
+                                }
+
+                                setLoginView();
                             }
-
-                            setLoginView();
                         }
-                    }
-                });
+                    });
+        } else {
+            ((CheckBox) findViewById(R.id.agree_check)).setError(getString(R.string.error_field_required));
+        }
     }
 
     @Override
