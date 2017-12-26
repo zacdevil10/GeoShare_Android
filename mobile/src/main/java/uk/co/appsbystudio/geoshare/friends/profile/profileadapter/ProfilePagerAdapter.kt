@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.friendsadapter
+package uk.co.appsbystudio.geoshare.friends.profile.profileadapter
 
 import android.os.Bundle
 import android.support.v4.app.Fragment

@@ -7,14 +7,18 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter
 import java.util.ArrayList
 
-class ProfileFriendsAllFragment : Fragment() {
+class ProfileFriendsAllFragment : Fragment(), FriendsSearchAdapter.Callback {
 
+    private var auth: FirebaseAuth? = null
     private var databaseFriendsRef: DatabaseReference? = null
     private var databaseReference: DatabaseReference? = null
 
@@ -31,9 +35,10 @@ class ProfileFriendsAllFragment : Fragment() {
             uid = arguments!!.getString("uid")
         }
 
+        auth = FirebaseAuth.getInstance()
+
         val database = FirebaseDatabase.getInstance()
         databaseReference = database.reference
-
         databaseFriendsRef = database.getReference("friends/" + uid)
         databaseFriendsRef?.keepSynced(true)
 
@@ -44,7 +49,7 @@ class ProfileFriendsAllFragment : Fragment() {
 
         getFriends()
 
-        friendAdapter = FriendsSearchAdapter(context, databaseReference, friendId, null)
+        friendAdapter = FriendsSearchAdapter(context, databaseReference, friendId, this)
         friendsAll.adapter = friendAdapter
 
         return view
@@ -54,7 +59,7 @@ class ProfileFriendsAllFragment : Fragment() {
         val friendsList = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
-                if (!friendId.contains(dataSnapshot.key)) friendId.add(dataSnapshot.key)
+                if (!friendId.contains(dataSnapshot.key) && dataSnapshot.key != auth?.currentUser?.uid) friendId.add(dataSnapshot.key)
                 friendAdapter!!.notifyDataSetChanged()
             }
 
@@ -77,6 +82,17 @@ class ProfileFriendsAllFragment : Fragment() {
         }
 
         databaseFriendsRef?.addChildEventListener(friendsList)
+    }
+
+    override fun onSendRequest(friendId: String?) {
+        databaseReference!!.child("pending").child(auth?.currentUser?.uid).child(friendId).child("outgoing").setValue(true)
+                .addOnFailureListener { success() }
+                .addOnSuccessListener { success() }
+        databaseReference!!.child("pending").child(friendId).child(auth?.currentUser?.uid).child("outgoing").setValue(false)
+    }
+
+    private fun success() {
+        friendAdapter!!.notifyDataSetChanged()
     }
 
 }

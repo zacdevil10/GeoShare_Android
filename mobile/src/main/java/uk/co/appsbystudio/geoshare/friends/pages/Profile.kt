@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.MainActivity
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.ProfilePagerAdapter
+import uk.co.appsbystudio.geoshare.friends.profile.profileadapter.ProfilePagerAdapter
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils
 
 class Profile : AppCompatActivity() {

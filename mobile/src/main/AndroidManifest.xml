@@ -72,7 +72,7 @@
                 android:value=".login.LoginActivity" />
         </activity>
         <activity
-            android:name=".friends.pages.FriendInfoActivity"
+            android:name=".friends.pages.Profile"
             android:label="@string/title_activity_friend_info"
             android:parentActivityName=".friends.FriendsManager"
             android:theme="@style/FriendsInfoTheme">
@@ -80,8 +80,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
         </activity>
-        <activity android:name=".friends.pages.Profile"
-            android:theme="@style/FriendsInfoTheme"/>
         <activity
             android:name=".utils.ui.SettingsActivity"
             android:theme="@style/SettingsTheme">

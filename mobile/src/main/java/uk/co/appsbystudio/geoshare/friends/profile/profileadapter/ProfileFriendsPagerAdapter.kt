@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.friendsadapter
+package uk.co.appsbystudio.geoshare.friends.profile.profileadapter
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,11 +10,11 @@ import uk.co.appsbystudio.geoshare.friends.profile.pages.ProfileFriendsMutualFra
 class ProfileFriendsPagerAdapter (fm: FragmentManager?, val uid: String) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        when(position) {
-            0 -> return setFriendsAllFragment()
-            1 -> return ProfileFriendsMutualFragment()
+        return when(position) {
+            0 -> setFriendsAllFragment()
+            1 -> setFriendsMutualFragment()
+            else -> setFriendsMutualFragment()
         }
-        return ProfileTestFragment()
     }
 
     override fun getCount(): Int {
@@ -22,11 +22,11 @@ class ProfileFriendsPagerAdapter (fm: FragmentManager?, val uid: String) : Fragm
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        when(position) {
-            0 -> return "Friends"
-            1 -> return "Mutual Friends"
+        return when(position) {
+            0 -> "Friends"
+            1 -> "Mutual Friends"
+            else -> ""
         }
-        return ""
     }
 
     private fun setFriendsAllFragment(): ProfileFriendsAllFragment {
@@ -35,5 +35,13 @@ class ProfileFriendsPagerAdapter (fm: FragmentManager?, val uid: String) : Fragm
         args.putString("uid", uid)
         profileInfoFragment.arguments = args
         return profileInfoFragment
+    }
+
+    private fun setFriendsMutualFragment(): ProfileFriendsMutualFragment {
+        val profileFriendsMutualFragment = ProfileFriendsMutualFragment()
+        val args = Bundle()
+        args.putString("uid", uid)
+        profileFriendsMutualFragment.arguments = args
+        return profileFriendsMutualFragment
     }
 }

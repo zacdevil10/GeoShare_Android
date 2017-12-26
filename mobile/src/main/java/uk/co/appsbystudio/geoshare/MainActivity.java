@@ -40,7 +40,6 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
-import uk.co.appsbystudio.geoshare.friends.pages.Profile;
 import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseFriendsRef;
     private DatabaseReference isTrackingRef;
@@ -113,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         userId = firebaseUser != null ? firebaseUser.getUid() : null;
 
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
         databaseFriendsRef = database.getReference("friends/" + userId);
         databaseFriendsRef.keepSynced(true);
