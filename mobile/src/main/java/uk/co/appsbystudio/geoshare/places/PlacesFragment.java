@@ -43,7 +43,7 @@ public class PlacesFragment extends Fragment {
         });
         toolbar.setTitle(R.string.places);
 
-        final NoSwipeViewPager viewPager = view.findViewById(R.id.view_pager);
+        /*final NoSwipeViewPager viewPager = view.findViewById(R.id.view_pager);
         FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -69,7 +69,7 @@ public class PlacesFragment extends Fragment {
 
         viewPager.setPagingEnabled();
 
-        viewPager.setAdapter(fragmentPagerAdapter);
+        viewPager.setAdapter(fragmentPagerAdapter);*/
 
         return view;
     }

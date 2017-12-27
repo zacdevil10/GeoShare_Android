@@ -27,9 +27,7 @@ class ProfileStaticMapFragment : Fragment() {
         val database = FirebaseDatabase.getInstance()
         ref = database.reference
 
-        if (arguments != null) {
-            uid = arguments!!.getString("uid")
-        }
+        uid = arguments?.getString("uid")
 
         val staticMapImageView: ImageView = view.findViewById(R.id.static_map)
 

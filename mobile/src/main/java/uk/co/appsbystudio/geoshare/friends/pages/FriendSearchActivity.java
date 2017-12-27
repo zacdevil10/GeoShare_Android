@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,13 +22,11 @@ import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter;
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter;
 import uk.co.appsbystudio.geoshare.utils.DeleteUnusedImagesFromCache;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UserSignedOutListener;
 
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-
-public class FriendSearchActivity extends AppCompatActivity implements FriendsSearchAdapter.Callback {
+public class FriendSearchActivity extends AppCompatActivity implements FriendshipStatusAdapter.Callback {
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -39,7 +35,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
 
     private String uid;
 
-    private FriendsSearchAdapter searchAdapter;
+    private FriendshipStatusAdapter searchAdapter;
 
     private final ArrayList<String> userId = new ArrayList<>();
 
@@ -104,7 +100,7 @@ public class FriendSearchActivity extends AppCompatActivity implements FriendsSe
             }
         });
 
-        searchAdapter = new FriendsSearchAdapter(this, databaseReference, userId, this);
+        searchAdapter = new FriendshipStatusAdapter(this, databaseReference, userId, this);
         searchResults.setAdapter(searchAdapter);
 
         SearchView searchView = findViewById(R.id.searchView);

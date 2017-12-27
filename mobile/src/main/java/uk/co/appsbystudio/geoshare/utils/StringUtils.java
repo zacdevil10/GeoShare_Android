@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.utils;
 
-class StringUtils {
+public class StringUtils {
 
     private final static String NON_THIN = "[^iIl1.,']";
 
@@ -8,7 +8,7 @@ class StringUtils {
         return str.length() - str.replaceAll(NON_THIN, "").length() / 2;
     }
 
-    static String ellipsize(String text, int max) {
+    public static String ellipsize(String text, int max) {
         if (textWidth(text) <= max)
             return text;
 

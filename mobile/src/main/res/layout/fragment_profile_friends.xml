@@ -22,8 +22,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/profile_friends_tab"
-                app:tabTextColor="@color/colorPrimary"
-                app:tabSelectedTextColor="@color/colorPrimaryDark"
+                app:tabTextColor="@android:color/darker_gray"
+                app:tabSelectedTextColor="@color/colorPrimary"
                 app:tabMode="fixed"/>
 
             <uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager

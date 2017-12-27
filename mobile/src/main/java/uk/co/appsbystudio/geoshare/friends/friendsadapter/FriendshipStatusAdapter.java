@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,11 +17,10 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.pages.Profile;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
-public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>{
+public class FriendshipStatusAdapter extends RecyclerView.Adapter<FriendshipStatusAdapter.ViewHolder>{
 
     private final Context context;
     private final DatabaseReference databaseReference;
@@ -34,7 +32,7 @@ public class FriendsSearchAdapter extends RecyclerView.Adapter<FriendsSearchAdap
 
     private final Callback callback;
 
-    public FriendsSearchAdapter(Context context, DatabaseReference databaseReference, ArrayList userId, Callback callback) {
+    public FriendshipStatusAdapter(Context context, DatabaseReference databaseReference, ArrayList userId, Callback callback) {
         this.context = context;
         this.databaseReference = databaseReference;
         this.userId = userId;

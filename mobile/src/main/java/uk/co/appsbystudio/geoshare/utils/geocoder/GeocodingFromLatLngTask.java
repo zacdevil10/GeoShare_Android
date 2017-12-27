@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 
-class GeocodingFromLatLngTask extends AsyncTask<Void, Void, String> {
+public class GeocodingFromLatLngTask extends AsyncTask<Void, Void, String> {
 
     private final Double lat;
     private final Double lng;

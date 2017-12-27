@@ -11,7 +11,7 @@ import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.MainActivity
 
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsSearchAdapter
+import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter
 import java.util.ArrayList
 
 class ProfileFriendsMutualFragment : Fragment() {
@@ -19,7 +19,7 @@ class ProfileFriendsMutualFragment : Fragment() {
     private var databaseFriendsRef: DatabaseReference? = null
     private var databaseReference: DatabaseReference? = null
 
-    private var friendAdapter: FriendsSearchAdapter? = null
+    private var friendAdapter: FriendshipStatusAdapter? = null
 
     var uid: String? = null
 
@@ -34,9 +34,7 @@ class ProfileFriendsMutualFragment : Fragment() {
 
         val database = FirebaseDatabase.getInstance()
         databaseReference = database.reference
-
         databaseFriendsRef = database.getReference("friends/" + uid)
-        databaseFriendsRef?.keepSynced(true)
 
         val friendsAll: RecyclerView = view.findViewById(R.id.profile_friends_mutual_list)
         friendsAll.setHasFixedSize(true)
@@ -45,7 +43,7 @@ class ProfileFriendsMutualFragment : Fragment() {
 
         getFriends()
 
-        friendAdapter = FriendsSearchAdapter(context, databaseReference, friendId, null)
+        friendAdapter = FriendshipStatusAdapter(context, databaseReference, friendId, null)
         friendsAll.adapter = friendAdapter
 
         return view
@@ -56,24 +54,24 @@ class ProfileFriendsMutualFragment : Fragment() {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
                 if (!friendId.contains(dataSnapshot.key) && MainActivity.friendsId.contains(dataSnapshot.key)) friendId.add(dataSnapshot.key)
-                friendAdapter!!.notifyDataSetChanged()
+                friendAdapter?.notifyDataSetChanged()
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, string: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
                 friendId.remove(dataSnapshot.key)
-                friendAdapter!!.notifyDataSetChanged()
+                friendAdapter?.notifyDataSetChanged()
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, string: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
         }
 

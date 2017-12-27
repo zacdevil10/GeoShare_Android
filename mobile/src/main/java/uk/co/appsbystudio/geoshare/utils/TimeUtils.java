@@ -5,13 +5,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-class TimeUtils {
+public class TimeUtils {
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
 
-    static String convertDate(Long dateMilli) {
+    public static String convertDate(Long dateMilli) {
         if (dateMilli < 1000000000000L) {
             //Timestamp is in seconds
             dateMilli *= 1000;

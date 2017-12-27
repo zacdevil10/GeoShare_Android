@@ -49,18 +49,15 @@ class Profile : AppCompatActivity() {
         if (MainActivity.friendNames.contains(uid)) {
             // Is a friend
             nameView.text = MainActivity.friendNames[uid]
-            addRemoveButton.text = "FRIENDS"
             profileViewPager.adapter = ProfilePagerAdapter(supportFragmentManager, 3, uid!!)
-        } else if (name != null) {
-            // Is not a friend
-            nameView.text = name
-            profileViewPager.adapter = ProfilePagerAdapter(supportFragmentManager, 2, uid!!)
         }
 
-        if (MainActivity.friendsId.contains(uid)) {
-            addRemoveButton.text = "UNFRIEND"
-        } else if (MainActivity.pendingId.contains(uid)) {
-            addRemoveButton.text = "REQUEST PENDING"
-        }
+        addRemoveButton.setOnClickListener({
+            showFriendOptionsDialog()
+        })
+    }
+
+    private fun showFriendOptionsDialog() {
+        println("Hmm, he who hath died from the frozen pond")
     }
 }
