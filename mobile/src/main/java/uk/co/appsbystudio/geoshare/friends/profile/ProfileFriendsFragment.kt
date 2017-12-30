@@ -25,7 +25,7 @@ class ProfileFriendsFragment : Fragment() {
             uid = arguments!!.getString("uid")
         }
 
-        friendsViewPager.setPagingEnabled()
+        friendsViewPager.setPagingEnabled(true)
         friendsViewPager.adapter = ProfileFriendsPagerAdapter(childFragmentManager, uid!!)
         friendsTabLayout.setupWithViewPager(friendsViewPager)
 

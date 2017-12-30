@@ -34,13 +34,15 @@ class ProfileStaticMapFragment : Fragment() {
         val singleLocation = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val location = dataSnapshot.getValue(DatabaseLocations::class.java)
-                DownloadImageTask("https://maps.googleapis.com/maps/api/staticmap?" +
-                        "center=" + location?.lat + "," + location?.longitude +
-                        "&zoom=17" +
-                        "&size=500x500" +
-                        "&markers=color:red%7C" + location?.lat + "," + location?.longitude +
-                        "&key=AIzaSyB7fJe5C8nfedKovcp_oLe7hrYm9bRgMlU",
-                        staticMapImageView).execute()
+                if (location != null) {
+                    DownloadImageTask("https://maps.googleapis.com/maps/api/staticmap?" +
+                            "center=" + location.lat + "," + location.longitude +
+                            "&zoom=17" +
+                            "&size=500x500" +
+                            "&markers=color:red%7C" + location.lat + "," + location.longitude +
+                            "&key=AIzaSyB7fJe5C8nfedKovcp_oLe7hrYm9bRgMlU",
+                            staticMapImageView).execute()
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

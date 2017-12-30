@@ -43,7 +43,6 @@ class Profile : AppCompatActivity() {
         val addRemoveButton: Button = findViewById(R.id.add_remove_friend)
         val profileViewPager: ViewPager = findViewById(R.id.profile_view_pager)
 
-
         ProfileUtils.setProfilePicture(uid, avatar)
 
         if (MainActivity.friendNames.contains(uid)) {

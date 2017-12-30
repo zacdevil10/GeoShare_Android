@@ -589,7 +589,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private void removeFriendMarker(String friendId) {
         Marker friendMarker = friendMarkerList.get(friendId);
         if (friendMarker != null) {
-            if (Objects.equals(friendMarker.getTag(), selectedMarker.getTag())) {
+            if (selectedMarker != null && Objects.equals(friendMarker.getTag(), selectedMarker.getTag())) {
                 selectedMarker = null;
             }
             friendMarker.remove();
@@ -681,7 +681,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         for (String markerId : friendMarkerList.keySet()) {
             LatLng markerLocation = friendMarkerList.get(markerId).getPosition();
-            Location tempLocation = new Location(LocationManager.GPS_PROVIDER);
+            Location tempLocation = new Location(gpsTracking.getLocation());
 
             tempLocation.setLatitude(markerLocation.latitude);
             tempLocation.setLongitude(markerLocation.longitude);
