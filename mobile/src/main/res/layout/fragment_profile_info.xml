@@ -29,7 +29,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Location"
+                        android:text="@string/pref_header_location"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textStyle="bold"
@@ -66,13 +66,13 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/location_text"
                             android:textSize="16sp"
-                            android:text="No location"/>
+                            android:text="@string/no_location"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/location_timestamp_text"
-                            android:text="Never"
+                            android:text="@string/never"
                             android:textSize="13sp"/>
 
                     </LinearLayout>
@@ -90,7 +90,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Request location update"
+                        android:text="@string/request_location_update"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textSize="16sp"
@@ -107,12 +107,13 @@
                     android:id="@+id/profile_delete_location"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                    android:background="?attr/selectableItemBackground"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Delete location"
+                        android:text="@string/delete_location"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textSize="16sp"
@@ -122,6 +123,28 @@
                         app:layout_constraintRight_toRightOf="parent"/>
 
                 </android.support.constraint.ConstraintLayout>
+
+                <!--<android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:id="@+id/profile_stop_tracking"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stop_tracking"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"/>
+
+                </android.support.constraint.ConstraintLayout>-->
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -135,7 +158,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/profile_share_location_label"
-                        android:text="Share current location"
+                        android:text="@string/share_current_location"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textSize="16sp"
@@ -146,7 +169,7 @@
 
                 </android.support.constraint.ConstraintLayout>
 
-                <android.support.constraint.ConstraintLayout
+                <!--<android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:paddingTop="4dp">
@@ -154,7 +177,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Current home town"
+                        android:text="@string/home_town"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textStyle="bold"
@@ -178,7 +201,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="East Barnet, London"
+                        android:text="@string/not_set"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textSize="16sp"
@@ -197,7 +220,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Work and Education"
+                        android:text="@string/work_and_education"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textStyle="bold"
@@ -221,7 +244,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Google - London"
+                        android:text="@string/not_set"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:textSize="16sp"
@@ -230,7 +253,7 @@
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"/>
 
-                </android.support.constraint.ConstraintLayout>
+                </android.support.constraint.ConstraintLayout>-->
 
             </LinearLayout>
 

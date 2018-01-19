@@ -178,5 +178,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="friends">FRIENDS</string>
+    <string name="no_location">No location</string>
+    <string name="never">Never</string>
+    <string name="request_location_update">Request location update</string>
+    <string name="delete_location">Delete location</string>
+    <string name="home_town">Home town</string>
+    <string name="not_set">Not set</string>
+    <string name="work_and_education">Work and Education</string>
+    <string name="stop_tracking">Stop tracking</string>
 
 </resources>

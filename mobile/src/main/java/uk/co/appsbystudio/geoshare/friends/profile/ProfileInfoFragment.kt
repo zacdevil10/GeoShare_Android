@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -33,6 +34,12 @@ class ProfileInfoFragment : Fragment() {
     private var auth: FirebaseAuth? = null
     private var ref: DatabaseReference? = null
 
+    private var profileLocationLabel: TextView? = null
+    private var profileLocationTimestampLabel: TextView? = null
+    private var shareLocationLabel: TextView? = null
+
+    private var profileDeleteLocationLayout: ConstraintLayout? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_profile_info, container, false)
 
@@ -44,12 +51,20 @@ class ProfileInfoFragment : Fragment() {
 
         uid = arguments?.getString("uid")
 
+        profileLocationLabel = view.findViewById(R.id.location_text)
+        profileLocationTimestampLabel = view.findViewById(R.id.location_timestamp_text)
+        shareLocationLabel = view.findViewById(R.id.profile_share_location_label)
+
+        profileDeleteLocationLayout = view.findViewById(R.id.profile_delete_location)
+
         val singleLocation = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val location = dataSnapshot.getValue(DatabaseLocations::class.java)
                 if (location != null) {
-                    view.findViewById<TextView>(R.id.location_text).text = ellipsize(GeocodingFromLatLngTask(location.lat, location.longitude).execute().get(), 46)
-                    view.findViewById<TextView>(R.id.location_timestamp_text).text = convertDate(location.timestamp)
+                    profileLocationLabel?.text = ellipsize(GeocodingFromLatLngTask(location.lat, location.longitude).execute().get(), 43)
+                    profileLocationTimestampLabel?.text = convertDate(location.timestamp)
+
+                    setDeleteButton()
                 }
             }
 
@@ -64,14 +79,10 @@ class ProfileInfoFragment : Fragment() {
             ref?.child("update")?.child(auth?.currentUser?.uid)?.child(uid)?.child("request_location")?.setValue(System.currentTimeMillis())
         })
 
-        view.findViewById<ConstraintLayout>(R.id.profile_delete_location).setOnClickListener({
-            ref?.child("current_location")?.child(auth?.currentUser?.uid)?.child(uid)?.removeValue()
-        })
-
         if (sharedPreferences!!.getBoolean(uid, false)) {
-            view.findViewById<TextView>(R.id.profile_share_location_label).text = "Stop sharing"
+            shareLocationLabel?.text = "Stop sharing"
         } else {
-            view.findViewById<TextView>(R.id.profile_share_location_label).text = "Share current location"
+            shareLocationLabel?.text = "Share current location"
         }
 
         view.findViewById<ConstraintLayout>(R.id.profile_share_location).setOnClickListener({
@@ -82,13 +93,13 @@ class ProfileInfoFragment : Fragment() {
             }
         })
 
-        view.findViewById<ConstraintLayout>(R.id.profile_home_location).setOnClickListener({
+        /*view.findViewById<ConstraintLayout>(R.id.profile_home_location).setOnClickListener({
 
         })
 
         view.findViewById<ConstraintLayout>(R.id.profile_work_location).setOnClickListener({
 
-        })
+        })*/
 
         return view
     }
@@ -107,11 +118,30 @@ class ProfileInfoFragment : Fragment() {
 
     private fun stopSharing() {
         ref?.child(FirebaseHelper.TRACKING)?.child(uid)?.child("tracking")?.child(auth?.currentUser?.uid)?.removeValue()
-                ?.addOnSuccessListener(OnSuccessListener<Void> {
+                ?.addOnSuccessListener({
                     sharedPreferences?.edit()?.putBoolean(uid, false)?.apply()
+                    shareLocationLabel?.text = "Share current location"
+
                 })
                 ?.addOnFailureListener(OnFailureListener {
                     //TODO: Show a message (with "try again?" ?)
                 })
+    }
+
+    /*private fun stopTracking() {
+        ref?.child(FirebaseHelper.TRACKING)?.child("")
+    }*/
+
+    private fun setDeleteButton() {
+        profileDeleteLocationLayout?.visibility = View.VISIBLE
+
+        profileDeleteLocationLayout?.setOnClickListener({
+            ref?.child("current_location")?.child(auth?.currentUser?.uid)?.child(uid)?.removeValue()
+                    ?.addOnSuccessListener({
+                        profileLocationLabel?.text = "No location"
+                        profileLocationTimestampLabel?.text = "Never"
+                        profileDeleteLocationLayout?.visibility = View.GONE
+                    })
+        })
     }
 }
