@@ -59,7 +59,7 @@
         <activity
             android:name=".friends.FriendsManager"
             android:label="@string/title_activity_friends_manager"
-            android:parentActivityName=".login.LoginActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/FriendsTheme">
             <intent-filter>
                 <action android:name="FRIEND_MANAGER" />
