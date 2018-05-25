@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.authentication.AuthActivity;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
-import uk.co.appsbystudio.geoshare.login.LoginActivity;
 import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 import uk.co.appsbystudio.geoshare.utils.Connectivity;
 import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult;
@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public static final HashMap<String, Boolean> pendingId = new HashMap<>();
     public static final HashMap<String, String> friendNames = new HashMap<>();
     private CircleImageView profileImageView;
+
+    private boolean isVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,12 +181,26 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser == null) {
                     ProfileUtils.resetDeviceSettings(settingsSharedPreferences, trackingPreferences, showOnMapPreferences);
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(MainActivity.this, AuthActivity.class);
                     startActivity(intent);
                     finish();
                 }
             }
         };
+
+
+
+        findViewById(R.id.show_hide_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isVisible) {
+                    findViewById(R.id.filter_content).setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.filter_content).setVisibility(View.VISIBLE);
+                }
+                isVisible = !isVisible;
+            }
+        });
     }
 
     private void setTracking() {

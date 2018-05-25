@@ -53,7 +53,7 @@ class ProfileFriendsMutualFragment : Fragment() {
         val friendsList = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
-                if (!friendId.contains(dataSnapshot.key) && MainActivity.friendsId.contains(dataSnapshot.key)) friendId.add(dataSnapshot.key)
+                if (!friendId.contains(dataSnapshot.key) && MainActivity.friendsId.contains(dataSnapshot.key)) friendId.add(dataSnapshot.key!!)
                 friendAdapter?.notifyDataSetChanged()
             }
 

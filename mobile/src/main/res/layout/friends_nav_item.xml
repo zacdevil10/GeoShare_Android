@@ -108,13 +108,13 @@
         </RelativeLayout>
 
         <RelativeLayout
-        android:id="@+id/showOnMapLayout"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?android:attr/selectableItemBackgroundBorderless">
+            android:id="@+id/showOnMapLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless">
 
             <TextView
                 android:layout_width="match_parent"

@@ -92,7 +92,7 @@ class Profile : AppCompatActivity() {
 
     private fun removeFriend() {
         if (auth?.currentUser != null) {
-            ref?.child("friends")?.child(auth?.currentUser?.uid)?.child(uid)?.removeValue()
+            ref?.child("friends")?.child(auth!!.currentUser!!.uid)?.child(uid!!)?.removeValue()
                     ?.addOnSuccessListener({
                         finish()
                     })

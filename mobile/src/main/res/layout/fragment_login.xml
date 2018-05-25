@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".authentication.login.LoginFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--  Name Label -->
+        <EditText
+            android:id="@+id/edit_email_login"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:drawableStart="@drawable/ic_email_white_24dp"
+            android:drawablePadding="8dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="8dp" />
+
+        <!--  Password Label -->
+        <EditText
+            android:id="@+id/edit_password_login"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/round_edge_green_outline"
+            android:drawableStart="@drawable/ic_lock_white_24dp"
+            android:drawablePadding="8dp"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_email_login"
+            tools:layout_editor_absoluteX="8dp" />
+
+        <LinearLayout
+            android:id="@+id/linear_auth_controls_login"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_password_login"
+            tools:layout_editor_absoluteX="8dp">
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/progress_button_login"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_edge_green_background"
+                android:text="@string/login_submit"
+                android:textColor="@color/text"
+                android:layout_gravity="center_horizontal"
+                app:spinning_bar_color="@color/colorAccent"
+                app:spinning_bar_width="4dp"
+                app:spinning_bar_padding="6dp"
+                app:initialCornerAngle="50dp"
+                app:finalCornerAngle="50dp" />
+
+            <LinearLayout
+                android:id="@+id/linear_button_panel_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/button_signup_login"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/login_sign_up"
+                    android:textColor="@color/text" />
+
+                <Button
+                    android:id="@+id/button_forgot_password_login"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/forgot_password"
+                    android:textColor="@color/text" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

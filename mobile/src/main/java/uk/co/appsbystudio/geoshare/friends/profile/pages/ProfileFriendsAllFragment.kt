@@ -56,7 +56,7 @@ class ProfileFriendsAllFragment : Fragment(), FriendshipStatusAdapter.Callback {
         val friendsList = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
-                if (!friendId.contains(dataSnapshot.key) && dataSnapshot.key != auth?.currentUser?.uid) friendId.add(dataSnapshot.key)
+                if (!friendId.contains(dataSnapshot.key) && dataSnapshot.key != auth?.currentUser?.uid) friendId.add(dataSnapshot.key!!)
                 friendAdapter?.notifyDataSetChanged()
             }
 
@@ -82,10 +82,10 @@ class ProfileFriendsAllFragment : Fragment(), FriendshipStatusAdapter.Callback {
     }
 
     override fun onSendRequest(friendId: String?) {
-        databaseReference?.child("pending")?.child(auth?.currentUser?.uid)?.child(friendId)?.child("outgoing")?.setValue(true)
+        databaseReference?.child("pending")?.child(auth?.currentUser!!.uid)?.child(friendId!!)?.child("outgoing")?.setValue(true)
                 ?.addOnFailureListener { success() }
                 ?.addOnSuccessListener { success() }
-        databaseReference?.child("pending")?.child(friendId)?.child(auth?.currentUser?.uid)?.child("outgoing")?.setValue(false)
+        databaseReference?.child("pending")?.child(friendId!!)?.child(auth?.currentUser!!.uid)?.child("outgoing")?.setValue(false)
     }
 
     private fun success() {

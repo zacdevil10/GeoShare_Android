@@ -73,10 +73,10 @@ class ProfileInfoFragment : Fragment() {
             }
         }
 
-        ref!!.child(FirebaseHelper.CURRENT_LOCATION).child(auth?.currentUser?.uid).child(uid).addListenerForSingleValueEvent(singleLocation)
+        ref!!.child(FirebaseHelper.CURRENT_LOCATION).child(auth!!.currentUser!!.uid).child(uid!!).addListenerForSingleValueEvent(singleLocation)
 
         view.findViewById<ConstraintLayout>(R.id.profile_request_location).setOnClickListener({
-            ref?.child("update")?.child(auth?.currentUser?.uid)?.child(uid)?.child("request_location")?.setValue(System.currentTimeMillis())
+            ref?.child("update")?.child(auth?.currentUser!!.uid)?.child(uid!!)?.child("request_location")?.setValue(System.currentTimeMillis())
         })
 
         if (sharedPreferences!!.getBoolean(uid, false)) {
@@ -117,7 +117,7 @@ class ProfileInfoFragment : Fragment() {
     }
 
     private fun stopSharing() {
-        ref?.child(FirebaseHelper.TRACKING)?.child(uid)?.child("tracking")?.child(auth?.currentUser?.uid)?.removeValue()
+        ref?.child(FirebaseHelper.TRACKING)?.child(uid!!)?.child("tracking")?.child(auth?.currentUser!!.uid)?.removeValue()
                 ?.addOnSuccessListener({
                     sharedPreferences?.edit()?.putBoolean(uid, false)?.apply()
                     shareLocationLabel?.text = "Share current location"
@@ -136,7 +136,7 @@ class ProfileInfoFragment : Fragment() {
         profileDeleteLocationLayout?.visibility = View.VISIBLE
 
         profileDeleteLocationLayout?.setOnClickListener({
-            ref?.child("current_location")?.child(auth?.currentUser?.uid)?.child(uid)?.removeValue()
+            ref?.child("current_location")?.child(auth?.currentUser!!.uid)?.child(uid!!)?.removeValue()
                     ?.addOnSuccessListener({
                         profileLocationLabel?.text = "No location"
                         profileLocationTimestampLabel?.text = "Never"

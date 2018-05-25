@@ -50,7 +50,7 @@ class ProfileStaticMapFragment : Fragment() {
             }
         }
 
-        ref!!.child(FirebaseHelper.CURRENT_LOCATION).child(auth.currentUser!!.uid).child(uid).addListenerForSingleValueEvent(singleLocation)
+        ref!!.child(FirebaseHelper.CURRENT_LOCATION).child(auth.currentUser!!.uid).child(uid!!).addListenerForSingleValueEvent(singleLocation)
 
         return view
     }
