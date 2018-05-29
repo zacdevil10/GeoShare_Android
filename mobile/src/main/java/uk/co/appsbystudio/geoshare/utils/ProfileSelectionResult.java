@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import uk.co.appsbystudio.geoshare.setup.InitialSetupView;
+
 import static android.app.Activity.RESULT_OK;
 
 public class ProfileSelectionResult {
@@ -37,11 +39,9 @@ public class ProfileSelectionResult {
         interface Main {
             void updateProfilePicture();
         }
-
-        void profileUploadSuccess();
     }
 
-    private Callback callback;
+    private InitialSetupView callback;
     private Callback.Main main;
 
     public ProfileSelectionResult(Callback.Main main) {
@@ -50,7 +50,7 @@ public class ProfileSelectionResult {
         pictureNotifyRef = database.getReference("picture");
     }
 
-    public ProfileSelectionResult(Callback callback) {
+    public ProfileSelectionResult(InitialSetupView callback) {
         this.callback = callback;
         database = FirebaseDatabase.getInstance();
         pictureNotifyRef = database.getReference("picture");
@@ -94,7 +94,7 @@ public class ProfileSelectionResult {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 pictureNotifyRef.child(userId).setValue(new Date().getTime());
-                                if (callback != null) callback.profileUploadSuccess();
+                                if (callback != null) callback.onNext();
 
                                 try {
                                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), resultUri);

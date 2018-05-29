@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -85,8 +84,6 @@ import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo;
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener;
 import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask;
-
-import static android.app.Activity.RESULT_OK;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,

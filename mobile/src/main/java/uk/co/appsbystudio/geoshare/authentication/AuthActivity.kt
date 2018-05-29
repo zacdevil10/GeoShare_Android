@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import uk.co.appsbystudio.geoshare.MainActivity
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.authentication.login.LoginFragment
-import uk.co.appsbystudio.geoshare.utils.setup.InitialSetupActivity
+import uk.co.appsbystudio.geoshare.setup.InitialSetupActivity
 
 class AuthActivity : AppCompatActivity(), AuthView {
 

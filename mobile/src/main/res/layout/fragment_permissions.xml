@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.utils.setup.fragments.PermissionsFragment">
+    tools:context=".setup.fragments.permissions.PermissionsFragment">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -13,7 +13,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/imageView"
-        android:contentDescription="TODO" />
+        android:contentDescription="@string/setup_image_header" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,27 +42,25 @@
         android:layout_marginEnd="8dp" />
 
     <Button
-        android:id="@+id/getPermsButton"
+        android:id="@+id/button_allow_permissions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/round_edge_green_background"
         android:backgroundTint="@color/colorAccent"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:onClick="onButtonPressed"
         android:text="@string/allow"
         android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/notNowButton"
+        app:layout_constraintBottom_toTopOf="@id/button_next_permissions"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@id/textView2" />
 
     <Button
         android:layout_height="48dp"
         android:layout_width="0dp"
-        android:id="@+id/notNowButton"
-        android:text="@string/not_now"
-        android:onClick="onButtonPressed"
+        android:id="@+id/button_next_permissions"
+        android:text="@string/next"
         android:background="@color/colorPrimaryDark"
         android:textColor="@android:color/white"
         app:layout_constraintRight_toRightOf="parent"

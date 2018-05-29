@@ -24,7 +24,6 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
-import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification;
 
 public class FriendsPendingFragment extends Fragment implements FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {

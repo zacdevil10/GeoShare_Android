@@ -8,7 +8,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class UserSignedOutListener implements com.google.firebase.auth.FirebaseAuth.AuthStateListener {
 
-    private Activity activity;
+    private final Activity activity;
 
     public UserSignedOutListener(Activity activity) {
         this.activity = activity;

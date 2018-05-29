@@ -152,7 +152,7 @@ public class FriendSearchActivity extends AppCompatActivity implements Friendshi
         databaseReference.child("pending").child(friendId).child(uid).child("outgoing").setValue(false);
     }
 
-    public void success() {
+    private void success() {
         searchAdapter.notifyDataSetChanged();
     }
 

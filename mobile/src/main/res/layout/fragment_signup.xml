@@ -102,7 +102,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/checkbox_terms_signup"
-                    android:text="I agree to the "
+                    android:text="@string/i_agree_to_the"
                     android:textColor="@android:color/white" />
 
                 <TextView
@@ -123,7 +123,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/round_edge_green_background"
-                android:text="@string/login_sign_up"
+                android:text="@string/create_new_account"
                 android:textColor="@color/text"
                 android:layout_gravity="center_horizontal"
                 app:spinning_bar_color="@color/colorAccent"

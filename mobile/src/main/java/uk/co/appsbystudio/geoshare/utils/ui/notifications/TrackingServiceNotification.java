@@ -3,9 +3,7 @@ package uk.co.appsbystudio.geoshare.utils.ui.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -14,7 +12,6 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.utils.services.StopTrackingService;
 
 public class TrackingServiceNotification {
 

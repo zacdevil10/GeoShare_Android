@@ -28,8 +28,8 @@ public class ShareOptions extends DialogFragment {
 
     private SharedPreferences sharedPreferences;
 
-    String friendId;
-    String uid;
+    private String friendId;
+    private String uid;
 
     private GPSTracking gpsTracking;
 
