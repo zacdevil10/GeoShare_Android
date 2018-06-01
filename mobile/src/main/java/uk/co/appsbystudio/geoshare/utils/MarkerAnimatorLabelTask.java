@@ -20,6 +20,9 @@ import java.io.IOException;
 import uk.co.appsbystudio.geoshare.MainActivity;
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 
+import static uk.co.appsbystudio.geoshare.utils.BitmapUtilsKt.bitmapCanvas;
+import static uk.co.appsbystudio.geoshare.utils.TimeUtilsKt.convertDate;
+
 public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
 
     private final Double lat;
@@ -51,10 +54,10 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
                 File fileCheck = new File(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
                 if (fileCheck.exists()) {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
                     marker.setAnchor(0.11328125f, 1f);
                 } else {
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), " \nLoading...\n ")));
                     marker.setAnchor(0.11328125f, 1f);
                 }
             }
@@ -91,7 +94,7 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
             if (split[1].startsWith(" ")) finalAddress[1] = split[1].substring(1);
             else finalAddress[1] = split[1];
 
-            finalAddress[2] = "Updated: " + TimeUtils.convertDate(time);
+            finalAddress[2] = "Updated: " + convertDate(time);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             finalAddress[0] = "";
@@ -113,10 +116,10 @@ public class MarkerAnimatorLabelTask extends AsyncTask<Void, Void, String[]> {
                 File fileCheck = new File(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
                 if (fileCheck.exists()) {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + marker.getTag() + ".png");
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(imageBitmap, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
                     marker.setAnchor(0.11328125f, 1f);
                 } else {
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
+                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapCanvas(null, 512, 155, true, (Integer) valueAnimator.getAnimatedValue(), addressString)));
                     marker.setAnchor(0.11328125f, 1f);
                 }
             }

@@ -49,6 +49,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
                 progressParameter = thumb.centerX() - text_progress_radius.measuredWidth
 
+                //TODO: Call method in presenter first
                 this@RadiusSetupFragment.onSeekBarPositionChanged(progressParameter)
             }
 

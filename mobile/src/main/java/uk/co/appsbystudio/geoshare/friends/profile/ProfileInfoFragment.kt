@@ -4,23 +4,20 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.transition.TransitionManager
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.Application
 import uk.co.appsbystudio.geoshare.MainActivity
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.utils.StringUtils.ellipsize
-import uk.co.appsbystudio.geoshare.utils.TimeUtils.convertDate
+import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
+import uk.co.appsbystudio.geoshare.utils.ellipsize
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromLatLngTask
@@ -61,8 +58,8 @@ class ProfileInfoFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val location = dataSnapshot.getValue(DatabaseLocations::class.java)
                 if (location != null) {
-                    profileLocationLabel?.text = ellipsize(GeocodingFromLatLngTask(location.lat, location.longitude).execute().get(), 43)
-                    profileLocationTimestampLabel?.text = convertDate(location.timestamp)
+                    profileLocationLabel?.text = GeocodingFromLatLngTask(location.lat, location.longitude).execute().get().ellipsize(43)
+                    profileLocationTimestampLabel?.text = location.timestamp.convertDate()
 
                     setDeleteButton()
                 }

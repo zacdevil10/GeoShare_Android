@@ -67,7 +67,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
         }
 
         if (polylineOptions != null) {
-            MapsFragment.directions = googleMap.addPolyline(polylineOptions);
+            MapsFragment.Companion.setDirections(googleMap.addPolyline(polylineOptions));
         }
     }
 }
