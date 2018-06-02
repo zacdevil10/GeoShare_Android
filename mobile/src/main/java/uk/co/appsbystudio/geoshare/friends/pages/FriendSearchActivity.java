@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter;
 import uk.co.appsbystudio.geoshare.utils.DeleteUnusedImagesFromCache;

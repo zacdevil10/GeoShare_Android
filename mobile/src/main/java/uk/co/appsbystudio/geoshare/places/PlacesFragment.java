@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class PlacesFragment extends Fragment {
@@ -33,7 +33,7 @@ public class PlacesFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getActivity()).openDrawer();
+                //((MainActivity) getActivity()).openDrawer();
             }
         });
         toolbar.setTitle(R.string.places);

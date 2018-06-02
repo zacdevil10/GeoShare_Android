@@ -20,11 +20,13 @@ interface MapsView {
 
     fun findOnMap()
 
+    fun updateTrackingButton(trackingState: Boolean)
+
     fun updateCameraPosition(latLng: LatLng, zoomLevel: Int, animated: Boolean)
 
     fun updateNearbyText(nearbyCount: Int)
 
-    fun updateNearbyRadiusCircle(radius: Int, centerPoint: LatLng)
+    fun updateNearbyRadiusCircle(radius: Int?, centerPoint: LatLng)
 
     fun showError(message: String)
 

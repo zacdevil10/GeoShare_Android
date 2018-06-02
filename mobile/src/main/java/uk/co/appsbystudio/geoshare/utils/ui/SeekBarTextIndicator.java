@@ -19,7 +19,6 @@ public class SeekBarTextIndicator extends AppCompatSeekBar {
         mThumb = thumb;
     }
 
-    public Drawable getSeekBarThumb() {
-        return mThumb;
+    public void getSeekBarThumb() {
     }
 }

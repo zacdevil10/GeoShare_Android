@@ -1,6 +1,5 @@
 package uk.co.appsbystudio.geoshare.friends.pages
 
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.view.ViewPager
@@ -10,13 +9,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.Application
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.profile.profileadapter.ProfilePagerAdapter
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils
@@ -78,10 +76,10 @@ class Profile : AppCompatActivity() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
         builder.setMessage("Are you sure you want to remove this person from your friends list?")
-                .setPositiveButton("OK", DialogInterface.OnClickListener { dialogInterface, i ->
+                .setPositiveButton("OK", { dialogInterface, i ->
                         removeFriend()
                     })
-                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                .setNegativeButton("Cancel", { dialogInterface, i ->
                     println("CANCELED!")
                 })
 

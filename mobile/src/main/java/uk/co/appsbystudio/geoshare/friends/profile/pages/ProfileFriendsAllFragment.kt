@@ -37,7 +37,7 @@ class ProfileFriendsAllFragment : Fragment(), FriendshipStatusAdapter.Callback {
 
         val database = FirebaseDatabase.getInstance()
         databaseReference = database.reference
-        databaseFriendsRef = database.getReference("friends/" + uid)
+        databaseFriendsRef = database.getReference("friends/$uid")
 
         val friendsAll: RecyclerView = view.findViewById(R.id.profile_friends_all_list)
         friendsAll.setHasFixedSize(true)

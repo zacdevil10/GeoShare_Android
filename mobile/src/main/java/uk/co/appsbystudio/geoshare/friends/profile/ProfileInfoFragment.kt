@@ -9,11 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.Application
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
@@ -120,7 +119,7 @@ class ProfileInfoFragment : Fragment() {
                     shareLocationLabel?.text = "Share current location"
 
                 })
-                ?.addOnFailureListener(OnFailureListener {
+                ?.addOnFailureListener({
                     //TODO: Show a message (with "try again?" ?)
                 })
     }

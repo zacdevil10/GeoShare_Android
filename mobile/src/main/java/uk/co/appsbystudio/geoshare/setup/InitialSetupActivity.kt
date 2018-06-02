@@ -16,7 +16,7 @@ import android.widget.Toast
 
 import com.google.firebase.auth.FirebaseAuth
 
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions

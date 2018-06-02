@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.database.*
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter
@@ -34,7 +34,7 @@ class ProfileFriendsMutualFragment : Fragment() {
 
         val database = FirebaseDatabase.getInstance()
         databaseReference = database.reference
-        databaseFriendsRef = database.getReference("friends/" + uid)
+        databaseFriendsRef = database.getReference("friends/$uid")
 
         val friendsAll: RecyclerView = view.findViewById(R.id.profile_friends_mutual_list)
         friendsAll.setHasFixedSize(true)

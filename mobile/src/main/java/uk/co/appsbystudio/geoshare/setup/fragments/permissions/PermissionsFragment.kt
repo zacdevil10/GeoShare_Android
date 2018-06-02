@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.setup.fragments.permissions
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater

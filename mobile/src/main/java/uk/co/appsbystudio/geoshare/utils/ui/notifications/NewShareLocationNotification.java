@@ -11,7 +11,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 
 public class NewShareLocationNotification {

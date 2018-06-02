@@ -6,7 +6,7 @@ import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.authentication.login.LoginFragment
 import uk.co.appsbystudio.geoshare.setup.InitialSetupActivity
@@ -15,13 +15,13 @@ class AuthActivity : AppCompatActivity(), AuthView {
 
     private var firebaseAuth: FirebaseAuth? = null
 
-    private var presenter: AuthPresenter? = null;
+    private var presenter: AuthPresenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        if (savedInstanceState == null) supportFragmentManager.beginTransaction().replace(R.id.frame_auth_fragments_auth, LoginFragment()).commit();
+        if (savedInstanceState == null) supportFragmentManager.beginTransaction().replace(R.id.frame_auth_fragments_auth, LoginFragment()).commit()
 
         presenter = AuthPresenterImpl(this)
 
@@ -38,7 +38,7 @@ class AuthActivity : AppCompatActivity(), AuthView {
                 .beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
                 .replace(R.id.frame_auth_fragments_auth, fragment)
-                .addToBackStack(null).commit();
+                .addToBackStack(null).commit()
     }
 
     override fun onSuccess() {

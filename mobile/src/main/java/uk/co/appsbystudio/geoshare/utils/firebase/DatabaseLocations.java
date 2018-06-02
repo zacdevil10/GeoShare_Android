@@ -2,9 +2,9 @@ package uk.co.appsbystudio.geoshare.utils.firebase;
 
 public class DatabaseLocations {
 
-    private Double longitude;
-    private Double lat;
-    private Long timestamp;
+    public Double longitude;
+    public Double lat;
+    public Long timestamp;
 
     public DatabaseLocations() {}
 
@@ -26,15 +26,12 @@ public class DatabaseLocations {
         this.timestamp = timestamp;
     }
 
-    public Double getLongitude() {
-        return longitude;
+    public void getLongitude() {
     }
 
-    public Double getLat() {
-        return lat;
+    public void getLat() {
     }
 
-    public Long getTimestamp() {
-        return timestamp;
+    public void getTimestamp() {
     }
 }

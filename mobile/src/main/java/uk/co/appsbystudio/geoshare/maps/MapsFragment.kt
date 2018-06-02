@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps
 
 import android.Manifest
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IntentFilter
@@ -15,81 +14,46 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.PendingResult
-import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsResult
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.Circle
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FileDownloadTask
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.map_layout_main.*
-
-import java.io.File
-import java.util.HashMap
-import java.util.Locale
-import java.util.Objects
-
 import uk.co.appsbystudio.geoshare.Application
 import uk.co.appsbystudio.geoshare.GPSTracking
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.utils.Connectivity
+import uk.co.appsbystudio.geoshare.base.MainView
+import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesResources
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
-import uk.co.appsbystudio.geoshare.utils.directions.DirectionsDownloadTask
-import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
-import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo
-import uk.co.appsbystudio.geoshare.utils.json.UrlUtil
 import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener
-import uk.co.appsbystudio.geoshare.utils.MarkerAnimatorLabelTask
-
-import uk.co.appsbystudio.geoshare.utils.bitmapCanvas
+import java.util.*
 
 class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, SharedPreferences.OnSharedPreferenceChangeListener, OnNetworkStateChangeListener.NetworkStateReceiverListener {
 
+    private var fragmentCallback: MainView? = null
+
+    private var savedInstance: Boolean = false
+
     private var mapsPresenter: MapsPresenter? = null
+    private var settingsResources: SettingsPreferencesResources? = null
 
     private var googleMap: GoogleMap? = null
 
@@ -97,7 +61,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
     private var isTracking: Boolean = false
 
-    private var mobileNetwork: Boolean = false
+    private var mobileNetwork: Boolean? = false
 
     private var gpsTracking: GPSTracking? = null
 
@@ -107,7 +71,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     private var locationServiceEnabled: Boolean = false
 
     private var bestProvider: String? = null
-    private var updateFrequency: Int = 0
+    private var updateFrequency: Int? = 0
 
     private var settingsSharedPreferences: SharedPreferences? = null
     private var showOnMapPreferences: SharedPreferences? = null
@@ -121,14 +85,35 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
     private val friendMarkerList = HashMap<String?, Marker?>()
 
-    private val standardZoomLevel = 16
+    companion object {
+        private const val DEFAULT_ZOOM = 16
+        private const val GET_PERMS = 1
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        try {
+            fragmentCallback = context as MainActivity
+        } catch (e: ClassCastException) {
+            throw ClassCastException(activity.toString() + "must implement AuthView")
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
-        mapsPresenter = MapsPresenterImpl(this, MapsInteractorImpl())
+        showOnMapPreferences = context?.getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
+        settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        settingsSharedPreferences?.registerOnSharedPreferenceChangeListener(this)
+
+        settingsResources = SettingsPreferencesResources(settingsSharedPreferences)
+        mapsPresenter = MapsPresenterImpl(this, settingsResources, MapsInteractorImpl())
+
+        gpsTracking = GPSTracking(context)
 
         var mapFragment: MapFragment? = null
+
         if (activity != null) {
             mapFragment = activity?.fragmentManager?.findFragmentById(R.id.map) as MapFragment
             mapFragment.getMapAsync(this)
@@ -138,49 +123,45 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
             mapFragment.retainInstance = true
         }
 
+        savedInstance = savedInstanceState != null
+
         networkStateChangeListener = OnNetworkStateChangeListener()
         networkStateChangeListener?.addListener(this)
         Application.getContext().registerReceiver(networkStateChangeListener, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
-        settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        settingsSharedPreferences?.registerOnSharedPreferenceChangeListener(this)
-
-        showOnMapPreferences = Application.getContext().getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
-
-        mobileNetwork = settingsSharedPreferences?.getBoolean("mobile_network", true)!!
-
-        view.findViewById<View>(R.id.drawer_open).setOnClickListener {
-            //TODO: Callback
-            (activity as MainActivity).openDrawer()
-        }
-
-        view.findViewById<View>(R.id.friend_drawer).setOnClickListener {
-            //TODO: Callback
-            (activity as MainActivity).openFriendsDrawer()
-        }
+        mobileNetwork = settingsResources?.mobileSyncState()
 
         return view
     }
 
-    /*@Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("marker_list", friendMarkerList);
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            friendMarkerList = savedInstanceState
+        image_drawer_map.setOnClickListener {
+            fragmentCallback?.openNavDrawer()
         }
-    }*/
 
-    override fun onDestroy() {
-        super.onDestroy()
-        settingsSharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
-        networkStateChangeListener?.removeListener(this)
-        Application.getContext().unregisterReceiver(networkStateChangeListener)
+        image_friend_drawer_map.setOnClickListener {
+            fragmentCallback?.openFriendsNavDrawer()
+        }
+
+        if (savedInstanceState != null) {
+            mapsPresenter?.updateTrackingState(savedInstanceState.getBoolean("tracking_state"))
+        }
+
+        fab_tracking_map?.setOnClickListener {
+            if (!isTracking) {
+                mapsPresenter?.updateTrackingState(true)
+
+                if (listenerLocation != null) {
+                    mapsPresenter?.moveMapCamera(LatLng(listenerLocation!!.latitude, listenerLocation!!.longitude), DEFAULT_ZOOM, true)
+                } else {
+                    if (gpsTracking != null) mapsPresenter?.moveMapCamera(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude), DEFAULT_ZOOM, true)
+                }
+
+                if (selectedMarker != null) selectedMarker = null
+            }
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -189,11 +170,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         /*MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
         styleManager.addStyle(R.raw.map_style);*/
 
-        setup()
+        if (!savedInstance) setup()
 
         googleMap.setOnMapClickListener {
             if (selectedMarker != null) {
-                mapsPresenter?.moveMapCamera(LatLng(selectedMarker!!.position.latitude, selectedMarker!!.position.longitude), standardZoomLevel, true)
+                mapsPresenter?.moveMapCamera(LatLng(selectedMarker!!.position.latitude, selectedMarker!!.position.longitude), DEFAULT_ZOOM, true)
                 selectedMarker = null
             }
         }
@@ -216,26 +197,12 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
             //TODO: Display location address in bottom panel thingy
 
-            val friendId = marker.tag as String?
-
-            val myLocationLatLng = myLocation!!.position
             val destination = marker.position
 
-            if (directions != null) directions!!.remove()
-
-            if (Connectivity.isConnected(Application.getContext())) {
-                if (destination !== myLocationLatLng) {
-                    val url = UrlUtil.getDirectionsUrl(myLocationLatLng, destination)
-                    val directionsDownloadTask = DirectionsDownloadTask(googleMap)
-                    directionsDownloadTask.execute(url)
-                }
-            }
-
-            mapsPresenter!!.moveMapCamera(destination, 18, true)
+            mapsPresenter?.moveMapCamera(destination, 18, true)
 
             if (isTracking) {
-                isTracking = false
-                fab_tracking_map.imageTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
+                mapsPresenter?.updateTrackingState(false)
             }
 
             true
@@ -260,18 +227,16 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
         isTracking = true
 
-        if (gpsTracking == null) {
-            gpsTracking = GPSTracking(context)
-        }
-
         googleMap?.isMyLocationEnabled = false
         googleMap?.isBuildingsEnabled = false
         googleMap?.uiSettings?.isCompassEnabled = false
         googleMap?.uiSettings?.isMyLocationButtonEnabled = false
         googleMap?.uiSettings?.isMapToolbarEnabled = false
 
-        /* FIREBASE TRACKING SETUP */
+        /* FIREBASE LOCATION TRACKING SETUP */
         //setTrackingReference();
+        mapsPresenter?.getStaticFriends()
+
         mapsPresenter?.getTrackingFriends()
         mapsPresenter?.setTrackingSync(true)
 
@@ -281,7 +246,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         val myLocationMarker = BitmapFactory.decodeResource(resources, R.drawable.navigation)
         val scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false)
 
-        mapsPresenter?.moveMapCamera(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude), standardZoomLevel, false)
+        mapsPresenter?.moveMapCamera(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude), DEFAULT_ZOOM, false)
 
         myLocation = googleMap?.addMarker(MarkerOptions()
                 .position(currentLocation)
@@ -291,24 +256,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         )
         myLocation?.tag = 0
 
-        mapsPresenter?.updateNearbyFriendsRadius(200, currentLocation)
-
-        fab_tracking_map.setOnClickListener {
-            if (!isTracking) {
-                isTracking = true
-                fab_tracking_map.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-
-                if (listenerLocation != null) {
-                    mapsPresenter?.moveMapCamera(LatLng(listenerLocation!!.latitude, listenerLocation!!.longitude), standardZoomLevel, true)
-                } else {
-                    mapsPresenter?.moveMapCamera(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude), standardZoomLevel, true)
-                }
-
-                if (selectedMarker != null) selectedMarker = null
-            }
-        }
-
-        mapsPresenter?.getStaticFriends()
+        mapsPresenter?.updateNearbyFriendsRadius(currentLocation)
     }
 
     private fun locationSettingsRequest(context: Context) {
@@ -357,17 +305,29 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
         bestProvider = locationManager!!.getBestProvider(criteria, false)
 
-        updateFrequency = Integer.parseInt(settingsSharedPreferences!!.getString("update_frequency", "5")) * 1000
+        updateFrequency = settingsResources?.updateFrequency()?.times(1000)
 
-        locationManager!!.requestLocationUpdates(bestProvider, updateFrequency.toLong(), 0f, locationListener)
+        locationManager?.requestLocationUpdates(bestProvider, updateFrequency!!.toLong(), 0f, locationListener)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            GET_PERMS -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            GET_PERMS -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setup()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("tracking_state", isTracking)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        settingsSharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
+        networkStateChangeListener?.removeListener(this)
+        Application.getContext().unregisterReceiver(networkStateChangeListener)
     }
 
     /*private void setTrackingReference() {
@@ -385,17 +345,14 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
             googleMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
             if (isTracking) {
-                isTracking = false
-                fab_tracking_map.imageTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
+                mapsPresenter?.updateTrackingState(false)
             }
         } else {
             Toast.makeText(activity, "This person has not shared a location with you.", Toast.LENGTH_SHORT).show()
         }
     }
-    /* END OF FRIEND MARKER METHODS */
 
     override fun addFriendMarker(uid: String?, markerPointer: Bitmap?, databaseLocations: DatabaseLocations?) {
-        println("Adding marker")
         val friendMarker = googleMap?.addMarker(MarkerOptions()
                 .position(LatLng(databaseLocations?.lat!!, databaseLocations.longitude!!))
                 .icon(BitmapDescriptorFactory.fromBitmap(markerPointer)))
@@ -407,7 +364,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
     override fun updateFriendMarker(uid: String?, databaseLocations: DatabaseLocations?) {
         val friendMarker = friendMarkerList[uid]
-        friendMarker?.position = LatLng(databaseLocations!!.lat!!, databaseLocations.longitude!!)
+        if (databaseLocations != null) friendMarker?.position = LatLng(databaseLocations.lat, databaseLocations.longitude)
 
         friendMarkerList[uid] = friendMarker
     }
@@ -434,22 +391,32 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
             val marker = friendMarkerList[uid]
             marker?.isVisible = visible
         }
-        if (showOnMapPreferences != null) showOnMapPreferences!!.edit().putBoolean(uid, visible).apply()
+        if (showOnMapPreferences != null) showOnMapPreferences?.edit()?.putBoolean(uid, visible)?.apply()
     }
 
     override fun setAllMarkersVisibility(visible: Boolean) {
         if (googleMap != null) {
             for (markerId in friendMarkerList.keys) {
                 val marker = friendMarkerList[markerId]
-                marker?.setVisible(visible)
+                marker?.isVisible = visible
                 showOnMapPreferences!!.edit().putBoolean(markerId, visible).apply()
             }
-            showOnMapPreferences!!.edit().putBoolean("all", visible).apply()
+            showOnMapPreferences?.edit()?.putBoolean("all", visible)?.apply()
         }
     }
 
     override fun findOnMap() {
 
+    }
+
+    override fun updateTrackingButton(trackingState: Boolean) {
+        isTracking = trackingState
+
+        fab_tracking_map?.imageTintList = if (!trackingState) {
+            ColorStateList.valueOf(ResourcesCompat.getColor(resources, android.R.color.darker_gray, null))
+        } else {
+            ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+        }
     }
 
     override fun updateCameraPosition(latLng: LatLng, zoomLevel: Int, animated: Boolean) {
@@ -462,18 +429,18 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     }
 
     override fun updateNearbyText(nearbyCount: Int) {
-        text_nearby_count_map.text = if (nearbyCount != 1) String.format(Locale.getDefault(), "Nearby\n%d Friends", nearbyCount) else String.format(Locale.getDefault(), "Nearby\n%d Friend", nearbyCount)
+        text_nearby_count_map?.text = if (nearbyCount != 1) String.format(Locale.getDefault(), "Nearby\n%d Friends", nearbyCount) else String.format(Locale.getDefault(), "Nearby\n%d Friend", nearbyCount)
     }
 
-    override fun updateNearbyRadiusCircle(radius: Int, centerPoint: LatLng) {
+    override fun updateNearbyRadiusCircle(radius: Int?, centerPoint: LatLng) {
         if (nearbyCircle != null) {
             nearbyCircle!!.center = centerPoint
-            nearbyCircle!!.radius = radius.toDouble()
+            nearbyCircle?.radius = radius?.toDouble()!!
         } else {
             nearbyCircle = googleMap!!.addCircle(
                     CircleOptions()
                             .center(centerPoint)
-                            .radius(radius.toDouble())
+                            .radius(radius?.toDouble()!!)
                             .fillColor(resources.getColor(R.color.colorPrimaryTransparent))
                             .strokeWidth(0f))
         }
@@ -492,8 +459,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         }
 
         if (i == 1 && isTracking) {
-            isTracking = false
-            fab_tracking_map.imageTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
+            mapsPresenter?.updateTrackingState(false)
         }
     }
 
@@ -501,16 +467,16 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
         when (s) {
             "update_frequency" -> {
-                updateFrequency = Integer.parseInt(sharedPreferences.getString("update_frequency", "5")) * 1000
+                updateFrequency = settingsResources?.updateFrequency()?.times(1000)
                 if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return
                 }
-                locationManager!!.removeUpdates(locationListener)
-                locationManager!!.requestLocationUpdates(bestProvider, updateFrequency.toLong(), 0f, locationListener)
+                locationManager?.removeUpdates(locationListener)
+                locationManager?.requestLocationUpdates(bestProvider, updateFrequency!!.toLong(), 0f, locationListener)
             }
             "mobile_network" -> mobileNetwork = sharedPreferences.getBoolean("mobile_network", true)
-            "nearby_radius" -> mapsPresenter!!.updateNearbyFriendsRadius(200, LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude))
-        }//setTrackingReference();
+            "nearby_radius" -> mapsPresenter?.updateNearbyFriendsRadius(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude))
+        }
     }
 
     /* NETWORK CHANGE EVENTS */
@@ -521,7 +487,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     }
 
     override fun networkUnavailable() {
-        snackbar = Snackbar.make(map_coordinator, "No network connection detected", Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(coordinator_map, "No network connection detected", Snackbar.LENGTH_INDEFINITE)
 
         snackbar?.setAction("DISMISS") { snackbar?.dismiss() }?.show()
     }
@@ -531,7 +497,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     }
 
     override fun networkMobile() {
-        if (!mobileNetwork) {
+        if (!mobileNetwork!!) {
             //unsyncTrackingRef();
         }
     }
@@ -541,7 +507,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         override fun onLocationChanged(location: Location) {
             if (isTracking) {
                 //Will only move the camera if the users current location is in focus
-                val cameraPosition = CameraPosition.Builder().target(LatLng(location.latitude, location.longitude)).zoom(standardZoomLevel.toFloat()).build()
+                val cameraPosition = CameraPosition.Builder().target(LatLng(location.latitude, location.longitude)).zoom(DEFAULT_ZOOM.toFloat()).build()
                 googleMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
             }
 
@@ -553,7 +519,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
             /* GET NUMBER OF FRIENDS WITHIN A GIVEN RADIUS */
             mapsPresenter?.updateNearbyFriendsCount(friendMarkerList)
-            mapsPresenter?.updateNearbyFriendsRadius(200, latLng)
+            mapsPresenter?.updateNearbyFriendsRadius(latLng)
         }
 
         override fun onStatusChanged(s: String, i: Int, bundle: Bundle) {
@@ -567,12 +533,5 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         override fun onProviderDisabled(s: String) {
 
         }
-    }
-
-    companion object {
-
-        var directions: Polyline? = null
-
-        private val GET_PERMS = 1
     }
 }

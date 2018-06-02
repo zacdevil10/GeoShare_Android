@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare;
+package uk.co.appsbystudio.geoshare.base;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -33,11 +34,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.authentication.AuthActivity;
 import uk.co.appsbystudio.geoshare.friends.FriendsManager;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
@@ -55,8 +60,10 @@ import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener,
+public class MainActivity extends AppCompatActivity implements MainView, SharedPreferences.OnSharedPreferenceChangeListener,
         FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
+
+    private MainPresenter mainPresenter;
 
     public static File cacheDir;
 
@@ -65,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
-    private DatabaseReference databaseFriendsRef;
-    private DatabaseReference isTrackingRef;
 
     private String userId;
 
@@ -78,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private DrawerLayout rightDrawer;
     private FriendsNavAdapter friendsNavAdapter;
 
-    private final ArrayList<String> uid = new ArrayList<>();
+    private final ArrayList<String> uidList = new ArrayList<>();
     private final HashMap<String, Boolean> hasTracking = new HashMap<>();
 
     private SharedPreferences settingsSharedPreferences;
@@ -96,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainPresenter = new MainPresenterImpl(this, new MainInteractorImpl());
 
         cacheDir = this.getCacheDir();
 
@@ -115,10 +122,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
-        databaseFriendsRef = database.getReference("friends/" + userId);
-        databaseFriendsRef.keepSynced(true);
-        isTrackingRef = database.getReference(FirebaseHelper.TRACKING + "/" + userId + "/" + FirebaseHelper.TRACKING);
-        isTrackingRef.keepSynced(true);
 
         /* HANDLES FOR VARIOUS VIEWS */
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -141,10 +144,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         rightDrawer.setScrimColor(getResources().getColor(android.R.color.transparent));
 
         //Get friends and populate right nav drawer
-        getFriends();
-        getTrackingStatus();
+        mainPresenter.getFriends();
+        mainPresenter.getFriendsTrackingState();
 
-        friendsNavAdapter = new FriendsNavAdapter(rightNavigationView, uid, hasTracking, this);
+        friendsNavAdapter = new FriendsNavAdapter(rightNavigationView, uidList, hasTracking, this);
         if (rightNavigationView != null) rightNavigationView.setAdapter(friendsNavAdapter);
 
         header = navigationView.getHeaderView(0);
@@ -163,14 +166,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         ProfileUtils.setProfilePicture(userId, (CircleImageView) header.findViewById(R.id.profile_image));
         databaseReference.child("picture").addChildEventListener(new UpdatedProfilePicturesListener(friendsNavAdapter));
 
-        /*findViewById(R.id.add_friends).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent manager = new Intent(MainActivity.this, FriendsManager.class);
-                startActivity(manager);
-            }
-        });*/
-
         ((Switch) findViewById(R.id.show_hide_markers)).setChecked(showOnMapPreferences.getBoolean("all", true));
 
         ((Switch) findViewById(R.id.show_hide_markers)).setOnCheckedChangeListener(new ToggleAllMarkersVisibility());
@@ -181,9 +176,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser == null) {
                     ProfileUtils.resetDeviceSettings(settingsSharedPreferences, trackingPreferences, showOnMapPreferences);
-                    Intent intent = new Intent(MainActivity.this, AuthActivity.class);
-                    startActivity(intent);
-                    finish();
+                    mainPresenter.auth();
                 }
             }
         };
@@ -226,33 +219,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
                 switch (item.getItemId()) {
                     case R.id.maps:
-                        getSupportFragmentManager().beginTransaction().show(mapsFragment).commit();
+                        mainPresenter.showFragment(mapsFragment);
                         return true;
                     case R.id.friends:
                         item.setChecked(false);
-                        Intent intent = new Intent(MainActivity.this, FriendsManager.class);
-                        startActivity(intent);
+                        mainPresenter.friends();
                         return true;
                     case R.id.settings:
                         item.setChecked(false);
-                        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivity(settingsIntent);
+                        mainPresenter.settings();
                         return true;
                     case R.id.logout:
                         item.setChecked(false);
-                        logout();
+                        mainPresenter.logout();
                         return true;
                     case R.id.feedback:
                         item.setChecked(false);
-                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                        emailIntent.setType("text/plain");
-                        emailIntent.setData(Uri.parse("mailto:support@appsbystudio.co.uk"));
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback");
-                        if (emailIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(Intent.createChooser(emailIntent, "Send email via"));
-                        } else {
-                            Toast.makeText(MainActivity.this, "No email applications found on this device!", Toast.LENGTH_SHORT).show();
-                        }
+                        mainPresenter.feedback();
                         return true;
                 }
                 return true;
@@ -268,94 +251,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    /* FIREBASE GET LIST OF FRIENDS */
-    private void getFriends() {
-        databaseFriendsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                uid.add(dataSnapshot.getKey());
-                if (!friendsId.containsKey(dataSnapshot.getKey())) friendsId.put(dataSnapshot.getKey(), true);
-                getFriendsName(dataSnapshot.getKey());
-                findViewById(R.id.add_friends).setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                uid.remove(dataSnapshot.getKey());
-                if (friendsId.containsKey(dataSnapshot.getKey())) friendsId.remove(dataSnapshot.getKey());
-                if (friendNames.containsKey(dataSnapshot.getKey())) friendNames.remove(dataSnapshot.getKey());
-                friendsNavAdapter.notifyDataSetChanged();
-                if (friendsId.isEmpty()) findViewById(R.id.add_friends).setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void getFriendsName(final String friendId) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserInformation userInformation = dataSnapshot.child("users").child(friendId).getValue(UserInformation.class);
-                if (userInformation != null) {
-                    friendNames.put(friendId, userInformation.getName());
-                    friendsNavAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void getTrackingStatus() {
-        isTrackingRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                TrackingInfo trackingInfo = dataSnapshot.getValue(TrackingInfo.class);
-                if (trackingInfo != null && trackingInfo.isTracking()) {
-                    hasTracking.put(dataSnapshot.getKey(), trackingInfo.isTracking());
-                    friendsNavAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                onChildAdded(dataSnapshot, s);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                hasTracking.remove(dataSnapshot.getKey());
-                friendsNavAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -382,13 +277,104 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    /* FRAGMENTS CALL THIS TO OPEN NAV DRAWER */
-    public void openDrawer() {
+    @Override
+    public void updateFriendsList(@Nullable String uid, @Nullable String name) {
+        uidList.add(uid);
+        if (!friendsId.containsKey(uid)) friendsId.put(uid, true);
+        if (!friendNames.containsKey(uid)) friendNames.put(uid, name);
+        friendsNavAdapter.notifyDataSetChanged();
+        findViewById(R.id.add_friends).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void removeFromFriendList(@Nullable String uid) {
+        uidList.remove(uid);
+        if (friendsId.containsKey(uid)) friendsId.remove(uid);
+        if (friendNames.containsKey(uid)) friendNames.remove(uid);
+        friendsNavAdapter.notifyDataSetChanged();
+        if (friendsId.isEmpty()) findViewById(R.id.add_friends).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateTrackingState(@Nullable String uid, @Nullable Boolean trackingState) {
+        hasTracking.put(uid, trackingState);
+        friendsNavAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void removeTrackingState(@Nullable String uid) {
+        hasTracking.remove(uid);
+        friendsNavAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void swapFragment(@NotNull Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().show(fragment).commit();
+    }
+
+    @Override
+    public void friendsIntent() {
+        startActivity(new Intent(MainActivity.this, FriendsManager.class));
+    }
+
+    @Override
+    public void settingsIntent() {
+        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+    }
+
+    @Override
+    public void logoutIntent() {
+        startActivity(new Intent(MainActivity.this, AuthActivity.class));
+        finish();
+    }
+
+    @Override
+    public void feedbackIntent() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setType("text/plain");
+        emailIntent.setData(Uri.parse("mailto:support@appsbystudio.co.uk"));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback");
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(emailIntent, "Send email via"));
+        } else {
+            Toast.makeText(MainActivity.this, "No email applications found on this device!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void openNavDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
-    public void openFriendsDrawer() {
+    @Override
+    public void openFriendsNavDrawer() {
         rightDrawer.openDrawer(GravityCompat.END);
+    }
+
+    @Override
+    public void closeNavDrawer() {
+        drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void closeFriendsNavDrawer() {
+        rightDrawer.closeDrawer(GravityCompat.END);
+    }
+
+    @Override
+    public void showError(@NotNull String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showErrorSnackbar(@NotNull String message) {
+        Snackbar.make(findViewById(R.id.coordinator), message, Snackbar.LENGTH_SHORT)
+                .setAction("RETRY?", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mainPresenter.logout();
+                    }
+                });
     }
 
     /* CLICK FUNCTIONALITY FOR PROFILE PIC */
@@ -479,25 +465,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             rightDrawer.closeDrawer(GravityCompat.END);
         } else {
             super.onBackPressed();
-        }
-    }
-
-    /* FIREBASE AUTH LOG OUT */
-    private void logout() {
-        if (FirebaseAuth.getInstance() != null) {
-            String token = FirebaseInstanceId.getInstance().getToken();
-            if (token != null) {
-                databaseReference.child("token").child(userId).child(token).removeValue();
-            }
-            FirebaseAuth.getInstance().signOut();
-        } else {
-            Snackbar.make(findViewById(R.id.coordinator), "Could not log out!", Snackbar.LENGTH_SHORT)
-                    .setAction("RETRY?", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            FirebaseAuth.getInstance().signOut();
-                        }
-                    }).show();
         }
     }
 

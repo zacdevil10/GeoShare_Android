@@ -1,11 +1,13 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/map_coordinator"
+    android:id="@+id/coordinator_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include layout="@layout/map_layout_main" />
+
+    <include layout="@layout/bottom_sheet_map" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_tracking_map"
@@ -16,6 +18,8 @@
         android:tint="@color/colorPrimary"
         android:background="?android:attr/selectableItemBackground"
         app:backgroundTint="@android:color/white"
-        android:layout_gravity="bottom|end"/>
+        app:layout_anchor="@+id/constraint_bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        android:layout_gravity="top"/>
 
 </android.support.design.widget.CoordinatorLayout>

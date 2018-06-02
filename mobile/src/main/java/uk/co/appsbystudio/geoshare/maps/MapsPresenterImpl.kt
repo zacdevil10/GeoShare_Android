@@ -2,15 +2,15 @@ package uk.co.appsbystudio.geoshare.maps
 
 import android.graphics.Bitmap
 import android.location.Location
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesResources
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
-import java.util.*
 
-class MapsPresenterImpl(private val mapsView: MapsView, private val mapsInteractor: MapsInteractor): MapsPresenter, MapsInteractor.OnFirebaseRequestFinishedListener {
+class MapsPresenterImpl(private val mapsView: MapsView,
+                        private val settingsResources: SettingsPreferencesResources?,
+                        private val mapsInteractor: MapsInteractorImpl):
+        MapsPresenter, MapsInteractor.OnFirebaseRequestFinishedListener {
 
     override fun getStaticFriends() {
         mapsInteractor.staticFriends(this)
@@ -24,15 +24,19 @@ class MapsPresenterImpl(private val mapsView: MapsView, private val mapsInteract
         mapsInteractor.trackingSync(sync)
     }
 
+    override fun updateTrackingState(trackingState: Boolean) {
+        mapsView.updateTrackingButton(trackingState)
+    }
+
     override fun moveMapCamera(latLng: LatLng, zoomLevel: Int, animated: Boolean) {
         mapsView.updateCameraPosition(latLng, zoomLevel, animated)
     }
 
     override fun updateNearbyFriendsCount(friendsMarkerList: Map<String?, Marker?>) {
-        var count = 0
+        val count = 0
 
         //TODO: Update with shared preferences
-        val radius = 200
+        val radius = settingsResources?.nearbyRadius()
 
         for (markerId in friendsMarkerList.keys) {
             val markerLocation = friendsMarkerList[markerId]?.position
@@ -50,8 +54,8 @@ class MapsPresenterImpl(private val mapsView: MapsView, private val mapsInteract
         mapsView.updateNearbyText(count)
     }
 
-    override fun updateNearbyFriendsRadius(radius: Int, centerPoint: LatLng) {
-        mapsView.updateNearbyRadiusCircle(radius, centerPoint)
+    override fun updateNearbyFriendsRadius(centerPoint: LatLng) {
+        mapsView.updateNearbyRadiusCircle(settingsResources?.nearbyRadius(), centerPoint)
     }
 
     override fun locationAdded(key: String?, markerPointer: Bitmap?, databaseLocations: DatabaseLocations?) {

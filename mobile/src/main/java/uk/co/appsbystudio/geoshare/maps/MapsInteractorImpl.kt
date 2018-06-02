@@ -5,15 +5,15 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import uk.co.appsbystudio.geoshare.MainActivity
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.utils.bitmapCanvas
 import uk.co.appsbystudio.geoshare.utils.firebase.*
 import java.io.File
 
 class MapsInteractorImpl: MapsInteractor {
 
-    var staticRef: DatabaseReference? = null
-    var trackingRef: DatabaseReference? = null
+    private var staticRef: DatabaseReference? = null
+    private var trackingRef: DatabaseReference? = null
 
     private var trackingListener: ChildEventListener? = null
 
@@ -120,11 +120,11 @@ class MapsInteractorImpl: MapsInteractor {
         FirebaseStorage.getInstance().reference.child(FirebaseHelper.PROFILE_PICTURE + "/" + uid + ".png")
                 .getFile(Uri.fromFile(File(MainActivity.cacheDir.toString() + "/" + uid + ".png")))
                 .addOnSuccessListener {
-                    val image = BitmapFactory.decodeFile(MainActivity.cacheDir.toString() + "/" + uid + ".png") .bitmapCanvas(116, 155, false, 0)
+                    val image = BitmapFactory.decodeFile(MainActivity.cacheDir.toString() + "/" + uid + ".png") .bitmapCanvas(116, 155)
                     listener.locationAdded(uid, image, databaseLocations)
                 }
                 .addOnFailureListener {
-                    listener.locationAdded(uid, null.bitmapCanvas(116, 155, false, 0), databaseLocations)
+                    listener.locationAdded(uid, null.bitmapCanvas(116, 155), databaseLocations)
                 }
     }
 

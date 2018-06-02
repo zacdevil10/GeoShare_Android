@@ -14,7 +14,6 @@ import java.util.List;
 
 import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.maps.MapsFragment;
 
 class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>>{
 
@@ -67,7 +66,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
         }
 
         if (polylineOptions != null) {
-            MapsFragment.Companion.setDirections(googleMap.addPolyline(polylineOptions));
+            //MapsFragment.Companion.setDirections(googleMap.addPolyline(polylineOptions));
         }
     }
 }

@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseError;
 
 import java.io.File;
 
-import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;

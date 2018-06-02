@@ -17,7 +17,7 @@ import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.Application;
-import uk.co.appsbystudio.geoshare.MainActivity;
+import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 

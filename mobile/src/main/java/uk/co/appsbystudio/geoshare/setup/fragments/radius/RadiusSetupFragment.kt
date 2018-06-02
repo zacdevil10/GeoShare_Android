@@ -45,7 +45,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
                 text_progress_radius.text = i.toString()
                 text_progress_radius.measure(0, 0)
 
-                val thumb = seek_radius.seekBarThumb.bounds
+                val thumb = seek_radius.thumb.bounds
 
                 progressParameter = thumb.centerX() - text_progress_radius.measuredWidth
 

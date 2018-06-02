@@ -19,8 +19,6 @@ import uk.co.appsbystudio.geoshare.R;
 
 public class ProfilePictureOptions extends DialogFragment {
 
-    private String currentPhotoPath;
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder optionsMenu = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
@@ -37,11 +35,7 @@ public class ProfilePictureOptions extends DialogFragment {
                     case 1:
                         File imageFile = null;
 
-                        try {
-                            imageFile = createImageFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        imageFile = createImageFile();
 
                         if (imageFile != null) {
                             Uri uri = FileProvider.getUriForFile(getActivity(), BuildConfig.APPLICATION_ID + ".fileProvider", imageFile);
@@ -58,12 +52,12 @@ public class ProfilePictureOptions extends DialogFragment {
         return optionsMenu.create();
     }
 
-    private File createImageFile() throws IOException{
+    private File createImageFile() {
         String imageFileName = "profile_picture";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = new File(storageDir, imageFileName + ".png");
 
-        currentPhotoPath = image.getAbsolutePath();
+        String currentPhotoPath = image.getAbsolutePath();
         return image;
     }
 }

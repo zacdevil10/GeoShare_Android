@@ -48,7 +48,7 @@
                     android:id="@+id/profile_current_location"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                    android:background="?android:attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -85,7 +85,7 @@
                     android:id="@+id/profile_request_location"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                    android:background="?android:attr/selectableItemBackground">
 
                     <TextView
                         android:layout_width="0dp"
@@ -107,7 +107,7 @@
                     android:id="@+id/profile_delete_location"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?android:attr/selectableItemBackground"
                     android:visibility="gone">
 
                     <TextView
@@ -152,7 +152,7 @@
                     android:id="@+id/profile_share_location"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                    android:background="?android:attr/selectableItemBackground">
 
                     <TextView
                         android:layout_width="0dp"

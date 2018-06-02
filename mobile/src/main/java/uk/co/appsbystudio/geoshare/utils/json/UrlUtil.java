@@ -15,13 +15,13 @@ import uk.co.appsbystudio.geoshare.R;
 public class UrlUtil {
 
     /* DIRECTIONS METHODS */
-    public static String getDirectionsUrl(LatLng origin, LatLng dest) {
+    public static void getDirectionsUrl(LatLng origin, LatLng dest) {
         String sOrigin = "origin=" + origin.latitude + "," + origin.longitude;
         String sDest = "destination=" + dest.latitude + "," + dest.longitude;
 
         String params = sOrigin + "&" + sDest + "&sensor=false";
 
-        return "https://maps.googleapis.com/maps/api/directions/json?" + params + "&key=" + Application.getContext().getString(R.string.server_key);
+        Application.getContext().getString(R.string.server_key);
     }
 
     /* GEOCODING METHOD */

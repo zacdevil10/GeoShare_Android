@@ -44,7 +44,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AuthActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".base.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/MainTheme" />
         <activity
@@ -56,7 +56,7 @@
         <activity
             android:name=".friends.FriendsManager"
             android:label="@string/title_activity_friends_manager"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".base.MainActivity"
             android:theme="@style/FriendsTheme">
             <intent-filter>
                 <action android:name="FRIEND_MANAGER" />
@@ -82,7 +82,7 @@
             android:theme="@style/SettingsTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uk.co.appsbystudio.geoshare.MainActivity" />
+                android:value="uk.co.appsbystudio.geoshare.base.MainActivity" />
         </activity>
 
         <service
