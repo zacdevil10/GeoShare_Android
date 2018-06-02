@@ -44,9 +44,14 @@ import uk.co.appsbystudio.geoshare.base.MainView
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesResources
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
 import uk.co.appsbystudio.geoshare.utils.services.OnNetworkStateChangeListener
+import java.io.Serializable
 import java.util.*
 
-class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, SharedPreferences.OnSharedPreferenceChangeListener, OnNetworkStateChangeListener.NetworkStateReceiverListener {
+class MapsFragment : Fragment(), MapsView,
+        OnMapReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        OnNetworkStateChangeListener.NetworkStateReceiverListener {
 
     private var fragmentCallback: MainView? = null
 
@@ -83,7 +88,9 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
     private var snackbar: Snackbar? = null
 
-    private val friendMarkerList = HashMap<String?, Marker?>()
+    private var friendMarkerList = HashMap<String?, Marker?>()
+
+    private var storageDirectory: String? = null
 
     companion object {
         private const val DEFAULT_ZOOM = 16
@@ -92,7 +99,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-
+        storageDirectory = context?.cacheDir.toString()
         try {
             fragmentCallback = context as MainActivity
         } catch (e: ClassCastException) {
@@ -147,6 +154,8 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
         if (savedInstanceState != null) {
             mapsPresenter?.updateTrackingState(savedInstanceState.getBoolean("tracking_state"))
+            //TODO: Change to parcelable
+            //friendMarkerList = savedInstanceState.getSerializable("markers") as HashMap<String?, Marker?>
         }
 
         fab_tracking_map?.setOnClickListener {
@@ -170,7 +179,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         /*MapStyleManager styleManager = MapStyleManager.attachToMap(getContext(), googleMap);
         styleManager.addStyle(R.raw.map_style);*/
 
-        if (!savedInstance) setup()
+        setup()
 
         googleMap.setOnMapClickListener {
             if (selectedMarker != null) {
@@ -195,7 +204,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
             selectedMarker = marker
 
-            //TODO: Display location address in bottom panel thingy
+            //TODO: Display location address in bottom sheet
 
             val destination = marker.position
 
@@ -225,8 +234,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
             return
         }
 
-        isTracking = true
-
         googleMap?.isMyLocationEnabled = false
         googleMap?.isBuildingsEnabled = false
         googleMap?.uiSettings?.isCompassEnabled = false
@@ -234,19 +241,21 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         googleMap?.uiSettings?.isMapToolbarEnabled = false
 
         /* FIREBASE LOCATION TRACKING SETUP */
-        //setTrackingReference();
-        mapsPresenter?.getStaticFriends()
-
-        mapsPresenter?.getTrackingFriends()
-        mapsPresenter?.setTrackingSync(true)
-
-        /* USING CUSTOM GPS TRACKING MARKER */
         val currentLocation = LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude)
+
+        if (!savedInstance) {
+            isTracking = true
+
+            mapsPresenter?.getStaticFriends()
+
+            mapsPresenter?.getTrackingFriends(storageDirectory)
+            mapsPresenter?.setTrackingSync(true)
+
+            mapsPresenter?.moveMapCamera(currentLocation, DEFAULT_ZOOM, false)
+        }
 
         val myLocationMarker = BitmapFactory.decodeResource(resources, R.drawable.navigation)
         val scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false)
-
-        mapsPresenter?.moveMapCamera(LatLng(gpsTracking!!.latitude, gpsTracking!!.longitude), DEFAULT_ZOOM, false)
 
         myLocation = googleMap?.addMarker(MarkerOptions()
                 .position(currentLocation)
@@ -321,6 +330,16 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("tracking_state", isTracking)
+        //TODO: This causes the app to crash when changing intent
+        //outState.putSerializable("markers", friendMarkerList)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        myLocation?.remove()
+        nearbyCircle?.remove()
+
+        locationManager?.removeUpdates(locationListener)
     }
 
     override fun onDestroy() {
@@ -328,6 +347,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
         settingsSharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         networkStateChangeListener?.removeListener(this)
         Application.getContext().unregisterReceiver(networkStateChangeListener)
+        locationManager?.removeUpdates(locationListener)
     }
 
     /*private void setTrackingReference() {
@@ -445,7 +465,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
                             .strokeWidth(0f))
         }
 
-        mapsPresenter?.updateNearbyFriendsCount(friendMarkerList)
+        mapsPresenter?.updateNearbyFriendsCount(centerPoint, friendMarkerList)
     }
 
     override fun showError(message: String) {
@@ -515,10 +535,10 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback, GoogleMap.OnCamer
 
             val latLng = LatLng(location.latitude, location.longitude)
 
-            if (myLocation != null) myLocation!!.position = latLng
+            if (myLocation != null) myLocation?.position = latLng
 
             /* GET NUMBER OF FRIENDS WITHIN A GIVEN RADIUS */
-            mapsPresenter?.updateNearbyFriendsCount(friendMarkerList)
+            mapsPresenter?.updateNearbyFriendsCount(latLng, friendMarkerList)
             mapsPresenter?.updateNearbyFriendsRadius(latLng)
         }
 

@@ -187,7 +187,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
                         databaseReference.child(FirebaseHelper.TRACKING).child(userId).child("location").setValue(databaseLocations);
                         for (Map.Entry<String, Boolean> id : shares.entrySet()) {
                             if (id.getValue()) {
-                                if (MainActivity.friendNames.containsKey(id.getKey())) inboxStyle.addLine(MainActivity.friendNames.get(id.getKey()));
+                                if (MainActivity.Companion.getFriendNames().containsKey(id.getKey())) inboxStyle.addLine(MainActivity.Companion.getFriendNames().get(id.getKey()));
                                 databaseReference.child(FirebaseHelper.TRACKING).child(id.getKey()).child("tracking").child(userId).child("timestamp").setValue(System.currentTimeMillis());
                             }
                         }

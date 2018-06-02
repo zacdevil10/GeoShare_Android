@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.pages;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -40,7 +41,15 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
     private View view;
 
+    private File cache;
+
     public FriendsPendingFragment() {}
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        cache = context.getCacheDir();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,8 +74,8 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         if (auth.getCurrentUser() != null) getRequests();
 
-        friendsIncomingAdapter = new FriendsRequestAdapter(userIdIncoming, databaseReference, FriendsPendingFragment.this);
-        friendsOutgoingAdapter = new FriendsPendingAdapter(userIdOutgoing, databaseReference, FriendsPendingFragment.this);
+        friendsIncomingAdapter = new FriendsRequestAdapter(getContext(), userIdIncoming, databaseReference, FriendsPendingFragment.this);
+        friendsOutgoingAdapter = new FriendsPendingAdapter(getContext(), userIdOutgoing, databaseReference, FriendsPendingFragment.this);
 
         friendsIncomingList.setAdapter(friendsIncomingAdapter);
         friendsOutgoingList.setAdapter(friendsOutgoingAdapter);
@@ -124,7 +133,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
                 databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
                 databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
 
-                new File(MainActivity.cacheDir + "/" + uid + ".png").delete();
+                new File(cache + "/" + uid + ".png").delete();
             }
         }
     }
@@ -136,7 +145,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
             databaseReference.child("pending").child(auth.getCurrentUser().getUid()).child(uid).removeValue();
             databaseReference.child("pending").child(uid).child(auth.getCurrentUser().getUid()).removeValue();
 
-            new File(MainActivity.cacheDir + "/" + uid + ".png").delete();
+            new File(cache + "/" + uid + ".png").delete();
         }
     }
 
@@ -144,11 +153,11 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
-            if (!MainActivity.pendingId.containsKey(dataSnapshot.getKey()) && addFriendsInfo != null) {
+            if (!MainActivity.Companion.getPendingId().containsKey(dataSnapshot.getKey()) && addFriendsInfo != null) {
                 if (addFriendsInfo.isOutgoing()) {
-                    MainActivity.pendingId.put(dataSnapshot.getKey(), true);
+                    MainActivity.Companion.getPendingId().put(dataSnapshot.getKey(), true);
                 } else {
-                    MainActivity.pendingId.put(dataSnapshot.getKey(), false);
+                    MainActivity.Companion.getPendingId().put(dataSnapshot.getKey(), false);
                 }
             }
 
@@ -166,7 +175,7 @@ public class FriendsPendingFragment extends Fragment implements FriendsRequestAd
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            if (MainActivity.pendingId.containsKey(dataSnapshot.getKey())) MainActivity.pendingId.remove(dataSnapshot.getKey());
+            if (MainActivity.Companion.getPendingId().containsKey(dataSnapshot.getKey())) MainActivity.Companion.getPendingId().remove(dataSnapshot.getKey());
             AddFriendsInfo addFriendsInfo = dataSnapshot.getValue(AddFriendsInfo.class);
             if (addFriendsInfo != null) {
                 removeRequests(dataSnapshot, addFriendsInfo);

@@ -23,21 +23,21 @@ import uk.co.appsbystudio.geoshare.utils.services.TrackingService;
 
 public class ProfileUtils {
 
-    public static void setProfilePicture(final String userId, final CircleImageView view) {
-        File fileCheck = new File(MainActivity.cacheDir + "/" + userId + ".png");
+    public static void setProfilePicture(final String userId, final CircleImageView view, final String storageDirectory) {
+        File fileCheck = new File(storageDirectory + "/" + userId + ".png");
 
         if (fileCheck.exists()) {
-            Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + userId + ".png");
+            Bitmap imageBitmap = BitmapFactory.decodeFile(storageDirectory + "/" + userId + ".png");
             view.setImageBitmap(imageBitmap);
         } else {
             //If the file doesn't exist, download from Firebase
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = storageReference.child("profile_pictures/" + userId + ".png");
-            profileRef.getFile(Uri.fromFile(new File(MainActivity.cacheDir + "/" + userId + ".png")))
+            profileRef.getFile(Uri.fromFile(new File(storageDirectory + "/" + userId + ".png")))
                     .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Bitmap imageBitmap = BitmapFactory.decodeFile(MainActivity.cacheDir + "/" + userId + ".png");
+                            Bitmap imageBitmap = BitmapFactory.decodeFile(storageDirectory + "/" + userId + ".png");
                             view.setImageBitmap(imageBitmap);
                         }
                     })

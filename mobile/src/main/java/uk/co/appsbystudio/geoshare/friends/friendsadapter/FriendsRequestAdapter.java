@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.friendsadapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,9 @@ import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 
 public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>{
+
+    private final Context context;
+
     private final ArrayList userIncoming;
     private final DatabaseReference databaseReference;
 
@@ -26,7 +30,8 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
 
     private final Callback callback;
 
-    public FriendsRequestAdapter(ArrayList userIncoming, DatabaseReference databaseReference, Callback callback) {
+    public FriendsRequestAdapter(Context context, ArrayList userIncoming, DatabaseReference databaseReference, Callback callback) {
+        this.context = context;
         this.userIncoming = userIncoming;
         this.callback = callback;
         this.databaseReference = databaseReference;
@@ -42,7 +47,7 @@ public class FriendsRequestAdapter extends RecyclerView.Adapter<FriendsRequestAd
     public void onBindViewHolder(final ViewHolder holder, int position) {
         databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userIncoming.get(position).toString(), holder.friend_name));
 
-        if (!userIncoming.isEmpty()) ProfileUtils.setProfilePicture(userIncoming.get(position).toString(), holder.friends_pictures);
+        if (!userIncoming.isEmpty()) ProfileUtils.setProfilePicture(userIncoming.get(position).toString(), holder.friends_pictures, context.getCacheDir().toString());
 
         holder.accept_request.setOnClickListener(new View.OnClickListener() {
             @Override

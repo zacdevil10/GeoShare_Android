@@ -17,16 +17,21 @@ public class UpdatedProfilePicturesListener implements ChildEventListener {
     private FriendsPendingAdapter pendingAdapter;
     private FriendsRequestAdapter requestAdapter;
 
-    public UpdatedProfilePicturesListener(FriendsNavAdapter adapter) {
+    private String storageDirectory;
+
+    public UpdatedProfilePicturesListener(FriendsNavAdapter adapter, String storageDirectory) {
         this.navAdapter = adapter;
+        this.storageDirectory = storageDirectory;
     }
 
-    public UpdatedProfilePicturesListener(FriendsPendingAdapter adapter) {
+    public UpdatedProfilePicturesListener(FriendsPendingAdapter adapter, String storageDirectory) {
         this.pendingAdapter = adapter;
+        this.storageDirectory = storageDirectory;
     }
 
-    public UpdatedProfilePicturesListener(FriendsRequestAdapter adapter) {
+    public UpdatedProfilePicturesListener(FriendsRequestAdapter adapter, String storageDirectory) {
         this.requestAdapter = adapter;
+        this.storageDirectory = storageDirectory;
     }
 
     @Override
@@ -37,7 +42,7 @@ public class UpdatedProfilePicturesListener implements ChildEventListener {
     @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        File imageFile = new File(MainActivity.cacheDir + "/" + dataSnapshot.getKey() + ".png");
+        File imageFile = new File(storageDirectory + "/" + dataSnapshot.getKey() + ".png");
         if (imageFile.exists() && dataSnapshot.getValue(Long.class) != null && dataSnapshot.getValue(Long.class) > imageFile.lastModified()) {
             imageFile.delete();
 

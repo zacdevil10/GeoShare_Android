@@ -50,12 +50,12 @@ public class FriendshipStatusAdapter extends RecyclerView.Adapter<FriendshipStat
     public void onBindViewHolder(final ViewHolder holder, int position) {
         databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
 
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
+        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures, context.getCacheDir().toString());
 
-        if (MainActivity.friendsId.containsKey(userId.get(position).toString())) {
+        if (MainActivity.Companion.getFriendsId().containsKey(userId.get(position).toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.colorPrimary)));
-        } else if (MainActivity.pendingId.containsKey(userId.get(position).toString())) {
+        } else if (MainActivity.Companion.getPendingId().containsKey(userId.get(position).toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));
         } else {

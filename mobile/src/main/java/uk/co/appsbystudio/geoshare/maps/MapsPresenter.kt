@@ -7,7 +7,7 @@ interface MapsPresenter {
 
     fun getStaticFriends()
 
-    fun getTrackingFriends()
+    fun getTrackingFriends(storageDirectory: String?)
 
     fun setTrackingSync(sync: Boolean)
 
@@ -15,7 +15,7 @@ interface MapsPresenter {
 
     fun moveMapCamera(latLng: LatLng, zoomLevel: Int, animated: Boolean)
 
-    fun updateNearbyFriendsCount(friendsMarkerList: Map<String?, Marker?>)
+    fun updateNearbyFriendsCount(latLng: LatLng, friendsMarkerList: Map<String?, Marker?>)
 
     fun updateNearbyFriendsRadius(centerPoint: LatLng)
 

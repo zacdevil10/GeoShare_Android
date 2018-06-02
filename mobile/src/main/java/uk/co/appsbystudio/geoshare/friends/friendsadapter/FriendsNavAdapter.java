@@ -28,6 +28,7 @@ import uk.co.appsbystudio.geoshare.R;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 
 public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>{
+    private final Context context;
     private final RecyclerView recyclerView;
     private final ArrayList userId;
     private final HashMap<String, Boolean> hasTracking;
@@ -47,7 +48,8 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
     private final Callback callback;
 
-    public FriendsNavAdapter(RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, Callback callback) {
+    public FriendsNavAdapter(Context context, RecyclerView recyclerView, ArrayList userId, HashMap<String, Boolean> hasTracking, Callback callback) {
+        this.context = context;
         this.recyclerView = recyclerView;
         this.userId = userId;
         this.hasTracking = hasTracking;
@@ -66,10 +68,10 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
 
     @Override
     public void onBindViewHolder(final FriendsNavAdapter.ViewHolder holder, int position) {
-        if (MainActivity.friendNames.containsKey(userId.get(position).toString())) holder.friend_name.setText(MainActivity.friendNames.get(userId.get(position).toString()));
+        if (MainActivity.Companion.getFriendNames().containsKey(userId.get(position).toString())) holder.friend_name.setText(MainActivity.Companion.getFriendNames().get(userId.get(position).toString()));
 
         //Set friends profile picture
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures);
+        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures, context.getCacheDir().toString());
 
         if (hasTracking.containsKey(userId.get(position).toString()) && hasTracking.get(userId.get(position).toString())) {
             holder.trackingIndicator.setVisibility(View.VISIBLE);

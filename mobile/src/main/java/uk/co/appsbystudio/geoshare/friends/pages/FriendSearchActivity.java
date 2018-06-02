@@ -113,8 +113,8 @@ public class FriendSearchActivity extends AppCompatActivity implements Friendshi
     private void addUsersToView(DataSnapshot ds) {
         userId.add(ds.getKey());
         if (!imageCacheId.contains(ds.getKey())
-                && !MainActivity.friendsId.containsKey(ds.getKey())
-                && !MainActivity.pendingId.containsKey(ds.getKey())) imageCacheId.add(ds.getKey());
+                && !MainActivity.Companion.getFriendsId().containsKey(ds.getKey())
+                && !MainActivity.Companion.getPendingId().containsKey(ds.getKey())) imageCacheId.add(ds.getKey());
         searchAdapter.notifyDataSetChanged();
 
         oldestUserName = ds.child("name").getValue(String.class);

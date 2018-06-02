@@ -13,7 +13,7 @@ class SettingsPreferencesResources(private val preferences: SharedPreferences?) 
     }
 
     fun syncFrequency(): Int? {
-        return preferences?.getInt("sync_frequency", 60)
+        return preferences?.getString("sync_frequency", "60")?.toInt()
     }
 
     fun mobileSyncState(): Boolean? {
@@ -21,7 +21,7 @@ class SettingsPreferencesResources(private val preferences: SharedPreferences?) 
     }
 
     fun updateFrequency(): Int? {
-        return preferences?.getInt("update_frequency", 5)
+        return preferences?.getString("update_frequency", "5")?.toInt()
     }
 
     fun nearbyRadius(): Int? {

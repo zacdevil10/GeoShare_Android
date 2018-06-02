@@ -20,7 +20,7 @@ interface MapsInteractor {
 
     fun staticFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener)
 
-    fun trackingFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener)
+    fun trackingFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener)
 
     fun trackingSync(sync: Boolean)
 

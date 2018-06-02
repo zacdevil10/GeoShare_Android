@@ -5,7 +5,6 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.utils.bitmapCanvas
 import uk.co.appsbystudio.geoshare.utils.firebase.*
 import java.io.File
@@ -29,7 +28,7 @@ class MapsInteractorImpl: MapsInteractor {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     if (dataSnapshot.exists()) {
                         val databaseLocations = dataSnapshot.getValue(DatabaseLocations::class.java)
-                        getUserProfileImage(dataSnapshot.key, databaseLocations, listener)
+                        getUserProfileImage(dataSnapshot.key, databaseLocations, null, listener)
                     }
                 }
 
@@ -57,7 +56,7 @@ class MapsInteractorImpl: MapsInteractor {
         }
     }
 
-    override fun trackingFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
+    override fun trackingFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
@@ -74,7 +73,7 @@ class MapsInteractorImpl: MapsInteractor {
                     if (dataSnapshot.exists()) {
                         val trackingInfo = dataSnapshot.getValue(TrackingInfo::class.java)
                         if (trackingInfo != null && trackingInfo.isTracking) {
-                            getTrackingLocation(dataSnapshot.key!!, listener)
+                            getTrackingLocation(dataSnapshot.key!!, storageDirectory, listener)
                         }
                     }
                 }
@@ -94,7 +93,7 @@ class MapsInteractorImpl: MapsInteractor {
         }
     }
 
-    fun getTrackingLocation(uid: String, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
+    fun getTrackingLocation(uid: String, storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         val trackingLocationListener = object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -103,7 +102,7 @@ class MapsInteractorImpl: MapsInteractor {
                     if (listener.markerExists(uid)) {
                         listener.locationChanged(uid, databaseLocations)
                     } else {
-                        getUserProfileImage(uid, databaseLocations, listener)
+                        getUserProfileImage(uid, databaseLocations, storageDirectory, listener)
                     }
                 }
             }
@@ -116,11 +115,11 @@ class MapsInteractorImpl: MapsInteractor {
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TRACKING}/$uid/${FirebaseHelper.LOCATION}").addListenerForSingleValueEvent(trackingLocationListener)
     }
 
-    fun getUserProfileImage(uid: String?, databaseLocations: DatabaseLocations?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
+    fun getUserProfileImage(uid: String?, databaseLocations: DatabaseLocations?, storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         FirebaseStorage.getInstance().reference.child(FirebaseHelper.PROFILE_PICTURE + "/" + uid + ".png")
-                .getFile(Uri.fromFile(File(MainActivity.cacheDir.toString() + "/" + uid + ".png")))
+                .getFile(Uri.fromFile(File("$storageDirectory/$uid.png")))
                 .addOnSuccessListener {
-                    val image = BitmapFactory.decodeFile(MainActivity.cacheDir.toString() + "/" + uid + ".png") .bitmapCanvas(116, 155)
+                    val image = BitmapFactory.decodeFile("$storageDirectory/$uid.png") .bitmapCanvas(116, 155)
                     listener.locationAdded(uid, image, databaseLocations)
                 }
                 .addOnFailureListener {

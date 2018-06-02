@@ -16,8 +16,8 @@ class MapsPresenterImpl(private val mapsView: MapsView,
         mapsInteractor.staticFriends(this)
     }
 
-    override fun getTrackingFriends() {
-        mapsInteractor.trackingFriends(this)
+    override fun getTrackingFriends(storageDirectory: String?) {
+        mapsInteractor.trackingFriends(storageDirectory, this)
     }
 
     override fun setTrackingSync(sync: Boolean) {
@@ -32,23 +32,27 @@ class MapsPresenterImpl(private val mapsView: MapsView,
         mapsView.updateCameraPosition(latLng, zoomLevel, animated)
     }
 
-    override fun updateNearbyFriendsCount(friendsMarkerList: Map<String?, Marker?>) {
-        val count = 0
+    override fun updateNearbyFriendsCount(latLng: LatLng, friendsMarkerList: Map<String?, Marker?>) {
+        var count = 0
 
-        //TODO: Update with shared preferences
         val radius = settingsResources?.nearbyRadius()
 
         for (markerId in friendsMarkerList.keys) {
             val markerLocation = friendsMarkerList[markerId]?.position
-            val tempLocation = Location("")
+            val tempLocation = Location("markerTempLocation")
+            val myTempLocation = Location("myTempLocation")
 
-            tempLocation.latitude = markerLocation!!.latitude
-            tempLocation.longitude = markerLocation.longitude
+            if (markerLocation != null) {
+                tempLocation.latitude = markerLocation.latitude
+                tempLocation.longitude = markerLocation.longitude
+            }
 
-            //TODO: Get phone location here
-            /*if (gpsTracking.getLocation().distanceTo(tempLocation) < radius) {
+            myTempLocation.latitude = latLng.latitude
+            myTempLocation.longitude = latLng.longitude
+
+            if (radius != null && myTempLocation.distanceTo(tempLocation) < radius) {
                 count++
-            }*/
+            }
         }
 
         mapsView.updateNearbyText(count)
