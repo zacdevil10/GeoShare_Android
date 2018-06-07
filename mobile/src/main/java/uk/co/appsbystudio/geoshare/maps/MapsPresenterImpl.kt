@@ -31,14 +31,6 @@ class MapsPresenterImpl(private val mapsView: MapsView,
         mapsInteractor.trackingSync(sync)
     }
 
-    override fun networkTrackingSync(networkType: Int) {
-        if (networkType == 0) {
-            mapsInteractor.trackingSync(true)
-        } else if (networkType == 1 && settingsHelper != null) {
-            mapsInteractor.trackingSync(settingsHelper.mobileSyncState()!!)
-        }
-    }
-
     override fun updateTrackingState(trackingState: Boolean) {
         mapsView.updateTrackingButton(trackingState)
     }
@@ -111,14 +103,6 @@ class MapsPresenterImpl(private val mapsView: MapsView,
 
     override fun unregisterSettingsPreferencesListener() {
         mapsHelper.unregisterSharedPreferencesListener()
-    }
-
-    override fun networkStateChanged(state: Int) {
-        if (state == 0) {
-            mapsView.networkError("No network connection detected")
-        } else {
-            mapsView.networkAvailable()
-        }
     }
 
     override fun locationAdded(key: String?, markerPointer: Bitmap?, databaseLocations: DatabaseLocations?) {

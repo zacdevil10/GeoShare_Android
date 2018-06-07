@@ -74,7 +74,7 @@ class MapsInteractorImpl: MapsInteractor {
                 override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
                     if (dataSnapshot.exists()) {
                         val trackingInfo = dataSnapshot.getValue(TrackingInfo::class.java)
-                        if (trackingInfo != null && trackingInfo.isTracking) {
+                        if (trackingInfo != null && trackingInfo.tracking) {
                             getTrackingLocation(dataSnapshot.key!!, storageDirectory, listener)
                         }
                     }
@@ -120,7 +120,6 @@ class MapsInteractorImpl: MapsInteractor {
     fun getUserProfileImage(uid: String?, databaseLocations: DatabaseLocations?, storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         val file = File(storageDirectory.toString() + "/" + uid + ".png")
         if (file.exists()) {
-            println("THE FILE EXISTS !!!!!!!!!!!!!!!!!!!!!!!")
             val image = BitmapFactory.decodeFile("$storageDirectory/$uid.png") .bitmapCanvas(116, 155)
             listener.locationAdded(uid, image, databaseLocations)
         } else {

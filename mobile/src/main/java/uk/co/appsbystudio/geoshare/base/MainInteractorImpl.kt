@@ -70,7 +70,7 @@ class MainInteractorImpl: MainInteractor {
 
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     val trackingInfo = dataSnapshot.getValue(TrackingInfo::class.java)
-                    listener.trackingAdded(dataSnapshot.key, trackingInfo?.isTracking)
+                    listener.trackingAdded(dataSnapshot.key, trackingInfo?.tracking)
                 }
 
                 override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {

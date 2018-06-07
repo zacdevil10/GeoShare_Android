@@ -6,7 +6,7 @@ import com.google.android.gms.maps.GoogleMap;
 
 import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
 
-public class DirectionsDownloadTask extends AsyncTask<String, String, String> {
+class DirectionsDownloadTask extends AsyncTask<String, String, String> {
 
     private final GoogleMap googleMap;
 

@@ -11,8 +11,6 @@ interface MapsPresenter {
 
     fun setTrackingSync(sync: Boolean)
 
-    fun networkTrackingSync(networkType: Int)
-
     fun updateTrackingState(trackingState: Boolean)
 
     fun moveMapCamera(latLng: LatLng, zoomLevel: Int, animated: Boolean)
@@ -32,8 +30,6 @@ interface MapsPresenter {
     fun registerNetworkReceiver()
 
     fun unregisterNetworkReceiver()
-
-    fun networkStateChanged(state: Int)
 
     fun registerSettingsPreferencesListener()
 
