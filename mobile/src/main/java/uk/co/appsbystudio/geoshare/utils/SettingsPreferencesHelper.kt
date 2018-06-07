@@ -2,7 +2,7 @@ package uk.co.appsbystudio.geoshare.utils
 
 import android.content.SharedPreferences
 
-class SettingsPreferencesResources(private val preferences: SharedPreferences?) {
+class SettingsPreferencesHelper(private val preferences: SharedPreferences?) {
 
     fun friendNotificationState(): Boolean? {
         return preferences?.getBoolean("friend_notification", true)
@@ -20,12 +20,7 @@ class SettingsPreferencesResources(private val preferences: SharedPreferences?) 
         return preferences?.getBoolean("mobile_network", true)
     }
 
-    fun updateFrequency(): Int? {
-        return preferences?.getString("update_frequency", "5")?.toInt()
-    }
-
     fun nearbyRadius(): Int? {
-        return preferences?.getInt("nearby_radius", 100)
+        return preferences?.getString("nearby_radius", "100")?.toInt()
     }
-
 }

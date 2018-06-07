@@ -121,14 +121,14 @@
         <item>15 minutes</item>
         <item>30 minutes</item>
     </string-array>
-    <integer-array name="pref_sync_frequency_values">
+    <string-array name="pref_sync_frequency_values">
         <item>60</item>
         <item>120</item>
         <item>300</item>
         <item>600</item>
         <item>900</item>
         <item>1800</item>
-    </integer-array>
+    </string-array>
 
     <string name="pref_title_mobile_network">Track over mobile network</string>
 
@@ -147,14 +147,14 @@
         <item>5 minutes</item>
     </string-array>
 
-    <integer-array name="pref_update_frequency_preference_values">
+    <string-array name="pref_update_frequency_preference_values">
         <item>5</item>
         <item>10</item>
         <item>30</item>
         <item>60</item>
         <item>120</item>
         <item>300</item>
-    </integer-array>
+    </string-array>
 
     <string name="pref_title_nearby_radius">Nearby radius</string>
 

@@ -16,6 +16,8 @@ class MapsInteractorImpl: MapsInteractor {
 
     private var trackingListener: ChildEventListener? = null
 
+    private var syncState: Boolean = false
+
     override fun staticFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         val user = FirebaseAuth.getInstance().currentUser
 
@@ -116,23 +118,32 @@ class MapsInteractorImpl: MapsInteractor {
     }
 
     fun getUserProfileImage(uid: String?, databaseLocations: DatabaseLocations?, storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
-        FirebaseStorage.getInstance().reference.child(FirebaseHelper.PROFILE_PICTURE + "/" + uid + ".png")
-                .getFile(Uri.fromFile(File("$storageDirectory/$uid.png")))
-                .addOnSuccessListener {
-                    val image = BitmapFactory.decodeFile("$storageDirectory/$uid.png") .bitmapCanvas(116, 155)
-                    listener.locationAdded(uid, image, databaseLocations)
-                }
-                .addOnFailureListener {
-                    listener.locationAdded(uid, null.bitmapCanvas(116, 155), databaseLocations)
-                }
+        val file = File(storageDirectory.toString() + "/" + uid + ".png")
+        if (file.exists()) {
+            println("THE FILE EXISTS !!!!!!!!!!!!!!!!!!!!!!!")
+            val image = BitmapFactory.decodeFile("$storageDirectory/$uid.png") .bitmapCanvas(116, 155)
+            listener.locationAdded(uid, image, databaseLocations)
+        } else {
+            FirebaseStorage.getInstance().reference.child("""${FirebaseHelper.PROFILE_PICTURE}/$uid.png""")
+                    .getFile(Uri.fromFile(file))
+                    .addOnSuccessListener {
+                        val image = BitmapFactory.decodeFile("$storageDirectory/$uid.png") .bitmapCanvas(116, 155)
+                        listener.locationAdded(uid, image, databaseLocations)
+                    }
+                    .addOnFailureListener {
+                        listener.locationAdded(uid, null.bitmapCanvas(116, 155), databaseLocations)
+                    }
+        }
     }
 
     override fun trackingSync(sync: Boolean) {
         trackingRef?.keepSynced(sync)
 
-        if (sync) {
+        if (sync && !syncState) {
+            syncState = true
             trackingRef?.addChildEventListener(trackingListener as ChildEventListener)
-        } else {
+        } else if (!sync) {
+            syncState = false
             trackingRef?.removeEventListener(trackingListener as ChildEventListener)
         }
     }

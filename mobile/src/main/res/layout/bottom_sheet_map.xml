@@ -6,24 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
+    android:clickable="true"
+    android:focusable="true"
     app:layout_behavior="BottomSheetBehavior"
-    app:behavior_hideable="true">
+    app:behavior_hideable="true"
+    android:elevation="16dp">
 
     <TextView
         android:id="@+id/text_name_map"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
+        android:textSize="32sp"
         tools:text="@tools:sample/full_names"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/text_address_map"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
         tools:text="@tools:sample/cities"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,11 +38,23 @@
         android:id="@+id/text_timestamp_map"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         tools:text="@tools:sample/date/ddmmyy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_address_map"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_distance_map"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="bottom"
+        android:layout_marginStart="16dp"
+        tools:text="@tools:sample/date/hhmmss"
+        app:layout_constraintStart_toEndOf="@id/text_timestamp_map"
+        app:layout_constraintTop_toTopOf="@id/text_timestamp_map"
+        app:layout_constraintBottom_toBottomOf="@id/text_timestamp_map"/>
 
 </android.support.constraint.ConstraintLayout>

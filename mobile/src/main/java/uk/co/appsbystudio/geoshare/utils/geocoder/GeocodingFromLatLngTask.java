@@ -28,6 +28,8 @@ public class GeocodingFromLatLngTask extends AsyncTask<Void, Void, String> {
         try {
             String jsonResponse = UrlUtil.downloadUrl(url);
 
+            System.out.println(jsonResponse);
+
             JSONObject jsonObject = new JSONObject(jsonResponse);
 
             finalAddress = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getString("formatted_address");

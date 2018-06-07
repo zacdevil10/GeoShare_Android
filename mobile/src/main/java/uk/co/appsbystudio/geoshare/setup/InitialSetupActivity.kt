@@ -92,7 +92,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     }
 
     override fun onFinish(radius: Int) {
-        sharedPreferences?.edit()?.putInt("nearby_radius", radius)?.apply()
+        sharedPreferences?.edit()?.putString("nearby_radius", radius.toString())?.apply()
         sharedPreferences?.edit()?.putBoolean("first_run", false)?.apply()
 
         startActivity(Intent(this, MainActivity::class.java))

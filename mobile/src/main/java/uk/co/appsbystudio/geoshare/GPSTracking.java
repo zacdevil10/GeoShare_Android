@@ -7,6 +7,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class GPSTracking implements LocationListener {
 
     private final Context context;
@@ -59,6 +61,10 @@ public class GPSTracking implements LocationListener {
 
     public Location getLocation() {
         return location;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     public double getLatitude() {

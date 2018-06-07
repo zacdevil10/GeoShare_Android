@@ -2,12 +2,10 @@
 <resources>
 
     <style name="MainTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">false</item>
 
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
 
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>

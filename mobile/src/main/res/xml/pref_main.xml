@@ -17,7 +17,6 @@
             android:key="sync_frequency"
             android:title="@string/pref_title_sync_frequency"
             android:summary="%s"
-            android:numeric="integer"
             android:defaultValue="60"
             android:entries="@array/pref_sync_frequency_titles"
             android:entryValues="@array/pref_sync_frequency_values"/>
@@ -29,21 +28,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_location">
-        <ListPreference
+        <!--<ListPreference
             android:key="update_frequency"
             android:title="@string/pref_title_update_frequency"
             android:summary="%s"
-            android:numeric="integer"
             android:defaultValue="5"
             android:entries="@array/pref_update_frequency_preference_titles"
-            android:entryValues="@array/pref_update_frequency_preference_values"/>
+            android:entryValues="@array/pref_update_frequency_preference_values"/>-->
 
         <EditTextPreference
             android:key="nearby_radius"
             android:title="@string/pref_title_nearby_radius"
-            android:numeric="integer"
             android:singleLine="true"
             android:defaultValue="100"
+            android:inputType="number"
             android:maxLength="3" />
     </PreferenceCategory>
 

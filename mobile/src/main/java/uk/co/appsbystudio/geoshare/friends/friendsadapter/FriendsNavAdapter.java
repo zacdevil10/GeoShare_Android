@@ -86,7 +86,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         if (isExpanded) {
             holder.friend_name.setTextColor(Application.getContext().getResources().getColor(R.color.colorAccent));
         } else {
-            holder.friend_name.setTextColor(Application.getContext().getResources().getColor(R.color.colorPrimary));
+            holder.friend_name.setTextColor(Application.getContext().getResources().getColor(android.R.color.white));
         }
 
         holder.nameItem.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +143,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         holder.findLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                System.out.println("Adapter: " + userId);
                 callback.findOnMapClicked(userId.get(holder.getAdapterPosition()).toString());
             }
         });
