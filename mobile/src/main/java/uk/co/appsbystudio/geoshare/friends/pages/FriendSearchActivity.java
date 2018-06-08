@@ -55,7 +55,7 @@ public class FriendSearchActivity extends AppCompatActivity implements Friendshi
 
         if (auth.getCurrentUser() != null) uid = auth.getCurrentUser().getUid();
 
-        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.image_back_button_profile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();

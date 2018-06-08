@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.pages.Profile;
+import uk.co.appsbystudio.geoshare.friends.profile.Profile;
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 

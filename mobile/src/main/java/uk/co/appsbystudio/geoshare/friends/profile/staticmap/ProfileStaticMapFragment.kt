@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.profile
+package uk.co.appsbystudio.geoshare.friends.profile.staticmap
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -18,6 +18,14 @@ class ProfileStaticMapFragment : Fragment() {
     var uid: String? = null
 
     private var ref: DatabaseReference? = null
+
+    companion object {
+        fun newInstance(uid: String?) = ProfileStaticMapFragment().apply {
+            arguments = Bundle().apply {
+                putString("uid", uid)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

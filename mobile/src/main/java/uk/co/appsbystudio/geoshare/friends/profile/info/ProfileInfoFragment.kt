@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.profile
+package uk.co.appsbystudio.geoshare.friends.profile.info
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -35,6 +35,14 @@ class ProfileInfoFragment : Fragment() {
     private var shareLocationLabel: TextView? = null
 
     private var profileDeleteLocationLayout: ConstraintLayout? = null
+
+    companion object {
+        fun newInstance(uid: String?) = ProfileInfoFragment().apply {
+            arguments = Bundle().apply {
+                putString("uid", uid)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_profile_info, container, false)

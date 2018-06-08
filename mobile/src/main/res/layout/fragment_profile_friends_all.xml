@@ -6,4 +6,4 @@
     android:layout_height="match_parent"
     android:paddingTop="8dp"
     android:clipToPadding="false"
-    tools:context="uk.co.appsbystudio.geoshare.friends.profile.pages.ProfileFriendsAllFragment"/>
+    tools:context=".friends.profile.friends.pages.ProfileFriendsAllFragment"/>

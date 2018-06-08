@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.profile
+package uk.co.appsbystudio.geoshare.friends.profile.friends
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.profile.profileadapter.ProfileFriendsPagerAdapter
 import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
 
 class ProfileFriendsFragment : Fragment() {

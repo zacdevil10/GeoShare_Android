@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.friends.pages.Profile">
+    tools:context="uk.co.appsbystudio.geoshare.friends.profile.Profile">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/background"
+        android:id="@+id/image_background_profile"
         android:contentDescription="TODO"
         android:scaleType="centerCrop"
         android:src="@mipmap/background_low"
@@ -31,14 +31,14 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:id="@+id/summary_container"
+        android:id="@+id/constraint_summary_container_profile"
         android:fitsSystemWindows="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/action_bar"
+            android:id="@+id/action_bar_profile"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/back"
+                android:id="@+id/image_back_button_profile"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back_white_24dp"
                 android:padding="8dp"
@@ -62,7 +62,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="84dp"
             android:layout_height="84dp"
-            android:id="@+id/avatar"
+            android:id="@+id/image_avatar_profile"
             android:src="@drawable/ic_profile_picture"
             android:layout_marginTop="16dp"
             app:civ_border_color="@android:color/white"
@@ -70,25 +70,25 @@
             android:paddingBottom="2dp"
             android:paddingEnd="1dp"
             android:background="@drawable/drop_shadow"
-            app:layout_constraintTop_toBottomOf="@id/action_bar"
+            app:layout_constraintTop_toBottomOf="@id/action_bar_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/name"
+            android:id="@+id/text_name_profile"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:layout_margin="8dp"
-            app:layout_constraintTop_toBottomOf="@id/avatar"
+            app:layout_constraintTop_toBottomOf="@id/image_avatar_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/add_remove_friend"
+            android:id="@+id/button_remove_friend_profile"
             android:background="@drawable/round_edge_green_outline"
             android:text="@string/friends"
             android:drawableStart="@drawable/ic_done_white_24dp"
@@ -98,15 +98,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/name" />
+            app:layout_constraintTop_toBottomOf="@id/text_name_profile" />
 
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:id="@+id/profile_view_pager"
-        app:layout_constraintTop_toBottomOf="@id/summary_container"
+        android:id="@+id/view_pager_profile"
+        app:layout_constraintTop_toBottomOf="@id/constraint_summary_container_profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

@@ -1,11 +1,11 @@
-package uk.co.appsbystudio.geoshare.friends.profile.profileadapter
+package uk.co.appsbystudio.geoshare.friends.profile.friends
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import uk.co.appsbystudio.geoshare.friends.profile.pages.ProfileFriendsAllFragment
-import uk.co.appsbystudio.geoshare.friends.profile.pages.ProfileFriendsMutualFragment
+import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsAllFragment
+import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsMutualFragment
 
 class ProfileFriendsPagerAdapter (fm: FragmentManager?, val uid: String) : FragmentPagerAdapter(fm) {
 

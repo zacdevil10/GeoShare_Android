@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_initial_setup.*
 
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
@@ -31,8 +32,6 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     private var initialSetupPresenter: InitialSetupPresenter? = null
     private var sharedPreferences: SharedPreferences? = null
 
-    private var viewPager: NoSwipeViewPager? = null
-
     private val PERMS = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +44,6 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
         initialSetupPresenter?.addDeviceToken()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
-        viewPager = findViewById(R.id.view_pager)
 
         val fragmentPagerAdapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment? {
@@ -64,9 +61,9 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
             }
         }
 
-        viewPager?.offscreenPageLimit = 3
-        viewPager?.setPagingEnabled(false)
-        viewPager?.adapter = fragmentPagerAdapter
+        view_pager?.offscreenPageLimit = 3
+        view_pager?.setPagingEnabled(false)
+        view_pager?.adapter = fragmentPagerAdapter
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -84,7 +81,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     }
 
     override fun onBackPressed() {
-        if (viewPager?.currentItem != 0) {
+        if (view_pager?.currentItem != 0) {
             this.onBack()
         } else {
             super.onBackPressed()
@@ -101,11 +98,11 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     }
 
     override fun onNext() {
-        viewPager?.currentItem = viewPager?.currentItem?.plus(1)!!
+        view_pager?.currentItem = view_pager?.currentItem?.plus(1)!!
     }
 
     override fun onBack() {
-        viewPager?.currentItem = viewPager?.currentItem?.minus(1)!!
+        view_pager?.currentItem = view_pager?.currentItem?.minus(1)!!
     }
 
     override fun hasPermissions(): Boolean {

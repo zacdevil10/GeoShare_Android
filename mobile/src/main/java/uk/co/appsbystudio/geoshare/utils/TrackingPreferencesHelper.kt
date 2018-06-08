@@ -12,6 +12,14 @@ class TrackingPreferencesHelper(private val preferences: SharedPreferences?) {
         return preferences?.all
     }
 
+    fun exists(uid: String): Boolean? {
+        return preferences?.contains(uid)
+    }
+
+    fun removeEntry(uid: String) {
+        preferences?.edit()?.remove(uid)?.apply()
+    }
+
     fun clear() {
         preferences?.edit()?.clear()?.apply()
     }
