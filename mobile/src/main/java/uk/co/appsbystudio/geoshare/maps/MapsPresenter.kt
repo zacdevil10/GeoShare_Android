@@ -9,7 +9,7 @@ interface MapsPresenter {
 
     fun getTrackingFriends(storageDirectory: String?)
 
-    fun setTrackingSync(sync: Boolean)
+    fun setTrackingSync(sync: Boolean): Boolean
 
     fun updateTrackingState(trackingState: Boolean)
 

@@ -92,6 +92,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     }
 
     override fun onFinish(radius: Int) {
+        sharedPreferences?.edit()?.putString("display_name", FirebaseAuth.getInstance().currentUser?.displayName)?.apply()
         sharedPreferences?.edit()?.putString("nearby_radius", radius.toString())?.apply()
         sharedPreferences?.edit()?.putBoolean("first_run", false)?.apply()
 

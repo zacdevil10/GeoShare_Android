@@ -13,8 +13,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.GPSTracking;
@@ -39,7 +42,7 @@ public class ShareOptions extends DialogFragment {
         Bundle args = getArguments();
         String name = args.getString("name");
         friendId = args.getString("friendId");
-        uid = args.getString("uid");
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         gpsTracking = new GPSTracking(getActivity());
 

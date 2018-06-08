@@ -22,6 +22,6 @@ interface MapsInteractor {
 
     fun trackingFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener)
 
-    fun trackingSync(sync: Boolean)
+    fun trackingSync(sync: Boolean): Boolean
 
 }

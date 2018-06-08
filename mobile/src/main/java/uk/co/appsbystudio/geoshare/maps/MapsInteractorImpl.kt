@@ -135,7 +135,7 @@ class MapsInteractorImpl: MapsInteractor {
         }
     }
 
-    override fun trackingSync(sync: Boolean) {
+    override fun trackingSync(sync: Boolean): Boolean {
         trackingRef?.keepSynced(sync)
 
         if (sync && !syncState) {
@@ -145,5 +145,7 @@ class MapsInteractorImpl: MapsInteractor {
             syncState = false
             trackingRef?.removeEventListener(trackingListener as ChildEventListener)
         }
+
+        return syncState
     }
 }

@@ -16,6 +16,7 @@ import uk.co.appsbystudio.geoshare.setup.InitialSetupView
 class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
     private var fragmentCallback: InitialSetupView? = null
+    private var radiusSetupPresenter: RadiusSetupPresenter? = null
 
     private var progressParameter: Int = 0
 
@@ -31,7 +32,11 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_radius_setup, container, false)
+        val view = inflater.inflate(R.layout.fragment_radius_setup, container, false)
+
+        radiusSetupPresenter = RadiusSetupPresenterImpl(this)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,8 +54,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
                 progressParameter = thumb.centerX() - text_progress_radius.measuredWidth
 
-                //TODO: Call method in presenter first
-                this@RadiusSetupFragment.onSeekBarPositionChanged(progressParameter)
+                radiusSetupPresenter?.onSeekBarPositionChanged(progressParameter)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -71,7 +75,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
         }
     }
 
-    override fun onSeekBarPositionChanged(progress: Int) {
+    override fun updateSeekBarText(progress: Int) {
         val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         params.addRule(RelativeLayout.ABOVE, seek_radius.id)
 

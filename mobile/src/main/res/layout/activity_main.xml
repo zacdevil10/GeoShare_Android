@@ -11,7 +11,7 @@
     <android.support.v4.widget.DrawerLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:id="@+id/right_nav_drawer">
+        android:id="@+id/drawer_right_nav_main">
 
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/coordinator"
@@ -19,12 +19,12 @@
             android:layout_height="match_parent">
 
             <FrameLayout
-                android:id="@+id/content_frame_map"
+                android:id="@+id/frame_content_map_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <FrameLayout
-                android:id="@+id/content_frame"
+                android:id="@+id/frame_content_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
@@ -40,132 +40,23 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/filter_container"
-                android:layout_marginTop="25dp"
+                android:layout_height="?android:attr/actionBarSize"
+                android:id="@+id/labels"
+                android:layout_marginTop="33dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/search_key_line"
+                android:layout_marginEnd="@dimen/search_key_line"
+                android:orientation="horizontal"
+                android:gravity="end"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:id="@+id/labels"
-                    android:layout_margin="8dp"
-                    android:paddingEnd="@dimen/search_key_line"
-                    android:paddingStart="@dimen/search_key_line"
-                    android:orientation="horizontal"
-                    android:gravity="end">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="Friends"
-                        android:textColor="@android:color/white"/>
-
-                    <!--<ImageView
-                        android:id="@+id/show_hide_filter"
-                        android:layout_width="@dimen/search_icon"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/menu_desc"
-                        android:src="@drawable/ic_filter_list_black_24dp"
-                        android:tint="@color/colorPrimary"/>-->
-
-                </LinearLayout>
-
-                <!--<LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/filter_content"
-                    android:background="@drawable/friends_nav_drawer_expanded_background"
-                    android:visibility="gone"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:id="@+id/item_1"
-                        android:orientation="horizontal"
-                        android:gravity="end">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Is sharing"
-                            android:textColor="@color/colorAccent"/>
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:checked="true"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:id="@+id/item_2"
-                        android:orientation="horizontal"
-                        android:gravity="end">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Sharing with"
-                            android:textColor="@color/colorAccent"/>
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:checked="true"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:id="@+id/item_3"
-                        android:orientation="horizontal"
-                        android:gravity="end">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Is tracking"
-                            android:textColor="@color/colorAccent"/>
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:checked="true"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:id="@+id/item_4"
-                        android:orientation="horizontal"
-                        android:gravity="end">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tracking with"
-                            android:textColor="@color/colorAccent"/>
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:checked="true"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>-->
+                    android:layout_gravity="center_vertical"
+                    android:text="Friends"
+                    android:textSize="24sp"
+                    android:textColor="@android:color/white"/>
 
             </LinearLayout>
 
@@ -173,16 +64,16 @@
                 android:id="@+id/add_friends"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="You have no friends ;("
+                android:text="You currently have no friends"
                 android:gravity="end"
                 android:paddingEnd="8dp"
-                app:layout_constraintTop_toBottomOf="@id/filter_container"
+                app:layout_constraintTop_toBottomOf="@id/labels"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:textColor="@color/colorPrimary"/>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/right_friends_drawer"
+                android:id="@+id/recycler_right_nav_main"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:choiceMode="singleChoice"
@@ -192,7 +83,7 @@
                 android:overScrollMode="never"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/filter_container"
+                app:layout_constraintTop_toBottomOf="@id/labels"
                 app:layout_constraintBottom_toTopOf="@id/show_hide_button_bar"/>
 
             <LinearLayout
@@ -212,7 +103,7 @@
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <Switch
-                    android:id="@+id/show_hide_markers"
+                    android:id="@+id/switch_markers_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/show_markers"
@@ -226,7 +117,7 @@
     </android.support.v4.widget.DrawerLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/left_nav_view"
+        android:id="@+id/drawer_left_nav_main"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
         android:layout_gravity="start"

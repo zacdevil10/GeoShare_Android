@@ -27,8 +27,8 @@ class MapsPresenterImpl(private val mapsView: MapsView,
         mapsInteractor.trackingFriends(storageDirectory, this)
     }
 
-    override fun setTrackingSync(sync: Boolean) {
-        mapsInteractor.trackingSync(sync)
+    override fun setTrackingSync(sync: Boolean): Boolean {
+        return mapsInteractor.trackingSync(sync)
     }
 
     override fun updateTrackingState(trackingState: Boolean) {
@@ -78,7 +78,8 @@ class MapsPresenterImpl(private val mapsView: MapsView,
     }
 
     override fun updateBottomSheet(uid: String, startLatLng: LatLng, endLatLng: LatLng, timestamp: Long?) {
-        mapsView.updateBottomSheetText(MainActivity.friendNames[uid], GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude).execute().get(), timestamp?.convertDate(), distance(startLatLng, endLatLng))
+        //mapsView.updateBottomSheetText(MainActivity.friendNames[uid], GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude).execute().get(), timestamp?.convertDate(), distance(startLatLng, endLatLng))
+        mapsView.updateBottomSheetText(MainActivity.friendNames[uid], "", timestamp?.convertDate(), distance(startLatLng, endLatLng))
     }
 
     override fun updateNearbyFriendsRadius(centerPoint: LatLng) {

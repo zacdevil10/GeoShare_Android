@@ -1,5 +1,7 @@
 package uk.co.appsbystudio.geoshare.base
 
+import android.app.DialogFragment
+import android.content.Intent
 import android.support.v4.app.Fragment
 
 interface MainView {
@@ -12,7 +14,7 @@ interface MainView {
 
     fun removeTrackingState(uid: String?)
 
-    fun swapFragment(fragment: Fragment)
+    fun showFragment(fragment: Fragment)
 
     fun friendsIntent()
 
@@ -20,7 +22,17 @@ interface MainView {
 
     fun logoutIntent()
 
-    fun feedbackIntent()
+    fun feedbackIntent(intent: Intent)
+
+    fun startTrackingServiceIntent()
+
+    fun stopTrackingServiceIntent()
+
+    fun showDialog(dialog: DialogFragment, tag: String)
+
+    fun setDisplayName(name: String?)
+
+    fun markerToggleState(state: Boolean?)
 
     fun openNavDrawer()
 

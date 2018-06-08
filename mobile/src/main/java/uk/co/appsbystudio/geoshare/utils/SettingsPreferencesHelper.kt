@@ -23,4 +23,8 @@ class SettingsPreferencesHelper(private val preferences: SharedPreferences?) {
     fun nearbyRadius(): Int? {
         return preferences?.getString("nearby_radius", "100")?.toInt()
     }
+
+    fun clear() {
+        preferences?.edit()?.clear()?.apply()
+    }
 }

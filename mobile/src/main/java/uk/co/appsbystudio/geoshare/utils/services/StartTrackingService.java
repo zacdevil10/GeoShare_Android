@@ -14,10 +14,11 @@ public class StartTrackingService extends Thread {
     @Override
     public void run() {
         SharedPreferences sharedPreferences = Application.getContext().getSharedPreferences("tracking", MODE_PRIVATE);
-        Map<String, Boolean> shares = (Map<String, Boolean>) sharedPreferences.getAll();
+        Map<String, ?> shares = sharedPreferences.getAll();
 
-        for (Map.Entry<String, Boolean> hasShared : shares.entrySet()) {
-            if (hasShared.getValue()) {
+        for (Map.Entry<String, ?> hasShared : shares.entrySet()) {
+            Boolean value = (Boolean) hasShared.getValue();
+            if (value) {
                 Intent trackingService = new Intent(Application.getContext(), TrackingService.class);
                 Application.getContext().startService(trackingService);
                 break;

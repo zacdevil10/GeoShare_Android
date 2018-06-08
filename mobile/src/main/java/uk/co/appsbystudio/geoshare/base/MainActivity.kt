@@ -3,27 +3,20 @@ package uk.co.appsbystudio.geoshare.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_layout.*
 import kotlinx.android.synthetic.main.header_layout.view.*
@@ -32,44 +25,34 @@ import uk.co.appsbystudio.geoshare.authentication.AuthActivity
 import uk.co.appsbystudio.geoshare.friends.FriendsManager
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter
 import uk.co.appsbystudio.geoshare.maps.MapsFragment
-import uk.co.appsbystudio.geoshare.utils.Connectivity
-import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
+import uk.co.appsbystudio.geoshare.utils.*
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
-import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener
-import uk.co.appsbystudio.geoshare.utils.services.StartTrackingService
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity
 import java.util.*
 
-class MainActivity : AppCompatActivity(), MainView, SharedPreferences.OnSharedPreferenceChangeListener, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
+class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
 
     private var mainPresenter: MainPresenter? = null
 
     //FIREBASE
     private var firebaseAuth: FirebaseAuth? = null
-    private var firebaseUser: FirebaseUser? = null
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null
+    private lateinit var authStateListener: FirebaseAuth.AuthStateListener
     private var databaseReference: DatabaseReference? = null
 
-    private var userId: String? = null
-
-    private var drawerLayout: DrawerLayout? = null
     private var header: View? = null
 
-    private var mapsFragment: MapsFragment? = null
+    private var mapsFragment: MapsFragment = MapsFragment()
 
-    private var rightDrawer: DrawerLayout? = null
     private var friendsNavAdapter: FriendsNavAdapter? = null
 
     private val uidList = ArrayList<String?>()
     private val hasTracking = HashMap<String?, Boolean?>()
 
-    private var settingsSharedPreferences: SharedPreferences? = null
-    private var trackingPreferences: SharedPreferences? = null
-    private var showOnMapPreferences: SharedPreferences? = null
+    private var navItemSelected: Boolean = false
+    private var checkedItem: Int = 0
 
     companion object {
         val friendsId = HashMap<String?, Boolean>()
@@ -82,186 +65,163 @@ class MainActivity : AppCompatActivity(), MainView, SharedPreferences.OnSharedPr
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainPresenter = MainPresenterImpl(this, MainInteractorImpl())
+        mainPresenter = MainPresenterImpl(this,
+                ShowMarkerPreferencesHelper(getSharedPreferences("showOnMap", Context.MODE_PRIVATE)),
+                TrackingPreferencesHelper(getSharedPreferences("tracking", Context.MODE_PRIVATE)),
+                SettingsPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(applicationContext)),
+                MainInteractorImpl())
 
-        //SharedPreferences
-        settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        settingsSharedPreferences!!.registerOnSharedPreferenceChangeListener(this)
-        trackingPreferences = getSharedPreferences("tracking", Context.MODE_PRIVATE)
-        showOnMapPreferences = getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
-
-        setTracking()
+        mainPresenter?.setTrackingService()
 
         //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance()
-        firebaseUser = firebaseAuth!!.currentUser
 
-        userId = if (firebaseUser != null) firebaseUser!!.uid else null
 
-        val database = FirebaseDatabase.getInstance()
-        databaseReference = database.reference
+
+        databaseReference = FirebaseDatabase.getInstance().reference
 
         /* HANDLES FOR VARIOUS VIEWS */
-        drawerLayout = findViewById(R.id.drawer_layout)
-
-        val navigationView = findViewById<NavigationView>(R.id.left_nav_view)
         if (savedInstanceState == null) {
-            mapsFragment = MapsFragment()
-            supportFragmentManager.beginTransaction().add(R.id.content_frame_map, mapsFragment, "maps_fragment").commit()
+            supportFragmentManager.beginTransaction().replace(R.id.frame_content_map_main, mapsFragment, "maps_fragment").commit()
         } else {
             mapsFragment = supportFragmentManager.findFragmentByTag("maps_fragment") as MapsFragment
-            supportFragmentManager.beginTransaction().show(mapsFragment).commit()
+            mainPresenter?.swapFragment(mapsFragment)
         }
-        setupDrawerContent(navigationView)
 
-        rightDrawer = findViewById(R.id.right_nav_drawer)
+        drawer_left_nav_main.setNavigationItemSelectedListener({ item ->
+            navItemSelected = true
+            drawer_layout?.closeDrawers()
+            when (item.itemId) {
+                R.id.maps -> checkedItem = R.id.maps
+                R.id.friends -> checkedItem = R.id.friends
+                R.id.settings -> checkedItem = R.id.settings
+                R.id.logout -> checkedItem = R.id.logout
+                R.id.feedback -> checkedItem = R.id.feedback
+            }
+            false
+        })
 
-        val rightNavigationView = findViewById<RecyclerView>(R.id.right_friends_drawer)
-        rightNavigationView?.setHasFixedSize(true)
-        val layoutManager = LinearLayoutManager(this)
-        if (rightNavigationView != null) rightNavigationView.layoutManager = layoutManager
 
-        rightDrawer!!.setScrimColor(resources.getColor(android.R.color.transparent))
+        val drawerListener = object : DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {}
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+            override fun onDrawerOpened(drawerView: View) {}
+
+            override fun onDrawerClosed(drawerView: View) {
+                if (navItemSelected) {
+                    navItemSelected = false
+
+                    mainPresenter?.run {
+                        when (checkedItem) {
+                            R.id.maps -> swapFragment(mapsFragment)
+                            R.id.friends -> friends()
+                            R.id.settings -> settings()
+                            R.id.logout -> logout()
+                            R.id.feedback -> feedback()
+                            else -> showError("Hmm... Looks like something has gone wrong")
+                        }
+                    }
+                }
+            }
+        }
+
+        drawer_layout.addDrawerListener(drawerListener)
+
+        header = drawer_left_nav_main.getHeaderView(0)
+
+        recycler_right_nav_main?.setHasFixedSize(true)
+        recycler_right_nav_main?.layoutManager = LinearLayoutManager(this@MainActivity)
 
         //Get friends and populate right nav drawer
-        mainPresenter!!.getFriends()
-        mainPresenter!!.getFriendsTrackingState()
+        mainPresenter?.run {
+            getFriends()
+            getFriendsTrackingState()
+        }
 
-        friendsNavAdapter = FriendsNavAdapter(this, rightNavigationView, uidList, hasTracking, this)
-        if (rightNavigationView != null) rightNavigationView.adapter = friendsNavAdapter
-
-        header = navigationView.getHeaderView(0)
+        friendsNavAdapter = FriendsNavAdapter(this@MainActivity, recycler_right_nav_main, uidList, hasTracking, this)
+        recycler_right_nav_main.adapter = friendsNavAdapter
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
-        header?.profile_image?.setOnClickListener { profilePictureSettings() }
+        header?.profile_image?.setOnClickListener {
+            mainPresenter?.openDialog(ProfilePictureOptions(), "")
+        }
 
-        setDisplayName()
+        mainPresenter?.run {
+            updateNavProfilePicture(header?.profile_image, this@MainActivity.cacheDir.toString())
+            updateNavDisplayName()
+            setMarkerVisibilityState()
+        }
 
-        show_hide_markers.isChecked = showOnMapPreferences!!.getBoolean("all", true)
+        switch_markers_main.setOnCheckedChangeListener({ buttonView, isChecked ->
+            mapsFragment.setAllMarkersVisibility(isChecked)
+        })
 
-        show_hide_markers.setOnCheckedChangeListener(ToggleAllMarkersVisibility())
-
-        ProfileUtils.setProfilePicture(userId, header?.profile_image, this.cacheDir.toString())
-        databaseReference!!.child("picture").addChildEventListener(UpdatedProfilePicturesListener(friendsNavAdapter, this.cacheDir.toString()))
+        databaseReference?.child("picture")?.addChildEventListener(UpdatedProfilePicturesListener(friendsNavAdapter, this@MainActivity.cacheDir.toString()))
 
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val currentUser = firebaseAuth.currentUser
             if (currentUser == null) {
-                ProfileUtils.resetDeviceSettings(settingsSharedPreferences!!, trackingPreferences!!, showOnMapPreferences!!)
-                mainPresenter!!.auth()
+                mainPresenter?.run {
+                    clearSharedPreferences()
+                    stopTrackingService()
+                    auth()
+                }
             }
         }
     }
-
-
-
-    private fun setTracking() {
-        val mobileNetwork = settingsSharedPreferences!!.getBoolean("mobile_network", true)
-
-        //Tracking
-        if (mobileNetwork || Connectivity.isConnectedWifi(this)) {
-            val startTrackingService = StartTrackingService()
-            if (!TrackingService.isRunning) {
-                startTrackingService.start()
-            }
-        }
-    }
-
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.menu.getItem(0).isChecked = true
-
-        navigationView.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { item ->
-            item.isChecked = true
-            drawerLayout?.closeDrawers()
-
-            when (item.itemId) {
-                R.id.maps -> {
-                    if (mapsFragment != null) mainPresenter?.showFragment(mapsFragment!!)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.friends -> {
-                    item.isChecked = false
-                    mainPresenter?.friends()
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.settings -> {
-                    item.isChecked = false
-                    mainPresenter?.settings()
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.logout -> {
-                    item.isChecked = false
-                    mainPresenter?.logout()
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.feedback -> {
-                    item.isChecked = false
-                    mainPresenter!!.feedback()
-                    return@OnNavigationItemSelectedListener true
-                }
-            }
-            true
-        })
-    }
-
-    private fun setDisplayName() {
-        if (firebaseUser != null) {
-            val welcome = String.format(resources.getString(R.string.welcome_user_header), firebaseUser!!.displayName)
-            header?.username?.text = welcome
-            settingsSharedPreferences!!.edit().putString("display_name", firebaseUser!!.displayName).apply()
-        }
-    }
-
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 213) {
-                mapsFragment?.setup()
+                mapsFragment.setup()
             } else {
-                ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, userId)
+                ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, FirebaseAuth.getInstance().currentUser?.uid)
             }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        firebaseAuth!!.addAuthStateListener(authStateListener!!)
+        firebaseAuth?.addAuthStateListener(authStateListener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainPresenter?.updateNavDisplayName()
     }
 
     override fun onStop() {
         super.onStop()
-        if (authStateListener != null) {
-            firebaseAuth!!.removeAuthStateListener(authStateListener!!)
-        }
+        firebaseAuth?.removeAuthStateListener(authStateListener)
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {
         uidList.add(uid)
         if (!friendsId.containsKey(uid)) friendsId[uid] = true
         if (!friendNames.containsKey(uid)) friendNames[uid] = name
-        friendsNavAdapter!!.notifyDataSetChanged()
-        findViewById<View>(R.id.add_friends).visibility = View.GONE
+        friendsNavAdapter?.notifyDataSetChanged()
+        add_friends.visibility = View.GONE
     }
 
     override fun removeFromFriendList(uid: String?) {
         uidList.remove(uid)
         if (friendsId.containsKey(uid)) friendsId.remove(uid)
         if (friendNames.containsKey(uid)) friendNames.remove(uid)
-        friendsNavAdapter!!.notifyDataSetChanged()
-        if (friendsId.isEmpty()) findViewById<View>(R.id.add_friends).visibility = View.VISIBLE
+        friendsNavAdapter?.notifyDataSetChanged()
+        if (friendsId.isEmpty()) add_friends.visibility = View.VISIBLE
     }
 
     override fun updateTrackingState(uid: String?, trackingState: Boolean?) {
         hasTracking[uid] = trackingState
-        friendsNavAdapter!!.notifyDataSetChanged()
+        friendsNavAdapter?.notifyDataSetChanged()
     }
 
     override fun removeTrackingState(uid: String?) {
         hasTracking.remove(uid)
-        friendsNavAdapter!!.notifyDataSetChanged()
+        friendsNavAdapter?.notifyDataSetChanged()
     }
 
-    override fun swapFragment(fragment: Fragment) {
+    override fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().show(fragment).commit()
     }
 
@@ -278,32 +238,50 @@ class MainActivity : AppCompatActivity(), MainView, SharedPreferences.OnSharedPr
         finish()
     }
 
-    override fun feedbackIntent() {
-        val emailIntent = Intent(Intent.ACTION_SENDTO)
-        emailIntent.type = "text/plain"
-        emailIntent.data = Uri.parse("mailto:support@appsbystudio.co.uk")
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback")
-        if (emailIntent.resolveActivity(packageManager) != null) {
-            startActivity(Intent.createChooser(emailIntent, "Send email via"))
+    override fun feedbackIntent(intent: Intent) {
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(Intent.createChooser(intent, "Send email via"))
         } else {
             Toast.makeText(this@MainActivity, "No email applications found on this device!", Toast.LENGTH_SHORT).show()
         }
     }
 
+    override fun startTrackingServiceIntent() {
+        val trackingService = Intent(applicationContext, TrackingService::class.java)
+        startService(trackingService)
+    }
+
+    override fun stopTrackingServiceIntent() {
+        val trackingService = Intent(applicationContext, TrackingService::class.java)
+        stopService(trackingService)
+    }
+
+    override fun showDialog(dialog: DialogFragment, tag: String) {
+        dialog.show(fragmentManager, tag)
+    }
+
+    override fun setDisplayName(name: String?) {
+        header?.username?.text = String.format(resources.getString(R.string.welcome_user_header), name)
+    }
+
+    override fun markerToggleState(state: Boolean?) {
+        if (state != null) switch_markers_main.isChecked = state
+    }
+
     override fun openNavDrawer() {
-        drawerLayout?.openDrawer(GravityCompat.START)
+        drawer_layout?.openDrawer(GravityCompat.START)
     }
 
     override fun openFriendsNavDrawer() {
-        rightDrawer?.openDrawer(GravityCompat.END)
+        drawer_right_nav_main?.openDrawer(GravityCompat.END)
     }
 
     override fun closeNavDrawer() {
-        drawerLayout?.closeDrawer(GravityCompat.START)
+        drawer_layout?.closeDrawer(GravityCompat.START)
     }
 
     override fun closeFriendsNavDrawer() {
-        rightDrawer?.closeDrawer(GravityCompat.END)
+        drawer_right_nav_main?.closeDrawer(GravityCompat.END)
     }
 
     override fun showError(message: String) {
@@ -312,51 +290,22 @@ class MainActivity : AppCompatActivity(), MainView, SharedPreferences.OnSharedPr
 
     override fun showErrorSnackbar(message: String) {
         Snackbar.make(findViewById(R.id.coordinator), message, Snackbar.LENGTH_SHORT)
-                .setAction("RETRY?") { mainPresenter!!.logout() }
-    }
-
-    /* CLICK FUNCTIONALITY FOR PROFILE PIC */
-    private fun profilePictureSettings() {
-        val fragmentManager = fragmentManager
-        val profileDialog = ProfilePictureOptions()
-        profileDialog.show(fragmentManager, "profile_dialog")
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
-        if (s == "mobile_network") {
-            val mobileNetwork = sharedPreferences.getBoolean("mobile_network", true)
-            val trackingService = Intent(this, TrackingService::class.java)
-            if (mobileNetwork) {
-                startService(trackingService)
-            } else if (Connectivity.isConnectedMobile(this)) {
-                stopService(trackingService)
-            }
-        } else if (s == "display_name") {
-            val name = sharedPreferences.getString(s, "DEFAULT")
-            databaseReference!!.child("users").child(userId!!).child("name").setValue(name)
-            databaseReference!!.child("users").child(userId!!).child("caseFoldedName").setValue(name!!.toLowerCase())
-
-            val profileChangeRequest = UserProfileChangeRequest.Builder().setDisplayName(name).build()
-
-            firebaseUser!!.updateProfile(profileChangeRequest).addOnSuccessListener { setDisplayName() }
-        }
+                .setAction("RETRY?") { mainPresenter?.logout() }
     }
 
     override fun setMarkerHidden(friendId: String, visible: Boolean) {
-        mapsFragment?.setMarkerVisibility(friendId, visible)
-        showOnMapPreferences!!.edit().putBoolean(friendId, visible).apply()
+        mapsFragment.setMarkerVisibility(friendId, visible)
     }
 
     override fun findOnMapClicked(friendId: String) {
-        println("Main Activity: $friendId")
-        mapsFragment?.findFriendOnMap(friendId)
+        mapsFragment.findFriendOnMap(friendId)
     }
 
     override fun sendLocationDialog(name: String, friendId: String) {
         val arguments = Bundle()
         arguments.putString("name", name)
         arguments.putString("friendId", friendId)
-        arguments.putString("uid", userId)
+        arguments.putString("uid", FirebaseAuth.getInstance().currentUser?.uid)
 
         val fragmentManager = fragmentManager
         val friendDialog = ShareOptions()
@@ -364,40 +313,19 @@ class MainActivity : AppCompatActivity(), MainView, SharedPreferences.OnSharedPr
         friendDialog.show(fragmentManager, "location_dialog")
     }
 
-    override fun stopSharing(user: FirebaseUser, friendId: String) {
-        databaseReference!!.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(user.uid).removeValue()
-                .addOnSuccessListener {
-                    trackingPreferences!!.edit().putBoolean(friendId, false).apply()
-                    friendsNavAdapter!!.notifyDataSetChanged()
-                }
-                .addOnFailureListener {
-                    //TODO: Show a message (with "try again?" ?)
-                }
+    override fun stopSharing(friendId: String) {
+        mainPresenter?.setFriendSharingState(friendId, false)
     }
 
     override fun updateProfilePicture() {
-        ProfileUtils.setProfilePicture(userId, profile_image, this.cacheDir.toString())
+        ProfileUtils.setProfilePicture(FirebaseAuth.getInstance().currentUser?.uid, profile_image, this.cacheDir.toString())
     }
 
     override fun onBackPressed() {
-        if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout!!.closeDrawer(GravityCompat.START)
-        } else if (rightDrawer!!.isDrawerOpen(GravityCompat.END)) {
-            rightDrawer!!.closeDrawer(GravityCompat.END)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        settingsSharedPreferences!!.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
-    private inner class ToggleAllMarkersVisibility : CompoundButton.OnCheckedChangeListener {
-
-        override fun onCheckedChanged(compoundButton: CompoundButton, b: Boolean) {
-            mapsFragment?.setAllMarkersVisibility(b)
+        when {
+            drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
+            drawer_right_nav_main.isDrawerOpen(GravityCompat.END) -> drawer_right_nav_main.closeDrawer(GravityCompat.END)
+            else -> super.onBackPressed()
         }
     }
 }

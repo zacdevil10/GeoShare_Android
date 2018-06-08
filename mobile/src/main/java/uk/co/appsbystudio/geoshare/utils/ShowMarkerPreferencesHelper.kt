@@ -16,4 +16,12 @@ class ShowMarkerPreferencesHelper(private val preferences: SharedPreferences?) {
         return preferences?.getBoolean(uid, true)
     }
 
+    fun getAllMarkersVisibilityState(): Boolean? {
+        return preferences?.getBoolean("all", true)
+    }
+
+    fun clear() {
+        preferences?.edit()?.clear()?.apply()
+    }
+
 }

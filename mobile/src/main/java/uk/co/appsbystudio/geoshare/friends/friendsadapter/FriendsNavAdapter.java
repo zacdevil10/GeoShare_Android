@@ -43,7 +43,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
         void findOnMapClicked(String friendId);
         void sendLocationDialog(String name, String friendId);
 
-        void stopSharing(FirebaseUser user, String friendId);
+        void stopSharing(String friendId);
     }
 
     private final Callback callback;
@@ -121,7 +121,7 @@ public class FriendsNavAdapter extends RecyclerView.Adapter<FriendsNavAdapter.Vi
                 public void onClick(View view) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
-                        callback.stopSharing(user, userId.get(holder.getAdapterPosition()).toString());
+                        callback.stopSharing(userId.get(holder.getAdapterPosition()).toString());
                     }
                 }
             });
