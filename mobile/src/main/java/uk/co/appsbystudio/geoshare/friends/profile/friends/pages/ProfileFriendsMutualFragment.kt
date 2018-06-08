@@ -25,19 +25,11 @@ class ProfileFriendsMutualFragment : Fragment() {
 
     private val friendId = ArrayList<String>()
 
-    companion object {
-        fun newInstance(uid: String?) = ProfileFriendsMutualFragment().apply {
-            arguments = Bundle().apply {
-                putString("uid", uid)
-            }
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_profile_friends_mutual, container, false)
 
         if (arguments != null) {
-            uid = arguments!!.getString("uid")
+            uid = arguments?.getString("uid")
         }
 
         val database = FirebaseDatabase.getInstance()

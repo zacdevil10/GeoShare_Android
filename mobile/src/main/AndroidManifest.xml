@@ -73,6 +73,7 @@
             android:name=".friends.profile.Profile"
             android:label="@string/title_activity_friend_info"
             android:parentActivityName=".friends.FriendsManager"
+            android:screenOrientation="portrait"
             android:theme="@style/FriendsInfoTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

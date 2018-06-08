@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_profile.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.profile.friends.ProfileFriendsFragment
 import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsMutualFragment
 import uk.co.appsbystudio.geoshare.friends.profile.info.ProfileInfoFragment
 import uk.co.appsbystudio.geoshare.friends.profile.staticmap.ProfileStaticMapFragment
@@ -48,7 +49,7 @@ class Profile : AppCompatActivity(), ProfileView {
                 return when (position) {
                     0 -> ProfileInfoFragment.newInstance(uid)
                     1 -> ProfileStaticMapFragment.newInstance(uid)
-                    2 -> ProfileFriendsMutualFragment.newInstance(uid)
+                    2 -> ProfileFriendsFragment.newInstance(uid)
                     else -> null
                 }
             }

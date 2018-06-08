@@ -14,6 +14,14 @@ class ProfileFriendsFragment : Fragment() {
 
     var uid: String? = null
 
+    companion object {
+        fun newInstance(uid: String?) = ProfileFriendsFragment().apply {
+            arguments = Bundle().apply {
+                putString("uid", uid)
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_profile_friends, container, false)
 
