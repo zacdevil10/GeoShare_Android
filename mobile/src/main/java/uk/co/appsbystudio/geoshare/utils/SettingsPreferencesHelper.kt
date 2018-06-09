@@ -4,6 +4,18 @@ import android.content.SharedPreferences
 
 class SettingsPreferencesHelper(private val preferences: SharedPreferences?) {
 
+    fun setDisplayName(name: String?) {
+        preferences?.edit()?.putString("display_name", name)?.apply()
+    }
+
+    fun setNearbyRadius(radius: Int) {
+        preferences?.edit()?.putString("nearby_radius", radius.toString())?.apply()
+    }
+
+    fun setFirstRun(state: Boolean) {
+        preferences?.edit()?.putBoolean("first_run", state)?.apply()
+    }
+
     fun friendNotificationState(): Boolean? {
         return preferences?.getBoolean("friend_notification", true)
     }

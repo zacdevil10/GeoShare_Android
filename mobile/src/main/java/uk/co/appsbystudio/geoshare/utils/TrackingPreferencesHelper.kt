@@ -8,6 +8,10 @@ class TrackingPreferencesHelper(private val preferences: SharedPreferences?) {
         preferences?.edit()?.putBoolean(uid, state)?.apply()
     }
 
+    fun getTrackingState(uid: String): Boolean? {
+        return preferences?.getBoolean(uid, false)
+    }
+
     fun getAll(): MutableMap<String, *>? {
         return preferences?.all
     }

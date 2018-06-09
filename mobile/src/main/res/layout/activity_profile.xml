@@ -30,9 +30,10 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
         android:id="@+id/constraint_summary_container_profile"
         android:fitsSystemWindows="true"
+        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
@@ -52,6 +53,8 @@
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back_white_24dp"
                 android:padding="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -106,6 +109,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/view_pager_profile"
+        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toBottomOf="@id/constraint_summary_container_profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -25,14 +25,17 @@ import uk.co.appsbystudio.geoshare.setup.fragments.GetStartedFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.permissions.PermissionsFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.radius.RadiusSetupFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.profile.SetupProfileFragment
+import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
 
 class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
 
     private var initialSetupPresenter: InitialSetupPresenter? = null
-    private var sharedPreferences: SharedPreferences? = null
+    private var settingsPreferencesHelper: SettingsPreferencesHelper? = null
 
-    private val PERMS = 1
+    companion object {
+        private const val PERMS = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +46,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
         initialSetupPresenter = InitialSetupPresenterImpl(this)
         initialSetupPresenter?.addDeviceToken()
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        settingsPreferencesHelper = SettingsPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(this))
 
         val fragmentPagerAdapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment? {
@@ -61,9 +64,11 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
             }
         }
 
-        view_pager?.offscreenPageLimit = 3
-        view_pager?.setPagingEnabled(false)
-        view_pager?.adapter = fragmentPagerAdapter
+        view_pager?.apply {
+            offscreenPageLimit = 3
+            setPagingEnabled(false)
+            adapter = fragmentPagerAdapter
+        }
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -89,9 +94,11 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     }
 
     override fun onFinish(radius: Int) {
-        sharedPreferences?.edit()?.putString("display_name", FirebaseAuth.getInstance().currentUser?.displayName)?.apply()
-        sharedPreferences?.edit()?.putString("nearby_radius", radius.toString())?.apply()
-        sharedPreferences?.edit()?.putBoolean("first_run", false)?.apply()
+        settingsPreferencesHelper?.run {
+            setDisplayName(FirebaseAuth.getInstance().currentUser?.displayName)
+            setNearbyRadius(radius)
+            setFirstRun(false)
+        }
 
         startActivity(Intent(this, MainActivity::class.java))
         finish()

@@ -9,7 +9,7 @@ private const val SECOND_MILLIS = 1000
 private const val MINUTE_MILLIS = 60 * SECOND_MILLIS
 private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
 
-fun Long.convertDate(): String? {
+fun Long.convertDate(): String {
     var dateMilli = this
     if (this < 1000000000000L) {
         //Timestamp is in seconds
@@ -18,7 +18,7 @@ fun Long.convertDate(): String? {
 
     val currentTime = System.currentTimeMillis()
     if (dateMilli > currentTime || dateMilli <= 0) {
-        return null
+        return ""
     }
 
     val date = Date(dateMilli)
