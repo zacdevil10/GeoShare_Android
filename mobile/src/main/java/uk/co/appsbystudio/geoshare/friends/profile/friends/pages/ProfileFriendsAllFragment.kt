@@ -26,6 +26,14 @@ class ProfileFriendsAllFragment : Fragment(), FriendshipStatusAdapter.Callback {
 
     private val friendId = ArrayList<String>()
 
+    companion object {
+        fun newInstance(uid: String?) = ProfileFriendsAllFragment().apply {
+            arguments = Bundle().apply {
+                putString("uid", uid)
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_profile_friends_all, container, false)
 
