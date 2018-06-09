@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_profile_friends.*
 
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsAllFragment
+import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.all.ProfileFriendsAllFragment
 import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual.ProfileFriendsMutualFragment
 
 class ProfileFriendsFragment : Fragment() {

@@ -5,6 +5,7 @@ object FirebaseHelper {
     const val TRACKING = "tracking"
     const val LOCATION = "location"
     const val FRIENDS = "friends"
+    const val PENDING = "pending"
     const val USERS = "users"
     const val TOKEN = "token"
     const val PROFILE_PICTURE = "profile_picture"

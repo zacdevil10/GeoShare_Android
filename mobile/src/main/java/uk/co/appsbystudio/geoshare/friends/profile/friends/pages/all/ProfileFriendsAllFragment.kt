@@ -1,29 +1,32 @@
-package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual
+package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.all
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import kotlinx.android.synthetic.main.fragment_profile_friends_mutual.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.fragment_profile_friends_all.*
+
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter
-import java.util.*
+import java.util.ArrayList
 
-class ProfileFriendsMutualFragment : Fragment(), ProfileFriendsMutualView {
-
-    private var presenter: ProfileFriendsMutualPresenter? = null
-
-    private var friendAdapter: FriendshipStatusAdapter? = null
+class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipStatusAdapter.Callback {
 
     lateinit var uid: String
 
-    private val uidArray = ArrayList<String>()
+    private var presenter: ProfileFriendsAllPresenter? = null
+    private var friendAdapter: FriendshipStatusAdapter? = null
+
+    private val friendId = ArrayList<String>()
 
     companion object {
-        fun newInstance(uid: String?) = ProfileFriendsMutualFragment().apply {
+        fun newInstance(uid: String?) = ProfileFriendsAllFragment().apply {
             arguments = Bundle().apply {
                 putString("uid", uid)
             }
@@ -31,37 +34,46 @@ class ProfileFriendsMutualFragment : Fragment(), ProfileFriendsMutualView {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.fragment_profile_friends_mutual, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_profile_friends_all, container, false)
 
         uid = arguments?.getString("uid").toString()
 
-        presenter = ProfileFriendsMutualPresenterImpl(this, ProfileFriendsMutualInteractorImpl())
+        presenter = ProfileFriendsAllPresenterImpl(this, ProfileFriendsAllInteractorImpl())
 
-        friendAdapter = FriendshipStatusAdapter(context, uidArray, null)
+        friendAdapter = FriendshipStatusAdapter(context, friendId, this)
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter?.friends(uid)
 
-        recycler_friends_mutual_profile.apply {
+        if (savedInstanceState == null) presenter?.friends(uid)
+
+        recycler_friends_all_profile.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(activity)
             adapter = friendAdapter
         }
     }
 
+    override fun onSendRequest(friendId: String?) {
+        if (friendId != null) presenter?.request(friendId)
+    }
+
     override fun addItem(uid: String?) {
-        if (!uidArray.contains(uid) && uid != null) {
-            uidArray.add(uid)
+        if (!friendId.contains(uid) && uid != null) {
+            friendId.add(uid)
             friendAdapter?.notifyDataSetChanged()
         }
     }
 
     override fun removeItem(uid: String?) {
-        uidArray.remove(uid)
+        friendId.remove(uid)
+        friendAdapter?.notifyDataSetChanged()
+    }
+
+    override fun updateRecycler() {
         friendAdapter?.notifyDataSetChanged()
     }
 
