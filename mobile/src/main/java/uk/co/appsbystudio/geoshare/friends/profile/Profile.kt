@@ -6,14 +6,10 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_profile.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.friends.profile.friends.ProfileFriendsFragment
-import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsMutualFragment
 import uk.co.appsbystudio.geoshare.friends.profile.info.ProfileInfoFragment
 import uk.co.appsbystudio.geoshare.friends.profile.staticmap.ProfileStaticMapFragment
 import uk.co.appsbystudio.geoshare.utils.ProfileUtils

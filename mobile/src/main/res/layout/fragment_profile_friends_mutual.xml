@@ -1,9 +1,9 @@
 <android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/profile_friends_mutual_list"
+    android:id="@+id/recycler_friends_mutual_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="8dp"
     android:clipToPadding="false"
-    tools:context=".friends.profile.friends.pages.ProfileFriendsMutualFragment"/>
+    tools:context=".friends.profile.friends.pages.mutual.ProfileFriendsMutualFragment"/>

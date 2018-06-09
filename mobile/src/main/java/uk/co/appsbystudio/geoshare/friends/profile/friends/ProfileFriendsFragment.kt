@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.profile.friends
 
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.view.LayoutInflater
@@ -11,8 +10,7 @@ import kotlinx.android.synthetic.main.fragment_profile_friends.*
 
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsAllFragment
-import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.ProfileFriendsMutualFragment
-import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
+import uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual.ProfileFriendsMutualFragment
 
 class ProfileFriendsFragment : Fragment() {
 

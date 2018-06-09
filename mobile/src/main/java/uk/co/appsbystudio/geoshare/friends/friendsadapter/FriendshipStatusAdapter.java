@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,6 @@ import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase;
 public class FriendshipStatusAdapter extends RecyclerView.Adapter<FriendshipStatusAdapter.ViewHolder>{
 
     private final Context context;
-    private final DatabaseReference databaseReference;
     private final ArrayList userId;
 
     public interface Callback{
@@ -32,9 +32,8 @@ public class FriendshipStatusAdapter extends RecyclerView.Adapter<FriendshipStat
 
     private final Callback callback;
 
-    public FriendshipStatusAdapter(Context context, DatabaseReference databaseReference, ArrayList userId, Callback callback) {
+    public FriendshipStatusAdapter(Context context, ArrayList userId, Callback callback) {
         this.context = context;
-        this.databaseReference = databaseReference;
         this.userId = userId;
         this.callback = callback;
     }
@@ -48,7 +47,7 @@ public class FriendshipStatusAdapter extends RecyclerView.Adapter<FriendshipStat
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        databaseReference.addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
 
         if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId.get(position).toString(), holder.friends_pictures, context.getCacheDir().toString());
 

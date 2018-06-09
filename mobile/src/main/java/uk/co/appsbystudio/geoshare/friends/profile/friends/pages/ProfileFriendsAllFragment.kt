@@ -54,7 +54,7 @@ class ProfileFriendsAllFragment : Fragment(), FriendshipStatusAdapter.Callback {
 
         getFriends()
 
-        friendAdapter = FriendshipStatusAdapter(context, databaseReference, friendId, this)
+        friendAdapter = FriendshipStatusAdapter(context, friendId, this)
         friendsAll.adapter = friendAdapter
 
         return view

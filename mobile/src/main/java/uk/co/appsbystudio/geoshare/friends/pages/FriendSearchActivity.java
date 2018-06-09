@@ -100,7 +100,7 @@ public class FriendSearchActivity extends AppCompatActivity implements Friendshi
             }
         });
 
-        searchAdapter = new FriendshipStatusAdapter(this, databaseReference, userId, this);
+        searchAdapter = new FriendshipStatusAdapter(this, userId, this);
         searchResults.setAdapter(searchAdapter);
 
         SearchView searchView = findViewById(R.id.searchView);
