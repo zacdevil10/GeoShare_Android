@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.friendsadapter;
+package uk.co.appsbystudio.geoshare.friends.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;

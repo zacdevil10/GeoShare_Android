@@ -49,13 +49,13 @@
             android:theme="@style/MainTheme"
             android:hardwareAccelerated="true"/>
         <activity
-            android:name=".friends.pages.FriendSearchActivity"
+            android:name=".friends.manager.pages.FriendSearchActivity"
             android:theme="@style/FriendsTheme" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".friends.FriendsManager"
+            android:name=".friends.manager.FriendsManager"
             android:label="@string/title_activity_friends_manager"
             android:parentActivityName=".base.MainActivity"
             android:theme="@style/FriendsTheme">
@@ -72,12 +72,12 @@
         <activity
             android:name=".friends.profile.Profile"
             android:label="@string/title_activity_friend_info"
-            android:parentActivityName=".friends.FriendsManager"
+            android:parentActivityName=".friends.manager.FriendsManager"
             android:screenOrientation="portrait"
             android:theme="@style/FriendsInfoTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uk.co.appsbystudio.geoshare.friends.FriendsManager" />
+                android:value="uk.co.appsbystudio.geoshare.friends.manager.FriendsManager" />
         </activity>
         <activity
             android:name=".utils.ui.SettingsActivity"

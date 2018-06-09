@@ -22,7 +22,7 @@ public class PlacesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_places, container, false);
 
         /* SET UP TOOLBAR */
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar_manager);
 
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);

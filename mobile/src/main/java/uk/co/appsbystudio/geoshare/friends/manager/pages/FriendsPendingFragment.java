@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.pages;
+package uk.co.appsbystudio.geoshare.friends.manager.pages;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,8 +22,8 @@ import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsPendingAdapter;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsRequestAdapter;
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendsPendingAdapter;
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendsRequestAdapter;
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo;
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification;
 

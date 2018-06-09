@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_profile_friends_mutual.*
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendshipStatusAdapter
 import java.util.*
 
 class ProfileFriendsMutualFragment : Fragment(), ProfileFriendsMutualView {

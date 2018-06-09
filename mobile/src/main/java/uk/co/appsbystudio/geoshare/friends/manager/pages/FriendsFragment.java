@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.pages;
+package uk.co.appsbystudio.geoshare.friends.manager.pages;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.Application;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsAdapter;
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendsAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
 

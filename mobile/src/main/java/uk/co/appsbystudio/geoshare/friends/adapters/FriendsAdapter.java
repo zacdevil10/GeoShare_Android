@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.friendsadapter;
+package uk.co.appsbystudio.geoshare.friends.adapters;
 
 import android.content.Context;
 import android.content.Intent;

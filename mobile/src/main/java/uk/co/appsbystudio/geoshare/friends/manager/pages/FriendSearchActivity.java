@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.pages;
+package uk.co.appsbystudio.geoshare.friends.manager.pages;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import uk.co.appsbystudio.geoshare.base.MainActivity;
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter;
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendshipStatusAdapter;
 import uk.co.appsbystudio.geoshare.utils.DeleteUnusedImagesFromCache;
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UserSignedOutListener;
 

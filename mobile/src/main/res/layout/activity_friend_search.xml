@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.friends.pages.FriendSearchActivity">
+    tools:context=".friends.manager.pages.FriendSearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -14,7 +14,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import uk.co.appsbystudio.geoshare.R;
-import uk.co.appsbystudio.geoshare.friends.FriendsManager;
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager;
 
 public class NewFriendNotification {
 

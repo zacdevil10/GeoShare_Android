@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.header_layout.*
 import kotlinx.android.synthetic.main.header_layout.view.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.authentication.AuthActivity
-import uk.co.appsbystudio.geoshare.friends.FriendsManager
-import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendsNavAdapter
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
+import uk.co.appsbystudio.geoshare.friends.adapters.FriendsNavAdapter
 import uk.co.appsbystudio.geoshare.maps.MapsFragment
 import uk.co.appsbystudio.geoshare.utils.*
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions

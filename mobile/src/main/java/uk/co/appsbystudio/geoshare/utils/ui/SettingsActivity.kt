@@ -23,7 +23,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar_manager)
         setSupportActionBar(toolbar)
         if (supportActionBar != null) supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
