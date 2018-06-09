@@ -4,7 +4,7 @@ interface ProfileInfoView {
 
     fun setShareText(string: String)
 
-    fun setLocationItemText(location: String, timestamp: String)
+    fun setLocationItemText(location: String? = "No location", timestamp: String? = "Never")
 
     fun showShareDialog()
 

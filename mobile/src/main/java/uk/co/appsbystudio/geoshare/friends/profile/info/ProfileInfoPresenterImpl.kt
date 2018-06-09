@@ -48,7 +48,7 @@ class ProfileInfoPresenterImpl(private val profileInfoView: ProfileInfoView,
     }
 
     override fun resetLocationText() {
-        profileInfoView.setLocationItemText("No location", "Never")
+        profileInfoView.setLocationItemText()
     }
 
     override fun updateDeleteState(visible: Int) {

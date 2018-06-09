@@ -241,7 +241,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
 
         /* FIREBASE LOCATION TRACKING SETUP */
-        val currentLocation = gpsTracking!!.latLng
+        var currentLocation = gpsTracking?.latLng
+
+        if (currentLocation == null) {
+            currentLocation = LatLng(51.512037, -0.092165)
+        }
 
         if (!savedInstance) mapsPresenter?.run {
             getStaticFriends()

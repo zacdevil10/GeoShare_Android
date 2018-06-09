@@ -81,7 +81,7 @@
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/constraint_request_location_profile"
                     android:clickable="true"
                     android:focusable="true"
@@ -103,7 +103,7 @@
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/constraint_delete_location_profile"
                     android:clickable="true"
                     android:focusable="true"
@@ -126,7 +126,7 @@
 
                 <!--<android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/profile_stop_tracking"
                     android:clickable="true"
                     android:focusable="true"
@@ -148,7 +148,7 @@
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/constraint_share_location_profile"
                     android:clickable="true"
                     android:focusable="true"
@@ -192,7 +192,7 @@
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/profile_home_location"
                     android:clickable="true"
                     android:focusable="true"
@@ -235,7 +235,7 @@
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:id="@+id/profile_work_location"
                     android:clickable="true"
                     android:focusable="true"

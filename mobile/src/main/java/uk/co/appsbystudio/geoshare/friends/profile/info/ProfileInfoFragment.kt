@@ -63,7 +63,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
         text_share_location_profile?.text = string
     }
 
-    override fun setLocationItemText(location: String, timestamp: String) {
+    override fun setLocationItemText(location: String?, timestamp: String?) {
         text_location_profile?.text = location
         text_timestamp_profile?.text = timestamp
     }
