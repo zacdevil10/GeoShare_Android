@@ -80,7 +80,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
 
     private var friendMarkerList = HashMap<String?, Marker?>()
-    private var friendMarkerOptions = HashMap<String?, MarkerOptions?>()
     private var friendMarkerTimestamp = HashMap<String?, Long?>()
 
     private var storageDirectory: String? = null
@@ -343,8 +342,8 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     }
 
     fun findFriendOnMap(friendId: String) {
-        if (friendMarkerOptions.containsKey(friendId)) {
-            val marker = friendMarkerOptions[friendId]
+        if (friendMarkerList.containsKey(friendId)) {
+            val marker = friendMarkerList[friendId]
             if (marker != null) mapsPresenter?.moveMapCamera(marker.position, 18, true)
 
             if (isTracking) mapsPresenter?.updateTrackingState(false)
@@ -364,7 +363,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
             friendMarker?.tag = uid
 
             friendMarkerList[uid] = friendMarker
-            friendMarkerOptions[uid] = markerOptions
             friendMarkerTimestamp[uid] = databaseLocations.timestamp
 
             if (myLocation != null) mapsPresenter?.updateNearbyFriendsRadius(LatLng(myLocation!!.position.latitude, myLocation!!.position.longitude))

@@ -3,18 +3,14 @@ package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_profile_friends_mutual.*
-import uk.co.appsbystudio.geoshare.base.MainActivity
-
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.friendsadapter.FriendshipStatusAdapter
-import java.util.ArrayList
+import java.util.*
 
 class ProfileFriendsMutualFragment : Fragment(), ProfileFriendsMutualView {
 
