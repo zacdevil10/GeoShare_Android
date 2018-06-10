@@ -24,12 +24,12 @@
                 android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/friend_incoming_list"
+                android:id="@+id/recycler_incoming_pending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/friends_no_requests"
+                android:id="@+id/text_no_incoming_pending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -48,12 +48,12 @@
                 android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/friend_outgoing_list"
+                android:id="@+id/recycler_outgoing_pending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/friends_no_pending"
+                android:id="@+id/text_no_outgoing_pending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
