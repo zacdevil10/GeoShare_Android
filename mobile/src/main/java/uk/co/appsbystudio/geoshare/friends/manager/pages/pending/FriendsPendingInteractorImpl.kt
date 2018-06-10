@@ -18,6 +18,7 @@ class FriendsPendingInteractorImpl: FriendsPendingInteractor {
         requestListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 listener.add(dataSnapshot.key, dataSnapshot.getValue(AddFriendsInfo::class.java))
+                //TODO: Get name first!
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {

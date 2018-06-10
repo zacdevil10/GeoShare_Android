@@ -10,7 +10,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_profile_friends_all.*
 
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendshipStatusAdapter
+import uk.co.appsbystudio.geoshare.friends.profile.friends.adapters.FriendshipStatusAdapter
 import java.util.ArrayList
 
 class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipStatusAdapter.Callback {
@@ -54,8 +54,8 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
         }
     }
 
-    override fun onSendRequest(friendId: String?) {
-        if (friendId != null) presenter?.request(friendId)
+    override fun onSendRequest(friendId: String) {
+        presenter?.request(friendId)
     }
 
     override fun addItem(uid: String?) {

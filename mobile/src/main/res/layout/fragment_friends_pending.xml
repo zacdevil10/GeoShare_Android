@@ -21,12 +21,14 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="4dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_incoming_pending"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/friends_request_list_item"/>
 
             <TextView
                 android:id="@+id/text_no_incoming_pending"
@@ -45,12 +47,14 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="36dp"
                 android:layout_marginBottom="4dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_outgoing_pending"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/friends_pending_list_item"/>
 
             <TextView
                 android:id="@+id/text_no_outgoing_pending"

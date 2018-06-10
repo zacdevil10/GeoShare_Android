@@ -8,18 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_friends_pending.*
-
-import java.util.ArrayList
-
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsPendingAdapter
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsRequestAdapter
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsPendingAdapter
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsRequestAdapter
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification
+import java.util.*
 
 class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {
 
@@ -40,8 +34,8 @@ class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAda
 
         NewFriendNotification.cancel(context!!)
 
-        friendsIncomingAdapter = FriendsRequestAdapter(context, uidIncoming, FirebaseDatabase.getInstance().reference, this@FriendsPendingFragment)
-        friendsOutgoingAdapter = FriendsPendingAdapter(context, uidOutgoing, FirebaseDatabase.getInstance().reference, this@FriendsPendingFragment)
+        friendsIncomingAdapter = FriendsRequestAdapter(context, uidIncoming, this@FriendsPendingFragment)
+        friendsOutgoingAdapter = FriendsPendingAdapter(context, uidOutgoing, this@FriendsPendingFragment)
 
         return view
     }

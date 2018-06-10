@@ -8,19 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_friends.*
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsAdapter
+import uk.co.appsbystudio.geoshare.friends.manager.pages.current.adapter.FriendsCurrentAdapter
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import java.util.*
 
-class FriendsFragment : Fragment(), FriendsView, FriendsAdapter.Callback {
+class FriendsFragment : Fragment(), FriendsView, FriendsCurrentAdapter.Callback {
 
     private var presenter: FriendsPresenter? = null
 
-    private var friendsAdapter: FriendsAdapter? = null
+    private var friendsCurrentAdapter: FriendsCurrentAdapter? = null
 
     private val uidArray = ArrayList<String>()
 
@@ -33,7 +32,7 @@ class FriendsFragment : Fragment(), FriendsView, FriendsAdapter.Callback {
 
         presenter?.friends()
 
-        friendsAdapter = FriendsAdapter(context, uidArray, FirebaseDatabase.getInstance().reference, this)
+        friendsCurrentAdapter = FriendsCurrentAdapter(context, uidArray, this)
 
         return view
     }
@@ -44,7 +43,7 @@ class FriendsFragment : Fragment(), FriendsView, FriendsAdapter.Callback {
         recycler_friends_manager.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = friendsAdapter
+            adapter = friendsCurrentAdapter
         }
     }
 
@@ -59,14 +58,14 @@ class FriendsFragment : Fragment(), FriendsView, FriendsAdapter.Callback {
 
     override fun addFriend(uid: String) {
         uidArray.add(uid)
-        friendsAdapter?.notifyDataSetChanged()
+        friendsCurrentAdapter?.notifyDataSetChanged()
 
         if (uidArray.isNotEmpty()) text_no_friends_manager?.visibility = View.GONE
     }
 
     override fun removeFriend(uid: String) {
         uidArray.remove(uid)
-        friendsAdapter?.notifyDataSetChanged()
+        friendsCurrentAdapter?.notifyDataSetChanged()
 
         if (uidArray.isEmpty()) text_no_friends_manager?.visibility = View.VISIBLE
     }

@@ -6,9 +6,9 @@ import com.google.firebase.database.DatabaseError;
 
 import java.io.File;
 
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsNavAdapter;
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsPendingAdapter;
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsRequestAdapter;
+import uk.co.appsbystudio.geoshare.base.adapters.FriendsNavAdapter;
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsPendingAdapter;
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsRequestAdapter;
 
 public class UpdatedProfilePicturesListener implements ChildEventListener {
 

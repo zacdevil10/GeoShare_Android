@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.header_layout.view.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.authentication.AuthActivity
 import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
-import uk.co.appsbystudio.geoshare.friends.adapters.FriendsNavAdapter
+import uk.co.appsbystudio.geoshare.base.adapters.FriendsNavAdapter
 import uk.co.appsbystudio.geoshare.maps.MapsFragment
 import uk.co.appsbystudio.geoshare.utils.*
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
 
     private var friendsNavAdapter: FriendsNavAdapter? = null
 
-    private val uidList = ArrayList<String?>()
-    private val hasTracking = HashMap<String?, Boolean?>()
+    private val uidList = ArrayList<String>()
+    private val hasTracking = HashMap<String, Boolean>()
 
     private var navItemSelected: Boolean = false
     private var checkedItem: Int = 0
@@ -201,11 +201,13 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {
-        uidList.add(uid)
-        if (!friendsId.containsKey(uid)) friendsId[uid] = true
-        if (!friendNames.containsKey(uid)) friendNames[uid] = name
-        friendsNavAdapter?.notifyDataSetChanged()
-        add_friends.visibility = View.GONE
+        if (uid != null) {
+            uidList.add(uid)
+            if (!friendsId.containsKey(uid)) friendsId[uid] = true
+            if (!friendNames.containsKey(uid)) friendNames[uid] = name
+            friendsNavAdapter?.notifyDataSetChanged()
+            add_friends.visibility = View.GONE
+        }
     }
 
     override fun removeFromFriendList(uid: String?) {
@@ -217,7 +219,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
     }
 
     override fun updateTrackingState(uid: String?, trackingState: Boolean?) {
-        hasTracking[uid] = trackingState
+        if (uid != null && trackingState != null) hasTracking[uid] = trackingState
         friendsNavAdapter?.notifyDataSetChanged()
     }
 

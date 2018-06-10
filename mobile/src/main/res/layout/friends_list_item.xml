@@ -1,42 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="72dp"
     android:id="@+id/item"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/friend_profile_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:id="@+id/image_profile_current"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_profile_picture" />
+        android:src="@drawable/ic_profile_picture"
+        tools:src="@tools:sample/avatars"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
-        android:id="@+id/friend_name"
-        android:layout_width="match_parent"
+        android:id="@+id/text_name_current"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/friend_profile_image"
-        android:layout_toStartOf="@+id/more"
         android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
         android:textSize="16sp"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:text="" />
+        tools:text="@tools:sample/full_names"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/image_profile_current"
+        app:layout_constraintEnd_toStartOf="@id/image_more_current"/>
 
     <ImageView
+        android:id="@+id/image_more_current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/more"
         android:src="@drawable/ic_more_vert_black_48px"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
         android:padding="16dp"
-        android:contentDescription="@string/menu_desc"/>
+        android:contentDescription="@string/menu_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
