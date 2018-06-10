@@ -49,7 +49,7 @@
             android:theme="@style/MainTheme"
             android:hardwareAccelerated="true"/>
         <activity
-            android:name=".friends.manager.pages.FriendSearchActivity"
+            android:name=".friends.manager.search.FriendSearchActivity"
             android:theme="@style/FriendsTheme" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
