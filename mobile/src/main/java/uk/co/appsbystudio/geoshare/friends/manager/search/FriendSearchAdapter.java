@@ -46,12 +46,12 @@ public class FriendSearchAdapter extends RecyclerView.Adapter<FriendSearchAdapte
         holder.friend_name.setText(userMap.values().toArray()[position].toString());
         //FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new GetUserFromDatabase(userId.get(position).toString(), holder.friend_name));
 
-        if (!userMap.isEmpty()) ProfileUtils.setProfilePicture(userMap.values().toArray()[position].toString(), holder.friends_pictures, context.getCacheDir().toString());
+        if (!userMap.isEmpty()) ProfileUtils.setProfilePicture(userMap.keySet().toArray()[position].toString(), holder.friends_pictures, context.getCacheDir().toString());
 
-        if (MainActivity.Companion.getFriendsId().containsKey(userMap.values().toArray()[position].toString())) {
+        if (MainActivity.Companion.getFriendsId().containsKey(userMap.keySet().toArray()[position].toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.colorPrimary)));
-        } else if (MainActivity.Companion.getPendingId().containsKey(userMap.values().toArray()[position].toString())) {
+        } else if (MainActivity.Companion.getPendingId().containsKey(userMap.keySet().toArray()[position].toString())) {
             holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
             holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));
         } else {
@@ -60,7 +60,7 @@ public class FriendSearchAdapter extends RecyclerView.Adapter<FriendSearchAdapte
             holder.sendRequestButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    callback.onSendRequest(userMap.values().toArray()[holder.getAdapterPosition()].toString());
+                    callback.onSendRequest(userMap.keySet().toArray()[holder.getAdapterPosition()].toString());
                     /*holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
                     holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));*/
                 }

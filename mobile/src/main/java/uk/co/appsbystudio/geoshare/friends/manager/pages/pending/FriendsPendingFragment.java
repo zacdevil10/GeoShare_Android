@@ -1,4 +1,4 @@
-package uk.co.appsbystudio.geoshare.friends.manager.pages;
+package uk.co.appsbystudio.geoshare.friends.manager.pages.pending;
 
 import android.content.Context;
 import android.os.Bundle;

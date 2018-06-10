@@ -18,7 +18,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
 
     lateinit var uid: String
 
-    private var profileInfoPresenter: ProfileInfoPresenter? = null
+    private var presenter: ProfileInfoPresenter? = null
 
     companion object {
         fun newInstance(uid: String?) = ProfileInfoFragment().apply {
@@ -33,7 +33,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
 
         uid = arguments?.getString("uid").toString()
 
-        profileInfoPresenter = ProfileInfoPresenterImpl(this,
+        presenter = ProfileInfoPresenterImpl(this,
                 TrackingPreferencesHelper(context?.getSharedPreferences("tracking", Context.MODE_PRIVATE)),
                 ProfileInfoInteractorImpl())
 
@@ -43,19 +43,19 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileInfoPresenter?.updateCurrentLocation(uid)
-        profileInfoPresenter?.updateTrackingState(uid)
+        presenter?.updateCurrentLocation(uid)
+        presenter?.updateTrackingState(uid)
 
         constraint_request_location_profile.setOnClickListener {
-            profileInfoPresenter?.requestLocation(uid)
+            presenter?.requestLocation(uid)
         }
 
         constraint_share_location_profile.setOnClickListener {
-            profileInfoPresenter?.shareLocation(uid)
+            presenter?.shareLocation(uid)
         }
 
         constraint_delete_location_profile.setOnClickListener {
-            profileInfoPresenter?.removeLocation(uid)
+            presenter?.removeLocation(uid)
         }
     }
 

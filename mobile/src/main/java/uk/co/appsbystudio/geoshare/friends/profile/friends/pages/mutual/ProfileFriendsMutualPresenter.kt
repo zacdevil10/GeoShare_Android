@@ -4,4 +4,6 @@ interface ProfileFriendsMutualPresenter {
 
     fun friends(uid: String)
 
+    fun stop()
+
 }

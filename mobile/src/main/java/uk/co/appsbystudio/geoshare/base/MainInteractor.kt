@@ -20,4 +20,6 @@ interface MainInteractor {
 
     fun removeToken()
 
+    fun removeAllListeners()
+
 }

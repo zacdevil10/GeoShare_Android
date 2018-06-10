@@ -1,16 +1,17 @@
 package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual
 
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class ProfileFriendsMutualInteractorImpl: ProfileFriendsMutualInteractor {
 
+    private lateinit var friendsListener: ChildEventListener
+    private var friendsRef: DatabaseReference? = null
+
     override fun getFriends(uid: String, listener: ProfileFriendsMutualInteractor.OnFirebaseListener) {
-        val friendsList = object : ChildEventListener {
+        friendsRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/$uid")
+        friendsListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
                 if (MainActivity.friendsId.contains(dataSnapshot.key)) listener.added(dataSnapshot.key)
@@ -33,6 +34,10 @@ class ProfileFriendsMutualInteractorImpl: ProfileFriendsMutualInteractor {
             }
         }
 
-        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/$uid").addChildEventListener(friendsList)
+        friendsRef?.addChildEventListener(friendsListener)
+    }
+
+    override fun removeListener() {
+        friendsRef?.removeEventListener(friendsListener)
     }
 }

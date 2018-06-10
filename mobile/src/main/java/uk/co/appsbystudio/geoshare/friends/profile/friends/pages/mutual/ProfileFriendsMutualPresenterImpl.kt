@@ -6,6 +6,10 @@ class ProfileFriendsMutualPresenterImpl(private val view: ProfileFriendsMutualVi
         interactor.getFriends(uid, this)
     }
 
+    override fun stop() {
+        interactor.removeListener()
+    }
+
     override fun added(uid: String?) {
         view.addItem(uid)
     }

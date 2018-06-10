@@ -70,7 +70,7 @@
                 android:value=".authentication.AuthActivity" />
         </activity>
         <activity
-            android:name=".friends.profile.Profile"
+            android:name=".friends.profile.ProfileActivity"
             android:label="@string/title_activity_friend_info"
             android:parentActivityName=".friends.manager.FriendsManager"
             android:screenOrientation="portrait"

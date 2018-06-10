@@ -3,7 +3,7 @@ package uk.co.appsbystudio.geoshare.setup.fragments.profile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 
-class SetupProfilePresenterImpl(private val setupProfileView: SetupProfileView) : SetupProfilePresenter {
+class SetupProfilePresenterImpl(private val view: SetupProfileView) : SetupProfilePresenter {
 
     override fun imageAvailable() {
         val user = FirebaseAuth.getInstance().currentUser
@@ -11,7 +11,7 @@ class SetupProfilePresenterImpl(private val setupProfileView: SetupProfileView) 
         if (user != null) {
             val uid = user.uid
             FirebaseStorage.getInstance().reference.child("profile_pictures/$uid.png").downloadUrl.addOnSuccessListener {
-                setupProfileView.updateUIText()
+                view.updateUIText()
             }
         }
     }

@@ -5,7 +5,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
-class InitialSetupPresenterImpl(private val initialSetupView: InitialSetupView): InitialSetupPresenter {
+class InitialSetupPresenterImpl(private val view: InitialSetupView): InitialSetupPresenter {
 
     override fun addDeviceToken() {
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -20,10 +20,10 @@ class InitialSetupPresenterImpl(private val initialSetupView: InitialSetupView):
     }
 
     override fun onPermissionsResult() {
-        initialSetupView.onNext()
+        view.onNext()
     }
 
     override fun onError(error: String) {
-        initialSetupView.onError(error)
+        view.onError(error)
     }
 }

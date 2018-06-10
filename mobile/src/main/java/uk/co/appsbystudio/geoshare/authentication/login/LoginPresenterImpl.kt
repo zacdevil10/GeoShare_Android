@@ -1,30 +1,30 @@
 package uk.co.appsbystudio.geoshare.authentication.login
 
-class LoginPresenterImpl(private val loginView: LoginView, private val loginInteractor: LoginInteractor): LoginPresenter, LoginInteractor.OnLoginFinishedListener {
+class LoginPresenterImpl(private val view: LoginView, private val interactor: LoginInteractor): LoginPresenter, LoginInteractor.OnLoginFinishedListener {
 
     override fun validate(email: String, password: String) {
-        loginView.showProgress()
+        view.showProgress()
 
-        loginInteractor.login(email, password, this)
+        interactor.login(email, password, this)
     }
 
     override fun onEmailError() {
-        loginView.setEmailError()
-        loginView.hideProgress()
+        view.setEmailError()
+        view.hideProgress()
     }
 
     override fun onPasswordError() {
-        loginView.setPasswordError()
-        loginView.hideProgress()
+        view.setPasswordError()
+        view.hideProgress()
     }
 
     override fun onSuccess() {
-        loginView.updateUI()
+        view.updateUI()
     }
 
     override fun onFailure(error: String) {
-        loginView.hideProgress()
-        loginView.showError(error)
+        view.hideProgress()
+        view.showError(error)
     }
 
 }

@@ -1,9 +1,9 @@
 package uk.co.appsbystudio.geoshare.setup.fragments.radius
 
-class RadiusSetupPresenterImpl(private val radiusSetupView: RadiusSetupView): RadiusSetupPresenter {
+class RadiusSetupPresenterImpl(private val view: RadiusSetupView): RadiusSetupPresenter {
 
     override fun onSeekBarPositionChanged(position: Int) {
-        radiusSetupView.updateSeekBarText(position)
+        view.updateSeekBarText(position)
     }
 
 }

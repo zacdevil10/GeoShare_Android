@@ -6,12 +6,11 @@ import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
-class ProfilePresenterImpl(private val profileView: ProfileView,
-                           private val trackingPreferencesHelper: TrackingPreferencesHelper,
-                           private val showMarkerPreferencesHelper: ShowMarkerPreferencesHelper): ProfilePresenter {
+class ProfilePresenterImpl(private val view: ProfileView, private val trackingPreferencesHelper: TrackingPreferencesHelper,
+                           private val markerPreferencesHelper: ShowMarkerPreferencesHelper): ProfilePresenter {
 
     override fun removeFriendDialog(uid: String?) {
-        profileView.showDialog(uid)
+        view.showDialog(uid)
     }
 
     override fun removeFriend(uid: String?) {
@@ -19,13 +18,13 @@ class ProfilePresenterImpl(private val profileView: ProfileView,
         if (user != null && uid != null) {
             FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user.uid}/$uid").removeValue()
                     .addOnSuccessListener({
-                        profileView.closeProfile()
+                        view.closeProfile()
                     })
                     .addOnFailureListener({
-                        profileView.showError("Could not remove friend")
+                        view.showError("Could not remove friend")
                     })
             if (trackingPreferencesHelper.exists(uid)!!) trackingPreferencesHelper.removeEntry(uid)
-            if (showMarkerPreferencesHelper.exists(uid)!!) showMarkerPreferencesHelper.removeEntry(uid)
+            if (markerPreferencesHelper.exists(uid)!!) markerPreferencesHelper.removeEntry(uid)
         }
     }
 }

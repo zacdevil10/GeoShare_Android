@@ -11,8 +11,8 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_friends_manager.*
 
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.friends.manager.pages.FriendsFragment
-import uk.co.appsbystudio.geoshare.friends.manager.pages.FriendsPendingFragment
+import uk.co.appsbystudio.geoshare.friends.manager.pages.current.FriendsFragment
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingFragment
 import uk.co.appsbystudio.geoshare.friends.manager.search.FriendSearchActivity
 
 class FriendsManager : AppCompatActivity(), FriendsManagerView {

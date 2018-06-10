@@ -1,43 +1,43 @@
 package uk.co.appsbystudio.geoshare.authentication.signup
 
-class SignupPresenterImpl(private val signupView: SignupView, private val signupInteractor: SignupInteractor): SignupPresenter, SignupInteractor.OnSignupFinishedListener {
+class SignupPresenterImpl(private val view: SignupView, private val interactor: SignupInteractor): SignupPresenter, SignupInteractor.OnSignupFinishedListener {
 
     override fun validate(name: String, email: String, password: String, terms: Boolean) {
-        signupView.showProgress()
+        view.showProgress()
 
-        signupInteractor.signup(name, email, password, terms, this)
+        interactor.signup(name, email, password, terms, this)
     }
 
     override fun onTermsClick() {
-        signupView.showTerms()
+        view.showTerms()
     }
 
     override fun onNameError() {
-        signupView.setNameError()
-        signupView.hideProgress()
+        view.setNameError()
+        view.hideProgress()
     }
 
     override fun onEmailError() {
-        signupView.setEmailError()
-        signupView.hideProgress()
+        view.setEmailError()
+        view.hideProgress()
     }
 
     override fun onPasswordError() {
-        signupView.setPasswordError()
-        signupView.hideProgress()
+        view.setPasswordError()
+        view.hideProgress()
     }
 
     override fun onTermsError() {
-        signupView.setTermsError()
-        signupView.hideProgress()
+        view.setTermsError()
+        view.hideProgress()
     }
 
     override fun onSuccess() {
-        signupView.updateUI()
+        view.updateUI()
     }
 
     override fun onFailure(error: String) {
-        signupView.hideProgress()
-        signupView.showError(error)
+        view.hideProgress()
+        view.showError(error)
     }
 }

@@ -1,8 +1,8 @@
 package uk.co.appsbystudio.geoshare.setup.fragments.permissions
 
-class PermissionsPresenterImpl(private val permissionsView: PermissionsView) : PermissionsPresenter {
+class PermissionsPresenterImpl(private val view: PermissionsView) : PermissionsPresenter {
 
     override fun onResult(message: String) {
-        permissionsView.onResult(message)
+        view.onResult(message)
     }
 }

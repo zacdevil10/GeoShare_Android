@@ -11,6 +11,10 @@ class ProfileFriendsAllPresenterImpl(private val view: ProfileFriendsAllView, pr
         interactor.sendFriendRequest(uid, this)
     }
 
+    override fun stop() {
+        interactor.removeListener()
+    }
+
     override fun add(uid: String?) {
         view.addItem(uid)
     }

@@ -35,7 +35,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
 
-    private var mainPresenter: MainPresenter? = null
+    private var presenter: MainPresenter? = null
 
     //FIREBASE
     private var firebaseAuth: FirebaseAuth? = null
@@ -65,13 +65,13 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainPresenter = MainPresenterImpl(this,
+        presenter = MainPresenterImpl(this,
                 ShowMarkerPreferencesHelper(getSharedPreferences("showOnMap", Context.MODE_PRIVATE)),
                 TrackingPreferencesHelper(getSharedPreferences("tracking", Context.MODE_PRIVATE)),
                 SettingsPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(applicationContext)),
                 MainInteractorImpl())
 
-        mainPresenter?.setTrackingService()
+        presenter?.setTrackingService()
 
         //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance()
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
             supportFragmentManager.beginTransaction().replace(R.id.frame_content_map_main, mapsFragment, "maps_fragment").commit()
         } else {
             mapsFragment = supportFragmentManager.findFragmentByTag("maps_fragment") as MapsFragment
-            mainPresenter?.swapFragment(mapsFragment)
+            presenter?.swapFragment(mapsFragment)
         }
 
         drawer_left_nav_main.setNavigationItemSelectedListener({ item ->
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
                 if (navItemSelected) {
                     navItemSelected = false
 
-                    mainPresenter?.run {
+                    presenter?.run {
                         when (checkedItem) {
                             R.id.maps -> swapFragment(mapsFragment)
                             R.id.friends -> friends()
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
         recycler_right_nav_main?.layoutManager = LinearLayoutManager(this@MainActivity)
 
         //Get friends and populate right nav drawer
-        mainPresenter?.run {
+        presenter?.run {
             getFriends()
             getFriendsTrackingState()
         }
@@ -143,10 +143,10 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
         header?.profile_image?.setOnClickListener {
-            mainPresenter?.openDialog(ProfilePictureOptions(), "")
+            presenter?.openDialog(ProfilePictureOptions(), "")
         }
 
-        mainPresenter?.run {
+        presenter?.run {
             updateNavProfilePicture(header?.profile_image, this@MainActivity.cacheDir.toString())
             updateNavDisplayName()
             setMarkerVisibilityState()
@@ -161,7 +161,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val currentUser = firebaseAuth.currentUser
             if (currentUser == null) {
-                mainPresenter?.run {
+                presenter?.run {
                     clearSharedPreferences()
                     stopTrackingService()
                     auth()
@@ -187,12 +187,17 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
 
     override fun onResume() {
         super.onResume()
-        mainPresenter?.updateNavDisplayName()
+        presenter?.updateNavDisplayName()
     }
 
     override fun onStop() {
         super.onStop()
         firebaseAuth?.removeAuthStateListener(authStateListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.stop()
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {
@@ -290,7 +295,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
 
     override fun showErrorSnackbar(message: String) {
         Snackbar.make(findViewById(R.id.coordinator), message, Snackbar.LENGTH_SHORT)
-                .setAction("RETRY?") { mainPresenter?.logout() }
+                .setAction("RETRY?") { presenter?.logout() }
     }
 
     override fun setMarkerHidden(friendId: String, visible: Boolean) {
@@ -314,7 +319,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
     }
 
     override fun stopSharing(friendId: String) {
-        mainPresenter?.setFriendSharingState(friendId, false)
+        presenter?.setFriendSharingState(friendId, false)
     }
 
     override fun updateProfilePicture() {

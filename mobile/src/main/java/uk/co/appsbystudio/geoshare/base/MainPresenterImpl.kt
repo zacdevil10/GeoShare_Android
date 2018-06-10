@@ -13,24 +13,24 @@ import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
-class MainPresenterImpl(private val mainView: MainView, private val showMarkerPreferencesHelper: ShowMarkerPreferencesHelper,
+class MainPresenterImpl(private val view: MainView, private val markerPreferencesHelper: ShowMarkerPreferencesHelper,
                         private val trackingPreferencesHelper: TrackingPreferencesHelper, private val settingsPreferencesHelper: SettingsPreferencesHelper,
-                        private val mainInteractor: MainInteractorImpl):
+                        private val interactor: MainInteractorImpl):
         MainPresenter, MainInteractor.OnFirebaseRequestFinishedListener {
 
     override fun getFriends() {
-        mainInteractor.getFriends(this)
+        interactor.getFriends(this)
     }
 
     override fun getFriendsTrackingState() {
-        mainInteractor.getTrackingState(this)
+        interactor.getTrackingState(this)
     }
 
     override fun setTrackingService() {
         Runnable {
             trackingPreferencesHelper.getAll()?.forEach { (_, value) ->
                 if (value as Boolean) {
-                    mainView.startTrackingServiceIntent()
+                    view.startTrackingServiceIntent()
                     return@Runnable
                 }
             }
@@ -42,12 +42,12 @@ class MainPresenterImpl(private val mainView: MainView, private val showMarkerPr
                 .addOnSuccessListener {
                     trackingPreferencesHelper.setTrackingState(uid, state)
                 }.addOnFailureListener {
-                    mainView.showError(it.message!!)
+                    view.showError(it.message!!)
                 }
     }
 
     override fun stopTrackingService() {
-        mainView.stopTrackingServiceIntent()
+        view.stopTrackingServiceIntent()
     }
 
     override fun updateNavProfilePicture(view: CircleImageView?, storageDirectory: String) {
@@ -55,27 +55,27 @@ class MainPresenterImpl(private val mainView: MainView, private val showMarkerPr
     }
 
     override fun updateNavDisplayName() {
-        mainView.setDisplayName(FirebaseAuth.getInstance().currentUser?.displayName)
+        view.setDisplayName(FirebaseAuth.getInstance().currentUser?.displayName)
     }
 
     override fun setMarkerVisibilityState() {
-        mainView.markerToggleState(showMarkerPreferencesHelper.getAllMarkersVisibilityState())
+        view.markerToggleState(markerPreferencesHelper.getAllMarkersVisibilityState())
     }
 
     override fun swapFragment(fragment: Fragment) {
-        mainView.showFragment(fragment)
+        view.showFragment(fragment)
     }
 
     override fun openDialog(dialog: DialogFragment, tag: String) {
-        mainView.showDialog(dialog, tag)
+        view.showDialog(dialog, tag)
     }
 
     override fun friends() {
-        mainView.friendsIntent()
+        view.friendsIntent()
     }
 
     override fun settings() {
-        mainView.settingsIntent()
+        view.settingsIntent()
     }
 
     override fun feedback() {
@@ -84,53 +84,57 @@ class MainPresenterImpl(private val mainView: MainView, private val showMarkerPr
         emailIntent.data = Uri.parse("mailto:support@appsbystudio.co.uk")
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GeoShare Feedback")
 
-        mainView.feedbackIntent(emailIntent)
+        view.feedbackIntent(emailIntent)
     }
 
     override fun logout() {
         if (FirebaseAuth.getInstance() != null) {
-            mainInteractor.removeToken()
+            interactor.removeToken()
             FirebaseAuth.getInstance().signOut()
         } else {
-            mainView.showErrorSnackbar("Could not log out!")
+            view.showErrorSnackbar("Could not log out!")
         }
     }
 
     override fun auth() {
-        mainView.logoutIntent()
+        view.logoutIntent()
     }
 
     override fun clearSharedPreferences() {
         settingsPreferencesHelper.clear()
         trackingPreferencesHelper.clear()
-        showMarkerPreferencesHelper.clear()
+        markerPreferencesHelper.clear()
     }
 
     override fun navDrawerState(open: Boolean) {
         if (open) {
-            mainView.openNavDrawer()
+            view.openNavDrawer()
         } else {
-            mainView.closeNavDrawer()
+            view.closeNavDrawer()
         }
     }
 
+    override fun stop() {
+        interactor.removeAllListeners()
+    }
+
     override fun friendAdded(key: String?, name: String?) {
-        mainView.updateFriendsList(key, name)
+        view.updateFriendsList(key, name)
     }
 
     override fun friendRemoved(key: String?) {
-        mainView.removeFromFriendList(key)
+        view.removeFromFriendList(key)
     }
 
     override fun trackingAdded(key: String?, trackingState: Boolean?) {
-        mainView.updateTrackingState(key, trackingState)
+        view.updateTrackingState(key, trackingState)
     }
 
     override fun trackingRemoved(key: String?) {
-        mainView.removeTrackingState(key)
+        view.removeTrackingState(key)
     }
 
     override fun error(error: String) {
-        mainView.showError(error)
+        view.showError(error)
     }
 }

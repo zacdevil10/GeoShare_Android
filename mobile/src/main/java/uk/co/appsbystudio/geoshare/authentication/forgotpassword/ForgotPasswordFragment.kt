@@ -16,14 +16,14 @@ import uk.co.appsbystudio.geoshare.authentication.AuthView
 class ForgotPasswordFragment : Fragment(), ForgotPasswordView {
 
     private var fragmentCallback: AuthView? = null
-    private var forgotPasswordPresenter: ForgotPasswordPresenter? = null
+    private var presenter: ForgotPasswordPresenter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_forgot_password, container, false)
 
-        forgotPasswordPresenter = ForgotPasswordPresenterImpl(this, ForgotPasswordInteractorImpl())
+        presenter = ForgotPasswordPresenterImpl(this, ForgotPasswordInteractorImpl())
 
         return view
     }
@@ -32,7 +32,7 @@ class ForgotPasswordFragment : Fragment(), ForgotPasswordView {
         super.onViewCreated(view, savedInstanceState)
 
         progress_button_forgot_password.setOnClickListener {
-            forgotPasswordPresenter?.validate(edit_email_forgot_password.text.toString())
+            presenter?.validate(edit_email_forgot_password.text.toString())
         }
 
         button_back_forgot_password.setOnClickListener {

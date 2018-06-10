@@ -3,7 +3,6 @@ package uk.co.appsbystudio.geoshare.setup
 import android.Manifest
 import android.annotation.TargetApi
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -26,11 +25,10 @@ import uk.co.appsbystudio.geoshare.setup.fragments.permissions.PermissionsFragme
 import uk.co.appsbystudio.geoshare.setup.fragments.radius.RadiusSetupFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.profile.SetupProfileFragment
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
-import uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
 
 class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
 
-    private var initialSetupPresenter: InitialSetupPresenter? = null
+    private var presenter: InitialSetupPresenter? = null
     private var settingsPreferencesHelper: SettingsPreferencesHelper? = null
 
     companion object {
@@ -43,8 +41,8 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_main, false)
 
-        initialSetupPresenter = InitialSetupPresenterImpl(this)
-        initialSetupPresenter?.addDeviceToken()
+        presenter = InitialSetupPresenterImpl(this)
+        presenter?.addDeviceToken()
 
         settingsPreferencesHelper = SettingsPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(this))
 
@@ -78,9 +76,9 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == PERMS) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initialSetupPresenter?.onPermissionsResult()
+                presenter?.onPermissionsResult()
             } else {
-                initialSetupPresenter?.onError(getString(R.string.generic_error))
+                presenter?.onError(getString(R.string.generic_error))
             }
         }
     }

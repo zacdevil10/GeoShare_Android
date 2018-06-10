@@ -77,4 +77,9 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
     override fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.stop()
+    }
 }

@@ -12,4 +12,6 @@ interface ProfileFriendsAllInteractor {
     fun getFriends(uid: String?, listener: OnFirebaseListener)
 
     fun sendFriendRequest(uid: String?, listener: OnFirebaseListener)
+
+    fun removeListener()
 }

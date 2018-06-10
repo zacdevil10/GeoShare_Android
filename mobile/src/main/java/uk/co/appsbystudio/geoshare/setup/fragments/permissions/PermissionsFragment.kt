@@ -15,7 +15,7 @@ import uk.co.appsbystudio.geoshare.setup.InitialSetupView
 class PermissionsFragment : Fragment(), PermissionsView {
 
     private var fragmentCallback: InitialSetupView? = null
-    private var permissionsPresenter: PermissionsPresenter? = null
+    private var presenter: PermissionsPresenter? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -31,7 +31,7 @@ class PermissionsFragment : Fragment(), PermissionsView {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_permissions, container, false)
 
-        permissionsPresenter = PermissionsPresenterImpl(this)
+        presenter = PermissionsPresenterImpl(this)
 
         return view
     }
@@ -43,7 +43,7 @@ class PermissionsFragment : Fragment(), PermissionsView {
             if (!fragmentCallback?.hasPermissions()!!) {
                 fragmentCallback?.requestPermissions()
             } else {
-                permissionsPresenter?.onResult(getString(R.string.permissions_granted))
+                presenter?.onResult(getString(R.string.permissions_granted))
             }
         }
 

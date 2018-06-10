@@ -9,14 +9,22 @@ import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation
 
 class MainInteractorImpl: MainInteractor {
 
+    private var friendsRef: DatabaseReference? = null
+    private var nameRef: DatabaseReference? = null
+    private var trackingRef: DatabaseReference? = null
+
+    private lateinit var friendsListener: ChildEventListener
+    private lateinit var trackingListener: ChildEventListener
+    private lateinit var usersListener: ValueEventListener
+
     override fun getFriends(listener: MainInteractor.OnFirebaseRequestFinishedListener) {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
-            val friendsRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user.uid}")
-            friendsRef.keepSynced(true)
+            friendsRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user.uid}")
+            friendsRef?.keepSynced(true)
 
-            val friendsListener = object : ChildEventListener {
+            friendsListener = object : ChildEventListener {
 
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     getName(dataSnapshot.key, listener)
@@ -39,12 +47,13 @@ class MainInteractorImpl: MainInteractor {
                 }
             }
 
-            friendsRef.addChildEventListener(friendsListener)
+            friendsRef?.addChildEventListener(friendsListener)
         }
     }
 
     fun getName(uid: String?, listener: MainInteractor.OnFirebaseRequestFinishedListener) {
-        val usersListener = object : ValueEventListener {
+        nameRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/$uid")
+        usersListener = object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val userInformation = dataSnapshot.getValue(UserInformation::class.java)
@@ -56,17 +65,17 @@ class MainInteractorImpl: MainInteractor {
             }
         }
 
-        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/$uid").addListenerForSingleValueEvent(usersListener)
+        nameRef?.addListenerForSingleValueEvent(usersListener)
     }
 
     override fun getTrackingState(listener: MainInteractor.OnFirebaseRequestFinishedListener) {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
-            val trackingStatusRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TRACKING}/${user.uid}/${FirebaseHelper.TRACKING}")
-            trackingStatusRef.keepSynced(true)
+            trackingRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TRACKING}/${user.uid}/${FirebaseHelper.TRACKING}")
+            trackingRef?.keepSynced(true)
 
-            val trackingListener = object : ChildEventListener {
+            trackingListener = object : ChildEventListener {
 
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     val trackingInfo = dataSnapshot.getValue(TrackingInfo::class.java)
@@ -90,7 +99,7 @@ class MainInteractorImpl: MainInteractor {
                 }
             }
 
-            trackingStatusRef.addChildEventListener(trackingListener)
+            trackingRef?.addChildEventListener(trackingListener)
         }
     }
 
@@ -98,5 +107,11 @@ class MainInteractorImpl: MainInteractor {
         val user = FirebaseAuth.getInstance().currentUser
         val token = FirebaseInstanceId.getInstance().token
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TOKEN}/${user?.uid}/$token").removeValue()
+    }
+
+    override fun removeAllListeners() {
+        friendsRef?.removeEventListener(friendsListener)
+        trackingRef?.removeEventListener(trackingListener)
+        nameRef?.removeEventListener(usersListener)
     }
 }

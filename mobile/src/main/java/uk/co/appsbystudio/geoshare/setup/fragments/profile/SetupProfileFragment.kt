@@ -14,7 +14,7 @@ import uk.co.appsbystudio.geoshare.setup.InitialSetupView
 class SetupProfileFragment : Fragment(), SetupProfileView {
 
     private var fragmentCallback: InitialSetupView? = null
-    private var setupProfilePresenter: SetupProfilePresenter? = null
+    private var presenter: SetupProfilePresenter? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -30,9 +30,9 @@ class SetupProfileFragment : Fragment(), SetupProfileView {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_setup_profile, container, false)
 
-        setupProfilePresenter = SetupProfilePresenterImpl(this)
+        presenter = SetupProfilePresenterImpl(this)
 
-        setupProfilePresenter?.imageAvailable()
+        presenter?.imageAvailable()
 
         return view
     }

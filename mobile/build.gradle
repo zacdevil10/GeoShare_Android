@@ -46,6 +46,7 @@ dependencies {
     implementation 'br.com.simplepass:loading-button-android:1.8.0'
 
     testImplementation 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.1.1"
 }
 
 apply plugin: 'com.google.gms.google-services'

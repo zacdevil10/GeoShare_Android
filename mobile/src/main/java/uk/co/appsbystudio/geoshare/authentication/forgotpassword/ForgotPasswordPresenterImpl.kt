@@ -1,25 +1,25 @@
 package uk.co.appsbystudio.geoshare.authentication.forgotpassword
 
-class ForgotPasswordPresenterImpl(private val forgotPasswordView: ForgotPasswordView, private val forgotPasswordInteractor: ForgotPasswordInteractor):
+class ForgotPasswordPresenterImpl(private val view: ForgotPasswordView, private val interactor: ForgotPasswordInteractor):
         ForgotPasswordPresenter, ForgotPasswordInteractor.OnRecoverFinishedListener {
 
     override fun validate(email: String) {
-        forgotPasswordView.showProgress()
+        view.showProgress()
 
-        forgotPasswordInteractor.recover(email, this)
+        interactor.recover(email, this)
     }
 
     override fun onEmailError() {
-        forgotPasswordView.setEmailError()
-        forgotPasswordView.hideProgress()
+        view.setEmailError()
+        view.hideProgress()
     }
 
     override fun onSuccess() {
-        forgotPasswordView.updateUI()
+        view.updateUI()
     }
 
     override fun onFailure(error: String) {
-        forgotPasswordView.hideProgress()
-        forgotPasswordView.showError(error)
+        view.hideProgress()
+        view.showError(error)
     }
 }

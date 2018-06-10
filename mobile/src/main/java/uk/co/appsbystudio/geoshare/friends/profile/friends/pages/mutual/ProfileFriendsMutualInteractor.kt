@@ -9,4 +9,6 @@ interface ProfileFriendsMutualInteractor {
     }
 
     fun getFriends(uid: String, listener: OnFirebaseListener)
+
+    fun removeListener()
 }

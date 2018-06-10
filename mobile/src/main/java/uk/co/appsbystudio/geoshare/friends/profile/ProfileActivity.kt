@@ -16,9 +16,9 @@ import uk.co.appsbystudio.geoshare.utils.ProfileUtils
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 
-class Profile : AppCompatActivity(), ProfileView {
+class ProfileActivity : AppCompatActivity(), ProfileView {
 
-    private var profilePresenter: ProfilePresenter? = null
+    private var presenter: ProfilePresenter? = null
 
     private var uid: String? = null
 
@@ -26,7 +26,7 @@ class Profile : AppCompatActivity(), ProfileView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        profilePresenter = ProfilePresenterImpl(this,
+        presenter = ProfilePresenterImpl(this,
                 TrackingPreferencesHelper(getSharedPreferences("tracking", MODE_PRIVATE)),
                 ShowMarkerPreferencesHelper(getSharedPreferences("showOnMap", MODE_PRIVATE)))
 
@@ -40,19 +40,22 @@ class Profile : AppCompatActivity(), ProfileView {
 
         text_name_profile.text = MainActivity.friendNames[uid]
 
-        view_pager_profile.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
-            override fun getItem(position: Int): Fragment? {
-                return when (position) {
-                    0 -> ProfileInfoFragment.newInstance(uid)
-                    1 -> ProfileStaticMapFragment.newInstance(uid)
-                    2 -> ProfileFriendsFragment.newInstance(uid)
-                    else -> null
+        view_pager_profile.apply {
+            adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+                override fun getItem(position: Int): Fragment? {
+                    return when (position) {
+                        0 -> ProfileInfoFragment.newInstance(uid)
+                        1 -> ProfileStaticMapFragment.newInstance(uid)
+                        2 -> ProfileFriendsFragment.newInstance(uid)
+                        else -> null
+                    }
+                }
+
+                override fun getCount(): Int {
+                    return 3
                 }
             }
-
-            override fun getCount(): Int {
-                return 3
-            }
+            offscreenPageLimit = 2
         }
 
         image_back_button_profile.setOnClickListener {
@@ -60,7 +63,7 @@ class Profile : AppCompatActivity(), ProfileView {
         }
 
         button_remove_friend_profile.setOnClickListener({
-            profilePresenter?.removeFriendDialog(uid)
+            presenter?.removeFriendDialog(uid)
         })
     }
 
@@ -69,7 +72,7 @@ class Profile : AppCompatActivity(), ProfileView {
         builder.run {
             setMessage("Are you sure you want to remove this person from your friends list?")
             setPositiveButton("OK", { dialogInterface, i ->
-                profilePresenter?.removeFriend(uid)
+                presenter?.removeFriend(uid)
             })
             setNegativeButton("Cancel", { dialogInterface, i ->
                 dialogInterface.dismiss()

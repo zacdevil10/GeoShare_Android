@@ -17,14 +17,14 @@ import uk.co.appsbystudio.geoshare.authentication.AuthView
 class SignupFragment : Fragment(), SignupView {
 
     private var fragmentCallback: AuthView? = null
-    private var signupPresenter: SignupPresenter? = null
+    private var presenter: SignupPresenter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_signup, container, false)
 
-        signupPresenter = SignupPresenterImpl(this, SignupInteractorImpl())
+        presenter = SignupPresenterImpl(this, SignupInteractorImpl())
 
         return view
     }
@@ -33,11 +33,11 @@ class SignupFragment : Fragment(), SignupView {
         super.onViewCreated(view, savedInstanceState)
 
         progress_button_signup.setOnClickListener {
-            signupPresenter?.validate(edit_name_signup.text.toString(), edit_email_signup.text.toString(), edit_password_signup.text.toString(), checkbox_terms_signup.isChecked)
+            presenter?.validate(edit_name_signup.text.toString(), edit_email_signup.text.toString(), edit_password_signup.text.toString(), checkbox_terms_signup.isChecked)
         }
 
         text_terms_link_signup.setOnClickListener {
-            signupPresenter?.onTermsClick()
+            presenter?.onTermsClick()
         }
 
         button_back_signup.setOnClickListener {

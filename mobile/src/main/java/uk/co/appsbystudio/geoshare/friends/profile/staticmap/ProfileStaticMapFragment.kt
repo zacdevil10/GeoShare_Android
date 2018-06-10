@@ -7,18 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_profile_static_map.*
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.utils.DownloadImageTask
-import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
-import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class ProfileStaticMapFragment : Fragment(), ProfileStaticMapView {
 
     lateinit var uid: String
-    private var profileStaticMapPresenter: ProfileStaticMapPresenter? = null
+    private var presenter: ProfileStaticMapPresenter? = null
 
     companion object {
         fun newInstance(uid: String?) = ProfileStaticMapFragment().apply {
@@ -34,7 +29,7 @@ class ProfileStaticMapFragment : Fragment(), ProfileStaticMapView {
 
         uid = arguments?.getString("uid").toString()
 
-        profileStaticMapPresenter = ProfileStaticMapPresenterImpl(this, ProfileStaticMapInteractorImpl())
+        presenter = ProfileStaticMapPresenterImpl(this, ProfileStaticMapInteractorImpl())
 
         return view
     }
@@ -42,7 +37,7 @@ class ProfileStaticMapFragment : Fragment(), ProfileStaticMapView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileStaticMapPresenter?.location(uid)
+        presenter?.location(uid)
     }
 
     override fun setMapImage(bitmap: Bitmap) {

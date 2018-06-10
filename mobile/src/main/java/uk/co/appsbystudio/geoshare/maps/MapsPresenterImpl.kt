@@ -11,38 +11,37 @@ import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.distance
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
-import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromLatLngTask
 
-class MapsPresenterImpl(private val mapsView: MapsView,
-                        private val settingsHelper: SettingsPreferencesHelper?,
+class MapsPresenterImpl(private val view: MapsView,
+                        private val settingsPreferencesHelper: SettingsPreferencesHelper?,
                         private val mapsHelper: MapsHelperImpl,
-                        private val mapsInteractor: MapsInteractorImpl):
+                        private val interactor: MapsInteractorImpl):
         MapsPresenter, MapsInteractor.OnFirebaseRequestFinishedListener, MapsHelper.OnNetworkStateChangedListener, MapsHelper.OnSharePreferencesChangedListener {
 
     override fun getStaticFriends() {
-        mapsInteractor.staticFriends(this)
+        interactor.staticFriends(this)
     }
 
     override fun getTrackingFriends(storageDirectory: String?) {
-        mapsInteractor.trackingFriends(storageDirectory, this)
+        interactor.trackingFriends(storageDirectory, this)
     }
 
     override fun setTrackingSync(sync: Boolean): Boolean {
-        return mapsInteractor.trackingSync(sync)
+        return interactor.trackingSync(sync)
     }
 
     override fun updateTrackingState(trackingState: Boolean) {
-        mapsView.updateTrackingButton(trackingState)
+        view.updateTrackingButton(trackingState)
     }
 
     override fun moveMapCamera(latLng: LatLng, zoomLevel: Int, animated: Boolean) {
-        mapsView.updateCameraPosition(latLng, zoomLevel, animated)
+        view.updateCameraPosition(latLng, zoomLevel, animated)
     }
 
     override fun updateNearbyFriendsCount(latLng: LatLng, friendsMarkerList: Map<String?, Marker?>) {
         var count = 0
 
-        val radius = settingsHelper?.nearbyRadius()
+        val radius = settingsPreferencesHelper?.nearbyRadius()
 
         for (markerId in friendsMarkerList.keys) {
             val markerLocation = friendsMarkerList[markerId]?.position
@@ -62,32 +61,32 @@ class MapsPresenterImpl(private val mapsView: MapsView,
             }
         }
 
-        mapsView.updateNearbyText(count)
+        view.updateNearbyText(count)
     }
 
     override fun updateMapStyle(nightTheme: Boolean) {
         if (nightTheme) {
-            mapsView.setMapStyle(R.raw.map_style_dark)
+            view.setMapStyle(R.raw.map_style_dark)
         } else {
-            mapsView.setMapStyle(R.raw.map_style)
+            view.setMapStyle(R.raw.map_style)
         }
     }
 
     override fun updateBottomSheetState(state: Int) {
-        mapsView.setBottomSheetState(state)
+        view.setBottomSheetState(state)
     }
 
     override fun updateBottomSheet(uid: String, startLatLng: LatLng, endLatLng: LatLng, timestamp: Long?) {
         //mapsView.updateBottomSheetText(MainActivity.friendNames[uid], GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude).execute().get(), timestamp?.convertDate(), distance(startLatLng, endLatLng))
-        mapsView.updateBottomSheetText(MainActivity.friendNames[uid], "", timestamp?.convertDate(), distance(startLatLng, endLatLng))
+        view.updateBottomSheetText(MainActivity.friendNames[uid], "", timestamp?.convertDate(), distance(startLatLng, endLatLng))
     }
 
     override fun updateNearbyFriendsRadius(centerPoint: LatLng) {
-        mapsView.updateNearbyRadiusCircle(settingsHelper?.nearbyRadius(), centerPoint)
+        view.updateNearbyRadiusCircle(settingsPreferencesHelper?.nearbyRadius(), centerPoint)
     }
 
     override fun setError(message: String) {
-        mapsView.showError(message)
+        view.showError(message)
     }
 
     override fun registerNetworkReceiver() {
@@ -107,50 +106,50 @@ class MapsPresenterImpl(private val mapsView: MapsView,
     }
 
     override fun locationAdded(key: String?, markerPointer: Bitmap?, databaseLocations: DatabaseLocations?) {
-        mapsView.addFriendMarker(key, markerPointer, databaseLocations)
+        view.addFriendMarker(key, markerPointer, databaseLocations)
     }
 
     override fun locationChanged(key: String?, databaseLocations: DatabaseLocations?) {
-        mapsView.updateFriendMarker(key, databaseLocations)
+        view.updateFriendMarker(key, databaseLocations)
     }
 
     override fun locationRemoved(key: String?) {
-        mapsView.removeFriendMarker(key)
+        view.removeFriendMarker(key)
     }
 
     override fun markerExists(uid: String): Boolean {
-        return mapsView.markerExists(uid)
+        return view.markerExists(uid)
     }
 
     override fun error(error: String) {
-        mapsView.showError(error)
+        view.showError(error)
     }
 
     override fun registerNetworkReceiver(broadcastReceiver: BroadcastReceiver) {
-        mapsView.registerNetworkReceiver(broadcastReceiver)
+        view.registerNetworkReceiver(broadcastReceiver)
     }
 
     override fun available(state: Boolean) {
         if (state) {
-            mapsView.networkAvailable()
+            view.networkAvailable()
         } else {
-            mapsView.networkError("No network connection detected")
+            view.networkError("No network connection detected")
         }
     }
 
     override fun networkType(type: Int) {
         if (type == 0) {
-            mapsInteractor.trackingSync(true)
-        } else if (type == 1 && settingsHelper != null) {
-            mapsInteractor.trackingSync(settingsHelper.mobileSyncState()!!)
+            interactor.trackingSync(true)
+        } else if (type == 1 && settingsPreferencesHelper != null) {
+            interactor.trackingSync(settingsPreferencesHelper.mobileSyncState()!!)
         }
     }
 
     override fun unregisterNetworkReceiver(broadcastReceiver: BroadcastReceiver) {
-        mapsView.unregisterNetworkReceiver(broadcastReceiver)
+        view.unregisterNetworkReceiver(broadcastReceiver)
     }
 
     override fun updatedNearbyRadius() {
-        mapsView.updateRadiusCircleSize(settingsHelper?.nearbyRadius())
+        view.updateRadiusCircleSize(settingsPreferencesHelper?.nearbyRadius())
     }
 }

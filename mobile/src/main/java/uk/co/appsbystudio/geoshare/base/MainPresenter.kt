@@ -40,4 +40,6 @@ interface MainPresenter {
 
     fun navDrawerState(open: Boolean)
 
+    fun stop()
+
 }

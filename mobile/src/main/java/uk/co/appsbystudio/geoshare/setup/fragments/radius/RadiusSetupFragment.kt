@@ -16,7 +16,7 @@ import uk.co.appsbystudio.geoshare.setup.InitialSetupView
 class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
     private var fragmentCallback: InitialSetupView? = null
-    private var radiusSetupPresenter: RadiusSetupPresenter? = null
+    private var presenter: RadiusSetupPresenter? = null
 
     private var progressParameter: Int = 0
 
@@ -34,7 +34,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_radius_setup, container, false)
 
-        radiusSetupPresenter = RadiusSetupPresenterImpl(this)
+        presenter = RadiusSetupPresenterImpl(this)
 
         return view
     }
@@ -54,7 +54,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
 
                 progressParameter = thumb.centerX() - text_progress_radius.measuredWidth
 
-                radiusSetupPresenter?.onSeekBarPositionChanged(progressParameter)
+                presenter?.onSeekBarPositionChanged(progressParameter)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {

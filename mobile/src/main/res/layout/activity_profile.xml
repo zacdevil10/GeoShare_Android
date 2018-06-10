@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.friends.profile.Profile">
+    tools:context="uk.co.appsbystudio.geoshare.friends.profile.ProfileActivity">
 
     <ImageView
         android:layout_width="match_parent"

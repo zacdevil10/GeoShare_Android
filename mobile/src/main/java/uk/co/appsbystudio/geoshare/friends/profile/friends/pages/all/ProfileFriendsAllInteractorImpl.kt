@@ -1,17 +1,18 @@
 package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.all
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class ProfileFriendsAllInteractorImpl: ProfileFriendsAllInteractor {
 
+    private lateinit var friendsListener: ChildEventListener
+    private var friendsRef: DatabaseReference? = null
+
     override fun getFriends(uid: String?, listener: ProfileFriendsAllInteractor.OnFirebaseListener) {
         val user = FirebaseAuth.getInstance().currentUser
-        val friendsList = object : ChildEventListener {
+        friendsRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/$uid")
+        friendsListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
                 if (dataSnapshot.key != user?.uid) listener.add(dataSnapshot.key)
@@ -34,7 +35,7 @@ class ProfileFriendsAllInteractorImpl: ProfileFriendsAllInteractor {
             }
         }
 
-        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/$uid").addChildEventListener(friendsList)
+        friendsRef?.addChildEventListener(friendsListener)
     }
 
     override fun sendFriendRequest(uid: String?, listener: ProfileFriendsAllInteractor.OnFirebaseListener) {
@@ -47,5 +48,9 @@ class ProfileFriendsAllInteractorImpl: ProfileFriendsAllInteractor {
                 }
 
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.PENDING}/$uid/${user?.uid}/outgoing").setValue(false)
+    }
+
+    override fun removeListener() {
+        friendsRef?.removeEventListener(friendsListener)
     }
 }

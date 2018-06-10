@@ -5,4 +5,6 @@ interface ProfileFriendsAllPresenter {
     fun friends(uid: String)
 
     fun request(uid: String)
+
+    fun stop()
 }
