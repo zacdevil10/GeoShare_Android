@@ -16,7 +16,7 @@ fun Bitmap?.bitmapCanvas(w: Int, h: Int): Bitmap {
     val bmp = Bitmap.createBitmap(w, h, config)
     val canvas = Canvas(bmp)
 
-    val mapMarker = BitmapFactory.decodeResource(Application.getContext().resources, R.drawable.map_marker_point_shadow)
+    val mapMarker = BitmapFactory.decodeResource(Application.context?.resources, R.drawable.map_marker_point_shadow)
     val scaledMarker = Bitmap.createScaledBitmap(mapMarker, 116, 155, false)
 
     canvas.drawBitmap(scaledMarker, 0f, 0f, null)

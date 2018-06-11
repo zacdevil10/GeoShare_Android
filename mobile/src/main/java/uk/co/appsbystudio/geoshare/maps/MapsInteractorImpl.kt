@@ -18,7 +18,7 @@ class MapsInteractorImpl: MapsInteractor {
 
     private var syncState: Boolean = false
 
-    override fun staticFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
+    override fun staticFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
@@ -30,7 +30,7 @@ class MapsInteractorImpl: MapsInteractor {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     if (dataSnapshot.exists()) {
                         val databaseLocations = dataSnapshot.getValue(DatabaseLocations::class.java)
-                        getUserProfileImage(dataSnapshot.key, databaseLocations, null, listener)
+                        getUserProfileImage(dataSnapshot.key, databaseLocations, storageDirectory, listener)
                     }
                 }
 

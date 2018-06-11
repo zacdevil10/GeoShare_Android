@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.Marker
 
 interface MapsPresenter {
 
-    fun getStaticFriends()
+    fun getStaticFriends(storageDirectory: String?)
 
     fun getTrackingFriends(storageDirectory: String?)
 

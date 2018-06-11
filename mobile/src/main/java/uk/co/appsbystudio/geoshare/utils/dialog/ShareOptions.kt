@@ -19,6 +19,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ShareOptions : DialogFragment() {
+
+    private var mContext: Context? = null
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        this.mContext = context
+    }
     
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -27,12 +34,12 @@ class ShareOptions : DialogFragment() {
         val friendId = args.getString("friendId")
         val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        val gpsTracking = GPSTracking(activity)
+        val gpsTracking = GPSTracking(mContext)
 
-        val trackingPreferences = activity.getSharedPreferences("tracking", Context.MODE_PRIVATE)
-        val timerPreferences = activity.getSharedPreferences("tracking_time", Context.MODE_PRIVATE)
+        val trackingPreferences = mContext?.getSharedPreferences("tracking", Context.MODE_PRIVATE)
+        val timerPreferences = mContext?.getSharedPreferences("tracking_time", Context.MODE_PRIVATE)
 
-        val optionsMenu = AlertDialog.Builder(activity, R.style.DialogTheme)
+        val optionsMenu = AlertDialog.Builder(mContext, R.style.DialogTheme)
 
         optionsMenu.setTitle("Share your location with $name?").setMultiChoiceItems(R.array.shareLocationOptions, null) { dialog, which, isChecked ->
             when (which) {
@@ -47,7 +54,7 @@ class ShareOptions : DialogFragment() {
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             if ((dialog as AlertDialog).listView.checkedItemPositions.get(0) && !dialog.listView.checkedItemPositions.get(1)) {
-                val lastShare = System.currentTimeMillis() - timerPreferences.getLong(friendId, 0)
+                val lastShare = if (timerPreferences != null) System.currentTimeMillis() - timerPreferences.getLong(friendId, 0) else 0
                 if (lastShare > 300000) { //5 mins in millis
                     val databaseLocations = DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis())
 
@@ -55,16 +62,16 @@ class ShareOptions : DialogFragment() {
                     if (uid != null && friendId != null) {
                         databaseReference.child("current_location").child(friendId).child(uid).setValue(databaseLocations)
                                 .addOnSuccessListener {
-                                    timerPreferences.edit().putLong(friendId, System.currentTimeMillis()).apply()
+                                    timerPreferences?.edit()?.putLong(friendId, System.currentTimeMillis())?.apply()
                                 }.addOnFailureListener {
-                                    Toast.makeText(activity, "Failed", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(mContext, "Failed", Toast.LENGTH_LONG).show()
                                 }
-                        trackingPreferences.edit().putBoolean(friendId, false).apply()
+                        trackingPreferences?.edit()?.putBoolean(friendId, false)?.apply()
                     }
                 } else {
                     val timeLeft = (300000 - lastShare)
                     val format = SimpleDateFormat("mm:ss", Locale.getDefault())
-                    Toast.makeText(activity, "Please wait another ${format.format(timeLeft)}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(mContext, "Please wait another ${format.format(timeLeft)}", Toast.LENGTH_LONG).show()
                 }
             } else if (dialog.listView.checkedItemPositions.get(0) && dialog.listView.checkedItemPositions.get(1)) {
                 val databaseReference = FirebaseDatabase.getInstance().reference
@@ -72,13 +79,13 @@ class ShareOptions : DialogFragment() {
                     val trackingInfo = TrackingInfo(true, System.currentTimeMillis())
                     databaseReference.child(FirebaseHelper.TRACKING).child(friendId).child("tracking").child(uid).setValue(trackingInfo)
                             .addOnSuccessListener {
-                                trackingPreferences.edit().putBoolean(friendId, true).apply()
+                                trackingPreferences?.edit()?.putBoolean(friendId, true)?.apply()
                                 if (!TrackingService.isRunning) {
-                                    val trackingService = Intent(activity, TrackingService::class.java)
-                                    activity.startService(trackingService)
+                                    val trackingService = Intent(mContext, TrackingService::class.java)
+                                    mContext?.startService(trackingService)
                                 }
                             }.addOnFailureListener {
-                                Toast.makeText(activity, "Failed", Toast.LENGTH_LONG).show()
+                                Toast.makeText(mContext, "Failed", Toast.LENGTH_LONG).show()
                             }
 
                     val databaseLocations = DatabaseLocations(gpsTracking.getLongitude(), gpsTracking.getLatitude(), System.currentTimeMillis())

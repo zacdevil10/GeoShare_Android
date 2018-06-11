@@ -18,7 +18,7 @@ interface MapsInteractor {
         fun error(error: String)
     }
 
-    fun staticFriends(listener: MapsInteractor.OnFirebaseRequestFinishedListener)
+    fun staticFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener)
 
     fun trackingFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener)
 

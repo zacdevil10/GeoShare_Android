@@ -18,8 +18,8 @@ class MapsPresenterImpl(private val view: MapsView,
                         private val interactor: MapsInteractorImpl):
         MapsPresenter, MapsInteractor.OnFirebaseRequestFinishedListener, MapsHelper.OnNetworkStateChangedListener, MapsHelper.OnSharePreferencesChangedListener {
 
-    override fun getStaticFriends() {
-        interactor.staticFriends(this)
+    override fun getStaticFriends(storageDirectory: String?) {
+        interactor.staticFriends(storageDirectory, this)
     }
 
     override fun getTrackingFriends(storageDirectory: String?) {

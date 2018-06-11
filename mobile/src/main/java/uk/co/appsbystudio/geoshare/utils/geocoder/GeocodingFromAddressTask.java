@@ -21,7 +21,7 @@ public class GeocodingFromAddressTask extends AsyncTask<Void, Void, LatLng> {
 
     @Override
     protected LatLng doInBackground(Void... params) {
-        Geocoder gc = new Geocoder(Application.getContext());
+        Geocoder gc = new Geocoder(Application.Companion.getContext());
         LatLng latLng = null;
         try {
             List<Address> address = gc.getFromLocationName(location, 1);

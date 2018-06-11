@@ -87,6 +87,9 @@ class FriendsNavAdapter(private val context: Context,
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {
                     callback.stopSharing(userId[holder.adapterPosition])
+                    expandedPosition = if (isExpanded) -1 else holder.adapterPosition
+                    TransitionManager.beginDelayedTransition(recyclerView)
+                    notifyDataSetChanged()
                 }
             }
         } else {

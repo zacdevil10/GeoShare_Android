@@ -247,7 +247,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
 
         if (!savedInstance) presenter?.run {
-            getStaticFriends()
+            getStaticFriends(storageDirectory)
             getTrackingFriends(storageDirectory)
             syncState = setTrackingSync(true)
             moveMapCamera(currentLocation, DEFAULT_ZOOM, false)

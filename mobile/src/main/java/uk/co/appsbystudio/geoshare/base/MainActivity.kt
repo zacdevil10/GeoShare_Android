@@ -327,6 +327,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     override fun stopSharing(friendId: String) {
         presenter?.setFriendSharingState(friendId, false)
+        friendsNavAdapter?.notifyDataSetChanged()
     }
 
     override fun onBackPressed() {

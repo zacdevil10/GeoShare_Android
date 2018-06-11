@@ -24,7 +24,7 @@ fun CircleImageView?.setProfilePicture(userId: String?, storageDirectory: String
                     this?.setImageBitmap(imageBitmap)
                 }
                 .addOnFailureListener {
-                    this?.setImageDrawable(Application.getContext().resources.getDrawable(R.drawable.ic_profile_picture))
+                    this?.setImageDrawable(Application.context?.resources?.getDrawable(R.drawable.ic_profile_picture, null))
                 }
     }
 }
