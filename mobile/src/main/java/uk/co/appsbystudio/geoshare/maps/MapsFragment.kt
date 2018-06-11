@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.map_layout_main.*
-import uk.co.appsbystudio.geoshare.GPSTracking
+import uk.co.appsbystudio.geoshare.utils.GPSTracking
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.base.MainView

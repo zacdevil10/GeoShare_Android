@@ -7,10 +7,7 @@ import android.support.v4.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
-import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
-import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
-import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.*
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class MainPresenterImpl(private val view: MainView, private val markerPreferencesHelper: ShowMarkerPreferencesHelper,
@@ -51,7 +48,7 @@ class MainPresenterImpl(private val view: MainView, private val markerPreference
     }
 
     override fun updateNavProfilePicture(view: CircleImageView?, storageDirectory: String) {
-        ProfileUtils.setProfilePicture(FirebaseAuth.getInstance().currentUser?.uid, view, storageDirectory)
+        view.setProfilePicture(FirebaseAuth.getInstance().currentUser?.uid, storageDirectory)
     }
 
     override fun updateNavDisplayName() {

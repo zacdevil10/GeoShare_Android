@@ -33,7 +33,7 @@ import uk.co.appsbystudio.geoshare.utils.services.TrackingService
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity
 import java.util.*
 
-class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, ProfileSelectionResult.Callback.Main {
+class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     private var presenter: MainPresenter? = null
 
@@ -170,12 +170,12 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 213) {
                 mapsFragment.setup()
             } else {
-                ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, FirebaseAuth.getInstance().currentUser?.uid)
+                ProfileSelectionResult(main = this).profilePictureResult(this@MainActivity, requestCode, resultCode, data, FirebaseAuth.getInstance().currentUser?.uid)
             }
         }
     }
@@ -188,6 +188,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
     override fun onResume() {
         super.onResume()
         presenter?.updateNavDisplayName()
+        presenter?.updateNavProfilePicture(header?.profile_image, this@MainActivity.cacheDir.toString())
     }
 
     override fun onStop() {
@@ -271,6 +272,10 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
         header?.username?.text = String.format(resources.getString(R.string.welcome_user_header), name)
     }
 
+    override fun updateProfilePicture() {
+        presenter?.updateNavProfilePicture(header?.profile_image, this@MainActivity.cacheDir.toString())
+    }
+
     override fun markerToggleState(state: Boolean?) {
         if (state != null) switch_markers_main.isChecked = state
     }
@@ -322,10 +327,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback, 
 
     override fun stopSharing(friendId: String) {
         presenter?.setFriendSharingState(friendId, false)
-    }
-
-    override fun updateProfilePicture() {
-        ProfileUtils.setProfilePicture(FirebaseAuth.getInstance().currentUser?.uid, profile_image, this.cacheDir.toString())
     }
 
     override fun onBackPressed() {

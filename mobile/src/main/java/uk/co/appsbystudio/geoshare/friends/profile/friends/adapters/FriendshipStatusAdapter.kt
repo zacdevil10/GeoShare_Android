@@ -13,8 +13,8 @@ import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
 
 class FriendshipStatusAdapter(private val context: Context?,
@@ -32,7 +32,7 @@ class FriendshipStatusAdapter(private val context: Context?,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         FirebaseDatabase.getInstance().reference.addListenerForSingleValueEvent(GetUserFromDatabase(userId[position], holder.name))
 
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId[position], holder.profile, context?.cacheDir.toString())
+        if (!userId.isEmpty()) holder.profile.setProfilePicture(userId[position], context?.cacheDir.toString())
 
         when {
             MainActivity.friendsId.containsKey(userId[position]) -> {

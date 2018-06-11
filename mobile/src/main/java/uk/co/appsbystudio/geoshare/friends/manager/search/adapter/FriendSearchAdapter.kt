@@ -12,7 +12,7 @@ import android.widget.TextView
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
 
 class FriendSearchAdapter(private val context: Context, private val userMap: LinkedHashMap<String, String>, private val callback: Callback) : RecyclerView.Adapter<FriendSearchAdapter.ViewHolder>() {
@@ -30,7 +30,7 @@ class FriendSearchAdapter(private val context: Context, private val userMap: Lin
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = userMap.values.toTypedArray()[position]
 
-        if (!userMap.isEmpty()) ProfileUtils.setProfilePicture(userMap.keys.toTypedArray()[position], holder.profile, context.cacheDir.toString())
+        if (!userMap.isEmpty()) holder.profile.setProfilePicture(userMap.keys.toTypedArray()[position], context.cacheDir.toString())
 
         when {
             MainActivity.friendsId.containsKey(userMap.keys.toTypedArray()[position]) -> {

@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
 
-import uk.co.appsbystudio.geoshare.utils.json.UrlUtil;
+import uk.co.appsbystudio.geoshare.utils.UrlUtilKt;
 
 class DirectionsDownloadTask extends AsyncTask<String, String, String> {
 
@@ -19,7 +19,7 @@ class DirectionsDownloadTask extends AsyncTask<String, String, String> {
         String data = "";
 
         try {
-            data = UrlUtil.downloadUrl(url[0]);
+            data = UrlUtilKt.downloadUrl(url[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }

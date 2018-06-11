@@ -32,6 +32,8 @@ interface MainView {
 
     fun setDisplayName(name: String?)
 
+    fun updateProfilePicture()
+
     fun markerToggleState(state: Boolean?)
 
     fun openNavDrawer()

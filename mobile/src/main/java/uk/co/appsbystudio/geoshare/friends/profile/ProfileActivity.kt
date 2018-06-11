@@ -12,9 +12,9 @@ import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.friends.profile.friends.ProfileFriendsFragment
 import uk.co.appsbystudio.geoshare.friends.profile.info.ProfileInfoFragment
 import uk.co.appsbystudio.geoshare.friends.profile.staticmap.ProfileStaticMapFragment
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 
 class ProfileActivity : AppCompatActivity(), ProfileView {
 
@@ -36,7 +36,7 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
             uid = bundle.getString("uid")
         }
 
-        ProfileUtils.setProfilePicture(uid, image_avatar_profile, this.cacheDir.toString())
+        image_avatar_profile.setProfilePicture(uid, this.cacheDir.toString())
 
         text_name_profile.text = MainActivity.friendNames[uid]
 

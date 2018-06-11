@@ -14,10 +14,9 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
-import uk.co.appsbystudio.geoshare.Application
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
 
 class FriendsNavAdapter(private val context: Context,
@@ -42,8 +41,8 @@ class FriendsNavAdapter(private val context: Context,
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FriendsNavAdapter.ViewHolder {
         val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.friends_nav_item, viewGroup, false)
 
-        sharedPreferences = Application.getContext().getSharedPreferences("tracking", Context.MODE_PRIVATE)
-        showOnMapPreference = Application.getContext().getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
+        sharedPreferences = context.getSharedPreferences("tracking", Context.MODE_PRIVATE)
+        showOnMapPreference = context.getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
 
         return FriendsNavAdapter.ViewHolder(view)
     }
@@ -52,7 +51,7 @@ class FriendsNavAdapter(private val context: Context,
         if (MainActivity.friendNames.containsKey(userId[position])) holder.friend_name.text = MainActivity.friendNames[userId[position]]
 
         //Set friends profile picture
-        if (!userId.isEmpty()) ProfileUtils.setProfilePicture(userId[position], holder.friends_pictures, context.cacheDir.toString())
+        if (!userId.isEmpty()) holder.friends_pictures.setProfilePicture(userId[position], context.cacheDir.toString())
 
         if (hasTracking.containsKey(userId[position]) && hasTracking.getValue(userId[position])) {
             holder.trackingIndicator.visibility = View.VISIBLE
@@ -65,9 +64,9 @@ class FriendsNavAdapter(private val context: Context,
         holder.nameItem.isActivated = isExpanded
 
         if (isExpanded) {
-            holder.friend_name.setTextColor(Application.getContext().resources.getColor(R.color.colorAccent))
+            holder.friend_name.setTextColor(context.resources.getColor(R.color.colorAccent))
         } else {
-            holder.friend_name.setTextColor(Application.getContext().resources.getColor(android.R.color.white))
+            holder.friend_name.setTextColor(context.resources.getColor(android.R.color.white))
         }
 
         holder.nameItem.setOnClickListener {

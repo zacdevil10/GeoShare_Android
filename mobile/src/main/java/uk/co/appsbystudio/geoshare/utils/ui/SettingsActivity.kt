@@ -38,7 +38,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         ProfileSelectionResult().profilePictureResult(this, requestCode, resultCode, data, userId)
     }
 

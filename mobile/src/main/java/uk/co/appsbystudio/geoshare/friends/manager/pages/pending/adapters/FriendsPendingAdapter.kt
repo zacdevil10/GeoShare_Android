@@ -14,8 +14,8 @@ import java.util.ArrayList
 
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.utils.ProfileUtils
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 
 class FriendsPendingAdapter(private val context: Context?,
                             private val uid: ArrayList<String>,
@@ -32,7 +32,7 @@ class FriendsPendingAdapter(private val context: Context?,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         FirebaseDatabase.getInstance().reference.addListenerForSingleValueEvent(GetUserFromDatabase(uid[position], holder.name))
 
-        if (!uid.isEmpty()) ProfileUtils.setProfilePicture(uid[position], holder.profile, context?.cacheDir.toString())
+        if (!uid.isEmpty()) holder.profile.setProfilePicture(uid[position], context?.cacheDir.toString())
 
         holder.decline.setOnClickListener { callback.onReject(uid[holder.adapterPosition]) }
     }

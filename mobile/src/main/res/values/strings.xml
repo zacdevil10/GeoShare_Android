@@ -12,6 +12,7 @@
     <string name="prompt_password">Password</string>
 
     <string name="error_field_required">This field is required</string>
+    <string name="match">The passwords do not match</string>
 
     <string name="login_submit">LOGIN</string>
     <string name="create_new_account">CREATE NEW ACCOUNT</string>

@@ -69,8 +69,8 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
         }
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        ProfileSelectionResult(this).profilePictureResult(this, requestCode, resultCode, data, FirebaseAuth.getInstance().currentUser?.uid)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        ProfileSelectionResult(initial = this).profilePictureResult(this, requestCode, resultCode, data, FirebaseAuth.getInstance().currentUser?.uid)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
