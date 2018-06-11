@@ -1,3 +1,3 @@
 package uk.co.appsbystudio.geoshare.utils.firebase
 
-data class AddFriendsInfo(val isOutgoing: Boolean = false)
+data class AddFriendsInfo(val outgoing: Boolean = false)

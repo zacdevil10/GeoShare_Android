@@ -17,7 +17,7 @@
             android:key="sync_frequency"
             android:title="@string/pref_title_sync_frequency"
             android:summary="%s"
-            android:defaultValue="60"
+            android:defaultValue="600"
             android:entries="@array/pref_sync_frequency_titles"
             android:entryValues="@array/pref_sync_frequency_values"/>
 

@@ -29,7 +29,7 @@ class FriendSearchActivity : AppCompatActivity(), FriendSearchView, FriendSearch
         presenter = FriendSearchPresenterImpl(this, FriendSearchInteractorImpl())
         searchAdapter = FriendSearchAdapter(this, userMap, this)
 
-        image_back_button_profile?.setOnClickListener { finish() }
+        image_back_button_search.setOnClickListener { finish() }
 
         recycler_results_search.apply {
             setHasFixedSize(true)

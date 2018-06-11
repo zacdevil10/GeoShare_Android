@@ -22,7 +22,6 @@
     <style name="MainTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:navigationBarColor">@android:color/white</item>
 
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
 

@@ -58,6 +58,7 @@ class ProfileFriendsMutualFragment : Fragment(), ProfileFriendsMutualView {
             uidArray.add(uid)
             friendAdapter?.notifyDataSetChanged()
         }
+        text_no_mutual_profile.visibility = if (uidArray.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun removeItem(uid: String?) {

@@ -23,8 +23,8 @@ class FriendsPendingPresenterImpl(private val view: FriendsPendingView, private 
 
     override fun add(uid: String?, info: AddFriendsInfo?) {
         if (uid != null && info != null) {
-            MainActivity.pendingId[uid] = info.isOutgoing
-            if (info.isOutgoing) {
+            MainActivity.pendingId[uid] = info.outgoing
+            if (info.outgoing) {
                 view.addOutgoing(uid)
             } else {
                 view.addIncoming(uid)
@@ -36,7 +36,7 @@ class FriendsPendingPresenterImpl(private val view: FriendsPendingView, private 
     override fun remove(uid: String?, info: AddFriendsInfo?) {
         if (uid != null) {
             if (MainActivity.pendingId.containsKey(uid)) MainActivity.pendingId.remove(uid)
-            if (info != null && info.isOutgoing) {
+            if (info != null && info.outgoing) {
                 view.removeOutgoing(uid)
             } else {
                 view.removeIncoming(uid)

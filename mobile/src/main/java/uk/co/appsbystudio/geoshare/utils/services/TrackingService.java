@@ -127,7 +127,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals("sync_frequency")) {
-            TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "DEFAULT")) * 1000;
+            TIME_TO_UPDATE = Integer.parseInt(sharedPreferences.getString("sync_frequency", "600")) * 1000;
 
             if (locationManager != null) {
                 locationManager.removeUpdates(locationListener);

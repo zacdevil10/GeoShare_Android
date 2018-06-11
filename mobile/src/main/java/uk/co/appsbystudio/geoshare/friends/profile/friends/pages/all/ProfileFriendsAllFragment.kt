@@ -20,7 +20,7 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
     private var presenter: ProfileFriendsAllPresenter? = null
     private var friendAdapter: FriendshipStatusAdapter? = null
 
-    private val friendId = ArrayList<String>()
+    private val uidArray = ArrayList<String>()
 
     companion object {
         fun newInstance(uid: String?) = ProfileFriendsAllFragment().apply {
@@ -37,7 +37,7 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
 
         presenter = ProfileFriendsAllPresenterImpl(this, ProfileFriendsAllInteractorImpl())
 
-        friendAdapter = FriendshipStatusAdapter(context, friendId, this)
+        friendAdapter = FriendshipStatusAdapter(context, uidArray, this)
 
         return view
     }
@@ -59,14 +59,15 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
     }
 
     override fun addItem(uid: String?) {
-        if (!friendId.contains(uid) && uid != null) {
-            friendId.add(uid)
+        if (!uidArray.contains(uid) && uid != null) {
+            uidArray.add(uid)
             friendAdapter?.notifyDataSetChanged()
         }
+        text_no_friends_profile.visibility = if (uidArray.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun removeItem(uid: String?) {
-        friendId.remove(uid)
+        uidArray.remove(uid)
         friendAdapter?.notifyDataSetChanged()
     }
 

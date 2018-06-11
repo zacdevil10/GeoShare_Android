@@ -199,6 +199,9 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     override fun onDestroy() {
         super.onDestroy()
         presenter?.stop()
+        friendNames.clear()
+        friendsId.clear()
+        pendingId.clear()
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {

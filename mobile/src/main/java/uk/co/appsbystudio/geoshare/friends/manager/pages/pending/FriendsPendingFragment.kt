@@ -43,18 +43,18 @@ class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAda
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecycler(recycler_incoming_pending)
-        setupRecycler(recycler_outgoing_pending)
-
-        recycler_incoming_pending.adapter = friendsIncomingAdapter
-        recycler_outgoing_pending.adapter = friendsOutgoingAdapter
-    }
-
-    private fun setupRecycler(friendsLists: RecyclerView) {
-        friendsLists.apply {
+        recycler_incoming_pending.apply {
             setHasFixedSize(false)
             isNestedScrollingEnabled = false
             layoutManager = LinearLayoutManager(context)
+            adapter = friendsIncomingAdapter
+        }
+
+        recycler_outgoing_pending.apply {
+            setHasFixedSize(false)
+            isNestedScrollingEnabled = false
+            layoutManager = LinearLayoutManager(context)
+            adapter = friendsOutgoingAdapter
         }
     }
 

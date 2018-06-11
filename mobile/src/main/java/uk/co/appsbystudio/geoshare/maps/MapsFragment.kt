@@ -228,8 +228,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         setupLocationChangeListener()
 
         if (!locationServiceEnabled) {
-            locationSettingsRequest(context!!)
-            return
+            locationSettingsRequest(context)
         }
 
         googleMap?.apply {
@@ -269,31 +268,33 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.updateNearbyFriendsRadius(currentLocation)
     }
 
-    private fun locationSettingsRequest(context: Context) {
-        val googleApiClient = GoogleApiClient.Builder(context)
-                .addApi(LocationServices.API).build()
-        googleApiClient.connect()
+    private fun locationSettingsRequest(context: Context?) {
+        if (context != null) {
+            val googleApiClient = GoogleApiClient.Builder(context)
+                    .addApi(LocationServices.API).build()
+            googleApiClient.connect()
 
-        val locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 10000
-        locationRequest.fastestInterval = (10000 / 2).toLong()
+            val locationRequest = LocationRequest.create()
+            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            locationRequest.interval = 10000
+            locationRequest.fastestInterval = (10000 / 2).toLong()
 
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        builder.setAlwaysShow(true)
+            val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+            builder.setAlwaysShow(true)
 
-        val result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
-        result.setResultCallback { locationSettingsResult ->
-            val status = locationSettingsResult.status
-            when (status.statusCode) {
-                LocationSettingsStatusCodes.SUCCESS -> println("ALL LOCATION SETTINGS ARE SATISFIED")
-                LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-                    status.startResolutionForResult(activity, 213)
-                } catch (e: IntentSender.SendIntentException) {
-                    e.printStackTrace()
+            val result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
+            result.setResultCallback { locationSettingsResult ->
+                val status = locationSettingsResult.status
+                when (status.statusCode) {
+                    LocationSettingsStatusCodes.SUCCESS -> println("ALL LOCATION SETTINGS ARE SATISFIED")
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
+                        status.startResolutionForResult(activity, 213)
+                    } catch (e: IntentSender.SendIntentException) {
+                        e.printStackTrace()
+                    }
+
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> println("STUFF")
                 }
-
-                LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> println("STUFF")
             }
         }
     }
