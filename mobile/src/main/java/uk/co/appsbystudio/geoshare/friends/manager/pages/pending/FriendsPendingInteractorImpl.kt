@@ -2,7 +2,7 @@ package uk.co.appsbystudio.geoshare.friends.manager.pages.pending
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
@@ -46,7 +46,7 @@ class FriendsPendingInteractorImpl: FriendsPendingInteractor {
     }
 
     override fun acceptRequest(uid: String) {
-        MainActivity.pendingId.remove(uid)
+        FriendsManager.pendingUid.remove(uid)
         val user = FirebaseAuth.getInstance().currentUser
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user?.uid}/$uid").setValue(true)
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/$uid/${user?.uid}").setValue(true)
@@ -56,7 +56,7 @@ class FriendsPendingInteractorImpl: FriendsPendingInteractor {
     }
 
     override fun rejectRequest(uid: String) {
-        MainActivity.pendingId.remove(uid)
+        FriendsManager.pendingUid.remove(uid)
         val user = FirebaseAuth.getInstance().currentUser
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.PENDING}/${user?.uid}/$uid").removeValue()
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.PENDING}/$uid/${user?.uid}").removeValue()

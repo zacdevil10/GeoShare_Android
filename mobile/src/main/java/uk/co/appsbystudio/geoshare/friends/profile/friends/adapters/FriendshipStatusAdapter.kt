@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
@@ -39,7 +40,7 @@ class FriendshipStatusAdapter(private val context: Context?,
                 holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_person_white_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(R.color.colorPrimary)!!)
             }
-            MainActivity.pendingId.containsKey(userId[position]) -> {
+            FriendsManager.pendingUid.containsKey(userId[position]) -> {
                 holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_person_white_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(android.R.color.darker_gray)!!)
             }

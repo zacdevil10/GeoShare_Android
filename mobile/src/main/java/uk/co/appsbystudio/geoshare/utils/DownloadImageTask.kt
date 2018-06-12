@@ -3,11 +3,8 @@ package uk.co.appsbystudio.geoshare.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
-
-import java.io.InputStream
-import java.net.URL
-
 import uk.co.appsbystudio.geoshare.friends.profile.staticmap.ProfileStaticMapView
+import java.net.URL
 
 class DownloadImageTask(private val lat: Double, private val lng: Double, private val view: ProfileStaticMapView) : AsyncTask<Void, Void, Bitmap>() {
 

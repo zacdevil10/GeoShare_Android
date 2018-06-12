@@ -3,12 +3,8 @@ package uk.co.appsbystudio.geoshare.utils.firebase.listeners
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-
-import java.io.File
-
 import uk.co.appsbystudio.geoshare.base.adapters.FriendsNavAdapter
-import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsPendingAdapter
-import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsRequestAdapter
+import java.io.File
 
 class UpdatedProfilePicturesListener(private val navAdapter: FriendsNavAdapter?, private val storageDirectory: String) : ChildEventListener {
 

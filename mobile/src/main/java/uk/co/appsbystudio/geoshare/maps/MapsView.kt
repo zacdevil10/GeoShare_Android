@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps
 
+import android.arch.lifecycle.LiveData
 import android.content.BroadcastReceiver
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
@@ -31,7 +32,7 @@ interface MapsView {
 
     fun updateNearbyText(nearbyCount: Int)
 
-    fun updateBottomSheetText(name: String?, address: String, timestamp: String?, distance: String)
+    fun updateBottomSheetText(name: String?, address: LiveData<String>, timestamp: String?, distance: String)
 
     fun updateNearbyRadiusCircle(radius: Int?, centerPoint: LatLng)
 

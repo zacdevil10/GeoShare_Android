@@ -3,18 +3,14 @@ package uk.co.appsbystudio.geoshare.utils.dialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.DialogFragment
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
-
-import java.io.File
-
 import uk.co.appsbystudio.geoshare.BuildConfig
 import uk.co.appsbystudio.geoshare.R
+import java.io.File
 
 class ProfilePictureOptions : DialogFragment() {
 
@@ -47,8 +43,7 @@ class ProfilePictureOptions : DialogFragment() {
     private fun createImageFile(): File {
         val imageFileName = "profile_picture"
         val storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File(storageDir, "$imageFileName.png")
 
-        return image
+        return File(storageDir, "$imageFileName.png")
     }
 }

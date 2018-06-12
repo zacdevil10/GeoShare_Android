@@ -2,6 +2,8 @@ package uk.co.appsbystudio.geoshare.maps
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -35,10 +37,10 @@ import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.map_layout_main.*
-import uk.co.appsbystudio.geoshare.utils.GPSTracking
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.base.MainView
+import uk.co.appsbystudio.geoshare.utils.GPSTracking
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
@@ -146,12 +148,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         bottomSheetBehavior = BottomSheetBehavior.from(constraint_bottom_sheet)
         bottomSheetBehavior?.isHideable = true
 
-        if (savedInstanceState != null) {
-            if (selectedMarker != null && myLocation != null) {
-                presenter?.updateBottomSheet(savedInstanceState.getString("selected_marker_uid"), myLocation!!.position, selectedMarker!!.position, friendMarkerTimestamp[selectedMarker!!.tag])
-            }
-        }
-
         presenter?.updateBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
 
         fab_tracking_map?.setOnClickListener {
@@ -170,6 +166,10 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         presenter?.updateTrackingState(isTracking)
+
+        if (selectedMarker != null && myLocation != null) {
+            presenter?.updateBottomSheet(selectedMarker!!.tag.toString(), myLocation!!.position, selectedMarker!!.position, friendMarkerTimestamp[selectedMarker!!.tag])
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -327,11 +327,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("selected_marker_uid", selectedMarker?.tag.toString())
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         presenter?.run {
@@ -458,11 +453,18 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         text_nearby_count_map?.text = if (nearbyCount != 1) String.format(Locale.getDefault(), "%d FRIENDS AROUND YOU", nearbyCount) else String.format(Locale.getDefault(), "%d FRIEND AROUND YOU", nearbyCount)
     }
 
-    override fun updateBottomSheetText(name: String?, address: String, timestamp: String?, distance: String) {
+    override fun updateBottomSheetText(name: String?, address: LiveData<String>, timestamp: String?, distance: String) {
         text_name_map.text = name
-        text_address_map.text = address
+        text_address_map.text = address.value
         text_timestamp_map.text = timestamp
         text_distance_map.text = distance
+
+        val observer = Observer<String> { t ->
+            text_address_map.text = t
+            progress_map.visibility = View.GONE
+        }
+
+        address.observe(this, observer)
     }
 
     override fun updateNearbyRadiusCircle(radius: Int?, centerPoint: LatLng) {

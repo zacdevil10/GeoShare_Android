@@ -1,12 +1,12 @@
 package uk.co.appsbystudio.geoshare.base
 
 import android.app.Activity
+import android.app.DialogFragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
-import android.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -18,14 +18,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.header_layout.*
 import kotlinx.android.synthetic.main.header_layout.view.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.authentication.AuthActivity
-import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.base.adapters.FriendsNavAdapter
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.maps.MapsFragment
-import uk.co.appsbystudio.geoshare.utils.*
+import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult
+import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener
@@ -57,7 +59,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     companion object {
         val friendsId = HashMap<String?, Boolean>()
         //TODO: Move to a different class
-        val pendingId = HashMap<String?, Boolean>()
         val friendNames = HashMap<String?, String?>()
     }
 
@@ -201,7 +202,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
         presenter?.stop()
         friendNames.clear()
         friendsId.clear()
-        pendingId.clear()
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {

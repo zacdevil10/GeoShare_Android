@@ -1,5 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps
 
+import android.arch.lifecycle.MutableLiveData
 import android.content.BroadcastReceiver
 import android.graphics.Bitmap
 import android.location.Location
@@ -11,12 +12,15 @@ import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.distance
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
+import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromLatLngTask
 
 class MapsPresenterImpl(private val view: MapsView,
                         private val settingsPreferencesHelper: SettingsPreferencesHelper?,
                         private val mapsHelper: MapsHelperImpl,
                         private val interactor: MapsInteractorImpl):
         MapsPresenter, MapsInteractor.OnFirebaseRequestFinishedListener, MapsHelper.OnNetworkStateChangedListener, MapsHelper.OnSharePreferencesChangedListener {
+
+    private val liveData = MutableLiveData<String>()
 
     override fun getStaticFriends(storageDirectory: String?) {
         interactor.staticFriends(storageDirectory, this)
@@ -77,8 +81,8 @@ class MapsPresenterImpl(private val view: MapsView,
     }
 
     override fun updateBottomSheet(uid: String, startLatLng: LatLng, endLatLng: LatLng, timestamp: Long?) {
-        //mapsView.updateBottomSheetText(MainActivity.friendNames[uid], GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude).execute().get(), timestamp?.convertDate(), distance(startLatLng, endLatLng))
-        view.updateBottomSheetText(MainActivity.friendNames[uid], "", timestamp?.convertDate(), distance(startLatLng, endLatLng))
+        GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude, liveData).execute()
+        view.updateBottomSheetText(MainActivity.friendNames[uid], liveData, timestamp?.convertDate(), distance(startLatLng, endLatLng))
     }
 
     override fun updateNearbyFriendsRadius(centerPoint: LatLng) {

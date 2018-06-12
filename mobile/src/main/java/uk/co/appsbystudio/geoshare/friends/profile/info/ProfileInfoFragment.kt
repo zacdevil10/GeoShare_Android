@@ -1,5 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.profile.info
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -63,9 +65,18 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
         text_share_location_profile?.text = string
     }
 
-    override fun setLocationItemText(location: String?, timestamp: String?) {
-        text_location_profile?.text = location
+    override fun setLocationItemText(address: LiveData<String>?, timestamp: String?) {
         text_timestamp_profile?.text = timestamp
+
+        val observer = Observer<String> { t ->
+            text_location_profile.text = t
+        }
+
+        if (address == null) {
+            text_location_profile.text = "No location"
+        }
+
+        address?.observe(this, observer)
     }
 
     override fun showShareDialog() {

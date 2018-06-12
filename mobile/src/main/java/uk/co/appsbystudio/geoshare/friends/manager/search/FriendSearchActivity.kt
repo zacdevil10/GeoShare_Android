@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.widget.SearchView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_friend_search.*
-import kotlinx.android.synthetic.main.activity_profile.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.search.adapter.FriendSearchAdapter
 

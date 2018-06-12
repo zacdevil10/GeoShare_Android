@@ -1,10 +1,12 @@
 package uk.co.appsbystudio.geoshare.friends.profile.info
 
+import android.arch.lifecycle.LiveData
+
 interface ProfileInfoView {
 
     fun setShareText(string: String)
 
-    fun setLocationItemText(location: String? = "No location", timestamp: String? = "Never")
+    fun setLocationItemText(address: LiveData<String>? = null, timestamp: String? = "Never")
 
     fun showShareDialog()
 

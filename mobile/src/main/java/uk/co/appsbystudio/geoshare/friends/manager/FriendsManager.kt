@@ -14,12 +14,17 @@ import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.pages.current.FriendsFragment
 import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingFragment
 import uk.co.appsbystudio.geoshare.friends.manager.search.FriendSearchActivity
+import java.util.HashMap
 
 class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
     private var firebaseAuth: FirebaseAuth? = null
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
     private var presenter: FriendsManagerPresenter? = null
+
+    companion object {
+        val pendingUid = HashMap<String?, Boolean>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,5 +93,10 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
     override fun searchIntent() {
         startActivity(Intent(this@FriendsManager, FriendSearchActivity::class.java))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pendingUid.clear()
     }
 }

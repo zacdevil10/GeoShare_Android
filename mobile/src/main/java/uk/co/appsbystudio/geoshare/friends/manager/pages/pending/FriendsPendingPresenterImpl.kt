@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.manager.pages.pending
 
-import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.utils.firebase.AddFriendsInfo
 
 class FriendsPendingPresenterImpl(private val view: FriendsPendingView, private val interactor: FriendsPendingInteractor): FriendsPendingPresenter, FriendsPendingInteractor.OnFirebaseListener {
@@ -23,7 +23,7 @@ class FriendsPendingPresenterImpl(private val view: FriendsPendingView, private 
 
     override fun add(uid: String?, info: AddFriendsInfo?) {
         if (uid != null && info != null) {
-            MainActivity.pendingId[uid] = info.outgoing
+            FriendsManager.pendingUid[uid] = info.outgoing
             if (info.outgoing) {
                 view.addOutgoing(uid)
             } else {
@@ -35,7 +35,7 @@ class FriendsPendingPresenterImpl(private val view: FriendsPendingView, private 
 
     override fun remove(uid: String?, info: AddFriendsInfo?) {
         if (uid != null) {
-            if (MainActivity.pendingId.containsKey(uid)) MainActivity.pendingId.remove(uid)
+            if (FriendsManager.pendingUid.containsKey(uid)) FriendsManager.pendingUid.remove(uid)
             if (info != null && info.outgoing) {
                 view.removeOutgoing(uid)
             } else {

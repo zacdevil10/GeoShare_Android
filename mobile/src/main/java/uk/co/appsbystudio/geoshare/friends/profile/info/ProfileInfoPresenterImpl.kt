@@ -1,8 +1,8 @@
 package uk.co.appsbystudio.geoshare.friends.profile.info
 
+import android.arch.lifecycle.MutableLiveData
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.convertDate
-import uk.co.appsbystudio.geoshare.utils.ellipsize
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
 import uk.co.appsbystudio.geoshare.utils.geocoder.GeocodingFromLatLngTask
 
@@ -43,7 +43,9 @@ class ProfileInfoPresenterImpl(private val view: ProfileInfoView, private val tr
     }
 
     override fun updateLocationText(location: DatabaseLocations) {
-        with (location){ view.setLocationItemText(GeocodingFromLatLngTask(lat, longitude).execute().get().ellipsize(43), timestamp.convertDate()) }
+        val liveData = MutableLiveData<String>()
+        GeocodingFromLatLngTask(location.lat, location.longitude, liveData).execute()
+        with (location){ view.setLocationItemText(liveData, timestamp.convertDate()) }
     }
 
     override fun resetLocationText() {
