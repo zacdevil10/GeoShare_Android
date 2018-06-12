@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
@@ -27,7 +28,7 @@ class FriendsRequestAdapter(private val context: Context?,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        FirebaseDatabase.getInstance().reference.addListenerForSingleValueEvent(GetUserFromDatabase(userIncoming[position], holder.name))
+        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/${userIncoming[position]}").addListenerForSingleValueEvent(GetUserFromDatabase(holder.name))
 
         if (!userIncoming.isEmpty()) holder.profile.setProfilePicture(userIncoming[position], context?.cacheDir.toString())
 

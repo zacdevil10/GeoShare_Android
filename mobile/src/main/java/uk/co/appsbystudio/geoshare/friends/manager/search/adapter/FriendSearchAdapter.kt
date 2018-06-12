@@ -31,14 +31,16 @@ class FriendSearchAdapter(private val context: Context, private val userMap: Lin
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = userMap.values.toTypedArray()[position]
 
-        if (!userMap.isEmpty()) holder.profile.setProfilePicture(userMap.keys.toTypedArray()[position], context.cacheDir.toString())
+        val uid = userMap.keys.toTypedArray()[position]
+
+        if (!userMap.isEmpty()) holder.profile.setProfilePicture(uid, context.cacheDir.toString())
 
         when {
-            MainActivity.friendsId.containsKey(userMap.keys.toTypedArray()[position]) -> {
+            MainActivity.friendsMap.containsKey(uid) -> {
                 holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context.resources.getColor(R.color.colorPrimary))
             }
-            FriendsManager.pendingUid.containsKey(userMap.keys.toTypedArray()[position]) -> {
+            FriendsManager.pendingUid.containsKey(uid) -> {
                 holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context.resources.getColor(android.R.color.darker_gray))
             }
@@ -46,7 +48,7 @@ class FriendSearchAdapter(private val context: Context, private val userMap: Lin
                 holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_send_black_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context.resources.getColor(android.R.color.darker_gray))
                 holder.sendRequestButton.setOnClickListener {
-                    callback.onSendRequest(userMap.keys.toTypedArray()[holder.adapterPosition])
+                    callback.onSendRequest(uid)
                     /*holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
                     holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));*/
                 }

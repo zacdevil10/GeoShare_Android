@@ -38,7 +38,7 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
 
         image_avatar_profile.setProfilePicture(uid, this.cacheDir.toString())
 
-        text_name_profile.text = MainActivity.friendNames[uid]
+        text_name_profile.text = MainActivity.friendsMap[uid]
 
         view_pager_profile.apply {
             adapter = object : FragmentPagerAdapter(supportFragmentManager) {

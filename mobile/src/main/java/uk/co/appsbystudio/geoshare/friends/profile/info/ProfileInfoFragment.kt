@@ -81,7 +81,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
 
     override fun showShareDialog() {
         val arguments = Bundle()
-        arguments.putString("name", MainActivity.friendNames[uid])
+        arguments.putString("name", MainActivity.friendsMap[uid])
         arguments.putString("friendId", uid)
         arguments.putString("uid", FirebaseAuth.getInstance()?.currentUser?.uid)
 

@@ -36,6 +36,9 @@ class GeocodingFromLatLngTask(private val lat: Double, private val lng: Double, 
 
         if (liveData != null && result != null && !result.isBlank()) {
             liveData.value = result
+            return
         }
+
+        liveData?.value = "Request took too long..."
     }
 }

@@ -14,7 +14,7 @@ class ProfileFriendsMutualInteractorImpl: ProfileFriendsMutualInteractor {
         friendsListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
-                if (MainActivity.friendsId.contains(dataSnapshot.key)) listener.added(dataSnapshot.key)
+                if (MainActivity.friendsMap.containsKey(dataSnapshot.key)) listener.added(dataSnapshot.key)
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, string: String?) {

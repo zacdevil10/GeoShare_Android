@@ -15,13 +15,11 @@ import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
-import java.util.*
 
 class FriendsNavAdapter(private val context: Context,
                         private val recyclerView: RecyclerView,
-                        private val userId: ArrayList<String>,
+                        private val friends: LinkedHashMap<String, String>,
                         private val hasTracking: HashMap<String, Boolean>,
                         private val callback: Callback) : RecyclerView.Adapter<FriendsNavAdapter.ViewHolder>() {
 
@@ -48,12 +46,14 @@ class FriendsNavAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: FriendsNavAdapter.ViewHolder, position: Int) {
-        if (MainActivity.friendNames.containsKey(userId[position])) holder.friend_name.text = MainActivity.friendNames[userId[position]]
+        holder.friend_name.text = friends.values.toTypedArray()[position]
+
+        val uid = friends.keys.toTypedArray()[position]
 
         //Set friends profile picture
-        if (!userId.isEmpty()) holder.friends_pictures.setProfilePicture(userId[position], context.cacheDir.toString())
+        holder.friends_pictures.setProfilePicture(uid, context.cacheDir.toString())
 
-        if (hasTracking.containsKey(userId[position]) && hasTracking.getValue(userId[position])) {
+        if (hasTracking.containsKey(uid) && hasTracking.getValue(uid)) {
             holder.trackingIndicator.visibility = View.VISIBLE
         } else {
             holder.trackingIndicator.visibility = View.GONE
@@ -75,18 +75,18 @@ class FriendsNavAdapter(private val context: Context,
             notifyDataSetChanged()
         }
 
-        holder.showOnMapCheckBox.isChecked = showOnMapPreference!!.getBoolean(userId[position], true)
+        holder.showOnMapCheckBox.isChecked = showOnMapPreference!!.getBoolean(uid, true)
 
         holder.showOnMapLayout.setOnClickListener { holder.showOnMapCheckBox.isChecked = !holder.showOnMapCheckBox.isChecked }
 
-        holder.showOnMapCheckBox.setOnCheckedChangeListener { compoundButton, b -> callback.setMarkerHidden(userId[holder.adapterPosition], b) }
+        holder.showOnMapCheckBox.setOnCheckedChangeListener { compoundButton, b -> callback.setMarkerHidden(uid, b) }
 
-        if (sharedPreferences!!.getBoolean(userId[position], false)) {
+        if (sharedPreferences!!.getBoolean(uid, false)) {
             holder.sendLocationText.setText(R.string.stop_sharing)
             holder.sendLocation.setOnClickListener {
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {
-                    callback.stopSharing(userId[holder.adapterPosition])
+                    callback.stopSharing(uid)
                     expandedPosition = if (isExpanded) -1 else holder.adapterPosition
                     TransitionManager.beginDelayedTransition(recyclerView)
                     notifyDataSetChanged()
@@ -95,7 +95,7 @@ class FriendsNavAdapter(private val context: Context,
         } else {
             holder.sendLocationText.setText(R.string.share_current_location)
             holder.sendLocation.setOnClickListener {
-                callback.sendLocationDialog(holder.friend_name.text as String, userId[holder.adapterPosition])
+                callback.sendLocationDialog(holder.friend_name.text as String, uid)
 
                 expandedPosition = if (isExpanded) -1 else holder.adapterPosition
                 TransitionManager.beginDelayedTransition(recyclerView)
@@ -104,12 +104,12 @@ class FriendsNavAdapter(private val context: Context,
         }
 
         holder.findLocation.setOnClickListener {
-            callback.findOnMapClicked(userId[holder.adapterPosition])
+            callback.findOnMapClicked(uid)
         }
     }
 
     override fun getItemCount(): Int {
-        return userId.size
+        return friends.size
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

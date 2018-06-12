@@ -34,6 +34,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.map_layout_main.*
@@ -44,6 +45,8 @@ import uk.co.appsbystudio.geoshare.utils.GPSTracking
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -424,6 +427,14 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
 
     override fun setBottomSheetState(state: Int) {
         bottomSheetBehavior?.state = state
+
+        if (state == BottomSheetBehavior.STATE_HIDDEN) {
+            progress_map.visibility = View.VISIBLE
+            text_name_map.text = ""
+            text_address_map.text = ""
+            text_timestamp_map.text = ""
+            text_distance_map.text = ""
+        }
     }
 
     override fun setMapStyle(style: Int) {
@@ -453,9 +464,8 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         text_nearby_count_map?.text = if (nearbyCount != 1) String.format(Locale.getDefault(), "%d FRIENDS AROUND YOU", nearbyCount) else String.format(Locale.getDefault(), "%d FRIEND AROUND YOU", nearbyCount)
     }
 
-    override fun updateBottomSheetText(name: String?, address: LiveData<String>, timestamp: String?, distance: String) {
-        text_name_map.text = name
-        text_address_map.text = address.value
+    override fun updateBottomSheetText(uid: String?, address: LiveData<String>, timestamp: String?, distance: String) {
+        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/$uid").addListenerForSingleValueEvent(GetUserFromDatabase(text_name_map))
         text_timestamp_map.text = timestamp
         text_distance_map.text = distance
 

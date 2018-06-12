@@ -33,7 +33,6 @@ import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity
-import java.util.*
 
 class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
@@ -50,16 +49,13 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     private var friendsNavAdapter: FriendsNavAdapter? = null
 
-    private val uidList = ArrayList<String>()
     private val hasTracking = HashMap<String, Boolean>()
 
     private var navItemSelected: Boolean = false
     private var checkedItem: Int = 0
 
     companion object {
-        val friendsId = HashMap<String?, Boolean>()
-        //TODO: Move to a different class
-        val friendNames = HashMap<String?, String?>()
+        val friendsMap = LinkedHashMap<String, String>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +70,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
         presenter?.setTrackingService()
 
-        //Firebase initialisation
         firebaseAuth = FirebaseAuth.getInstance()
-
-
 
         databaseReference = FirebaseDatabase.getInstance().reference
 
@@ -139,7 +132,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
             getFriendsTrackingState()
         }
 
-        friendsNavAdapter = FriendsNavAdapter(this@MainActivity, recycler_right_nav_main, uidList, hasTracking, this)
+        friendsNavAdapter = FriendsNavAdapter(this@MainActivity, recycler_right_nav_main, friendsMap, hasTracking, this)
         recycler_right_nav_main.adapter = friendsNavAdapter
 
         /* POPULATE LEFT NAV DRAWER HEADER FIELDS */
@@ -200,26 +193,21 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     override fun onDestroy() {
         super.onDestroy()
         presenter?.stop()
-        friendNames.clear()
-        friendsId.clear()
+        friendsMap.clear()
     }
 
     override fun updateFriendsList(uid: String?, name: String?) {
-        if (uid != null) {
-            uidList.add(uid)
-            if (!friendsId.containsKey(uid)) friendsId[uid] = true
-            if (!friendNames.containsKey(uid)) friendNames[uid] = name
+        if (uid != null && name != null) {
+            friendsMap[uid] = name
             friendsNavAdapter?.notifyDataSetChanged()
             add_friends.visibility = View.GONE
         }
     }
 
     override fun removeFromFriendList(uid: String?) {
-        uidList.remove(uid)
-        if (friendsId.containsKey(uid)) friendsId.remove(uid)
-        if (friendNames.containsKey(uid)) friendNames.remove(uid)
+        friendsMap.remove(uid)
         friendsNavAdapter?.notifyDataSetChanged()
-        if (friendsId.isEmpty()) add_friends.visibility = View.VISIBLE
+        if (friendsMap.isEmpty()) add_friends.visibility = View.VISIBLE
     }
 
     override fun updateTrackingState(uid: String?, trackingState: Boolean?) {

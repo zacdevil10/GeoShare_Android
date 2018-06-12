@@ -7,15 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.google.firebase.database.FirebaseDatabase
-
-import java.util.ArrayList
-
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
+import java.util.*
 
 class FriendsPendingAdapter(private val context: Context?,
                             private val uid: ArrayList<String>,
@@ -30,7 +28,7 @@ class FriendsPendingAdapter(private val context: Context?,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        FirebaseDatabase.getInstance().reference.addListenerForSingleValueEvent(GetUserFromDatabase(uid[position], holder.name))
+        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/${uid[position]}").addListenerForSingleValueEvent(GetUserFromDatabase(holder.name))
 
         if (!uid.isEmpty()) holder.profile.setProfilePicture(uid[position], context?.cacheDir.toString())
 

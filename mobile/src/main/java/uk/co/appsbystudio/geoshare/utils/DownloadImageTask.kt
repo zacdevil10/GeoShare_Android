@@ -22,7 +22,7 @@ class DownloadImageTask(private val lat: Double, private val lng: Double, privat
         return staticMap
     }
 
-    override fun onPostExecute(result: Bitmap) {
-        view.setMapImage(result)
+    override fun onPostExecute(result: Bitmap?) {
+        if (result != null) view.setMapImage(result)
     }
 }

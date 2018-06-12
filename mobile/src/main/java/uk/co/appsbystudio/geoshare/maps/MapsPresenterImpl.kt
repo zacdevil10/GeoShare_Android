@@ -7,7 +7,6 @@ import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.distance
@@ -82,7 +81,7 @@ class MapsPresenterImpl(private val view: MapsView,
 
     override fun updateBottomSheet(uid: String, startLatLng: LatLng, endLatLng: LatLng, timestamp: Long?) {
         GeocodingFromLatLngTask(endLatLng.latitude, endLatLng.longitude, liveData).execute()
-        view.updateBottomSheetText(MainActivity.friendNames[uid], liveData, timestamp?.convertDate(), distance(startLatLng, endLatLng))
+        view.updateBottomSheetText(uid, liveData, timestamp?.convertDate(), distance(startLatLng, endLatLng))
     }
 
     override fun updateNearbyFriendsRadius(centerPoint: LatLng) {

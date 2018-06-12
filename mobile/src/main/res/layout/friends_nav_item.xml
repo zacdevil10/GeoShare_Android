@@ -69,6 +69,11 @@
         android:backgroundTint="@android:color/white"
         android:visibility="gone">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#BABABA" />
+
         <RelativeLayout
             android:id="@+id/sendLocation"
             android:orientation="horizontal"

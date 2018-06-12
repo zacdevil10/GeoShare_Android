@@ -14,6 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 import java.util.*
@@ -31,12 +32,12 @@ class FriendshipStatusAdapter(private val context: Context?,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        FirebaseDatabase.getInstance().reference.addListenerForSingleValueEvent(GetUserFromDatabase(userId[position], holder.name))
+        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/${userId[position]}").addListenerForSingleValueEvent(GetUserFromDatabase(holder.name))
 
         if (!userId.isEmpty()) holder.profile.setProfilePicture(userId[position], context?.cacheDir.toString())
 
         when {
-            MainActivity.friendsId.containsKey(userId[position]) -> {
+            MainActivity.friendsMap.containsKey(userId[position]) -> {
                 holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_person_white_24dp))
                 holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(R.color.colorPrimary)!!)
             }

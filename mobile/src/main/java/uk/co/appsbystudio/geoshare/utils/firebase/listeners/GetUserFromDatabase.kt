@@ -8,10 +8,10 @@ import com.google.firebase.database.ValueEventListener
 
 import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation
 
-class GetUserFromDatabase(private val uid: String, private val view: TextView) : ValueEventListener {
+class GetUserFromDatabase(private val view: TextView) : ValueEventListener {
 
     override fun onDataChange(dataSnapshot: DataSnapshot) {
-        val user = dataSnapshot.child("users").child(uid).getValue(UserInformation::class.java)
+        val user = dataSnapshot.getValue(UserInformation::class.java)
         view.text = user?.name
     }
 
