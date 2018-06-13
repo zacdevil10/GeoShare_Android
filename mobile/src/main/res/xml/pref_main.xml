@@ -45,6 +45,13 @@
             android:maxLength="3" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_header_theme">
+        <SwitchPreference
+            android:key="dark_map"
+            android:title="@string/pref_title_dark_map"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_header_account">
         <EditTextPreference
             android:key="display_name"

@@ -220,5 +220,7 @@
     <string name="generic_error">An error has occurred!</string>
     <string name="permissions_granted">Permissions have already been granted</string>
     <string name="distance_icon_image_desc">distance icon</string>
+    <string name="pref_header_theme">Theme</string>
+    <string name="pref_title_dark_map">Dark Map</string>
 
 </resources>

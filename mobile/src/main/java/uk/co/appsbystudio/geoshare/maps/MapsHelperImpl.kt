@@ -48,6 +48,7 @@ class MapsHelperImpl(private val settingsPreferences: SharedPreferences?): MapsH
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             "nearby_radius" -> settingsListener?.updatedNearbyRadius()
+            "dark_map" -> settingsListener?.updateTheme()
         }
     }
 }

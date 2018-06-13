@@ -36,6 +36,10 @@ class SettingsPreferencesHelper(private val preferences: SharedPreferences?) {
         return preferences?.getString("nearby_radius", "100")?.toInt()
     }
 
+    fun mapTheme(): Boolean? {
+        return preferences?.getBoolean("dark_map", false)
+    }
+
     fun clear() {
         preferences?.edit()?.clear()?.apply()
     }

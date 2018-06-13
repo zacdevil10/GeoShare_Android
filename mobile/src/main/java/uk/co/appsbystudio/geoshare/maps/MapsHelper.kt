@@ -15,7 +15,8 @@ interface MapsHelper {
     }
 
     interface OnSharePreferencesChangedListener {
-        fun  updatedNearbyRadius()
+        fun updatedNearbyRadius()
+        fun updateTheme()
     }
 
     //Network broadcast listener

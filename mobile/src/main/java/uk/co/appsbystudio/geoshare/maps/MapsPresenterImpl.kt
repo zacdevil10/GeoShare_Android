@@ -67,8 +67,8 @@ class MapsPresenterImpl(private val view: MapsView,
         view.updateNearbyText(count)
     }
 
-    override fun updateMapStyle(nightTheme: Boolean) {
-        if (nightTheme) {
+    override fun updateMapStyle() {
+        if (settingsPreferencesHelper != null && settingsPreferencesHelper.mapTheme()!!) {
             view.setMapStyle(R.raw.map_style_dark)
         } else {
             view.setMapStyle(R.raw.map_style)
@@ -154,5 +154,13 @@ class MapsPresenterImpl(private val view: MapsView,
 
     override fun updatedNearbyRadius() {
         view.updateRadiusCircleSize(settingsPreferencesHelper?.nearbyRadius())
+    }
+
+    override fun updateTheme() {
+        if (settingsPreferencesHelper != null && settingsPreferencesHelper.mapTheme()!!) {
+            view.setMapStyle(R.raw.map_style_dark)
+        } else {
+            view.setMapStyle(R.raw.map_style)
+        }
     }
 }

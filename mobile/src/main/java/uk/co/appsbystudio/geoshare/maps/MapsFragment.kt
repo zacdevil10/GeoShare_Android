@@ -219,7 +219,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     }
 
     fun setup() {
-        presenter?.updateMapStyle(false)
+        presenter?.updateMapStyle()
 
         if (activity != null) {
             if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

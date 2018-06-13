@@ -17,7 +17,7 @@ interface MapsPresenter {
 
     fun updateNearbyFriendsCount(latLng: LatLng, friendsMarkerList: Map<String?, Marker?>)
 
-    fun updateMapStyle(nightTheme: Boolean)
+    fun updateMapStyle()
 
     fun updateBottomSheetState(state: Int)
 
