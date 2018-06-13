@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingView
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
@@ -17,11 +18,7 @@ import java.util.*
 
 class FriendsRequestAdapter(private val context: Context?,
                             private val userIncoming: ArrayList<String>,
-                            private val callback: Callback) : RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>() {
-
-    interface Callback {
-        fun onAcceptReject(accept: Boolean?, uid: String)
-    }
+                            private val view: FriendsPendingView) : RecyclerView.Adapter<FriendsRequestAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.friends_request_list_item, viewGroup, false))
@@ -32,9 +29,9 @@ class FriendsRequestAdapter(private val context: Context?,
 
         if (!userIncoming.isEmpty()) holder.profile.setProfilePicture(userIncoming[position], context?.cacheDir.toString())
 
-        holder.accept.setOnClickListener { callback.onAcceptReject(true, userIncoming[holder.adapterPosition]) }
+        holder.accept.setOnClickListener { view.accept(userIncoming[holder.adapterPosition], true) }
 
-        holder.decline.setOnClickListener { callback.onAcceptReject(false, userIncoming[holder.adapterPosition]) }
+        holder.decline.setOnClickListener { view.accept(userIncoming[holder.adapterPosition], false) }
     }
 
     override fun getItemCount(): Int {

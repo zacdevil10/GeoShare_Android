@@ -9,7 +9,9 @@
         android:layout_height="match_parent"
         android:id="@+id/recycler_friends_manager"
         tools:listitem="@layout/friends_list_item"
-        android:paddingTop="8dp"/>
+        android:paddingTop="8dp"
+        android:paddingBottom="72dp"
+        android:clipToPadding="false"/>
 
     <TextView
         android:id="@+id/text_no_friends_manager"

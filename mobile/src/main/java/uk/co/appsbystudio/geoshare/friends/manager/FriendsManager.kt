@@ -1,20 +1,17 @@
 package uk.co.appsbystudio.geoshare.friends.manager
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
-
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.os.Bundle
-
+import android.support.v7.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_friends_manager.*
-
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.pages.current.FriendsFragment
 import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingFragment
 import uk.co.appsbystudio.geoshare.friends.manager.search.FriendSearchActivity
-import java.util.HashMap
+import java.util.*
 
 class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
@@ -93,6 +90,13 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
     override fun searchIntent() {
         startActivity(Intent(this@FriendsManager, FriendSearchActivity::class.java))
+    }
+
+    override fun fabState(visible: Boolean) {
+        fab_add_manager.apply {
+            if (visible) show()
+            else hide()
+        }
     }
 
     override fun onDestroy() {

@@ -9,6 +9,7 @@ object FirebaseHelper {
     const val USERS = "users"
     const val TOKEN = "token"
     const val PROFILE_PICTURE = "profile_picture"
+    const val PICTURE = "picture"
     const val UPDATE = "update"
     const val REQUEST_LOCATION = "request_location"
 }

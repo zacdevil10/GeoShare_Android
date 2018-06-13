@@ -24,6 +24,7 @@ class ProfileFriendsAllPresenterImpl(private val view: ProfileFriendsAllView, pr
     }
 
     override fun success(message: String) {
+        view.updateRecycler()
         view.showToast(message)
     }
 

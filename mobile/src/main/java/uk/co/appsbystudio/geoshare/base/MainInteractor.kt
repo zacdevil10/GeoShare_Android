@@ -11,12 +11,16 @@ interface MainInteractor {
 
         fun trackingRemoved(key: String?)
 
+        fun profileUpdated()
+
         fun error(error: String)
     }
 
     fun getFriends(listener: MainInteractor.OnFirebaseRequestFinishedListener)
 
     fun getTrackingState(listener: MainInteractor.OnFirebaseRequestFinishedListener)
+
+    fun setUpdatedProfileListener(listener: MainInteractor.OnFirebaseRequestFinishedListener)
 
     fun removeToken()
 

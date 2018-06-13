@@ -7,8 +7,11 @@ import android.support.v4.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
-import uk.co.appsbystudio.geoshare.utils.*
+import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
+import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 
 class MainPresenterImpl(private val view: MainView, private val markerPreferencesHelper: ShowMarkerPreferencesHelper,
                         private val trackingPreferencesHelper: TrackingPreferencesHelper, private val settingsPreferencesHelper: SettingsPreferencesHelper,
@@ -21,6 +24,10 @@ class MainPresenterImpl(private val view: MainView, private val markerPreference
 
     override fun getFriendsTrackingState() {
         interactor.getTrackingState(this)
+    }
+
+    override fun updatedProfileListener() {
+        interactor.setUpdatedProfileListener(this)
     }
 
     override fun setTrackingService() {
@@ -129,6 +136,10 @@ class MainPresenterImpl(private val view: MainView, private val markerPreference
 
     override fun trackingRemoved(key: String?) {
         view.removeTrackingState(key)
+    }
+
+    override fun profileUpdated() {
+        view.updateFriendsList()
     }
 
     override fun error(error: String) {

@@ -6,5 +6,9 @@ interface FriendsView {
 
     fun removeFriend(uid: String)
 
+    fun adapterRemoveFriend(uid: String)
+
+    fun showProfile(uid: String)
+
     fun showToast(message: String)
 }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
+import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingView
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
@@ -17,11 +18,7 @@ import java.util.*
 
 class FriendsPendingAdapter(private val context: Context?,
                             private val uid: ArrayList<String>,
-                            private val callback: Callback) : RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>() {
-
-    interface Callback {
-        fun onReject(uid: String)
-    }
+                            private val view: FriendsPendingView) : RecyclerView.Adapter<FriendsPendingAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.friends_pending_list_item, parent, false))
@@ -32,7 +29,7 @@ class FriendsPendingAdapter(private val context: Context?,
 
         if (!uid.isEmpty()) holder.profile.setProfilePicture(uid[position], context?.cacheDir.toString())
 
-        holder.decline.setOnClickListener { callback.onReject(uid[holder.adapterPosition]) }
+        holder.decline.setOnClickListener { view.accept(uid[holder.adapterPosition], false) }
     }
 
     override fun getItemCount(): Int {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.support.constraint.ConstraintLayout
 import android.support.transition.TransitionManager
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -64,9 +65,9 @@ class FriendsNavAdapter(private val context: Context,
         holder.nameItem.isActivated = isExpanded
 
         if (isExpanded) {
-            holder.friend_name.setTextColor(context.resources.getColor(R.color.colorAccent))
+            holder.friend_name.setTextColor(ResourcesCompat.getColor(context.resources, R.color.colorAccent, null))
         } else {
-            holder.friend_name.setTextColor(context.resources.getColor(android.R.color.white))
+            holder.friend_name.setTextColor(ResourcesCompat.getColor(context.resources, android.R.color.white, null))
         }
 
         holder.nameItem.setOnClickListener {

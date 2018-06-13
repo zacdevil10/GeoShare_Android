@@ -1,17 +1,22 @@
 package uk.co.appsbystudio.geoshare.friends.manager.pages.current
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class FriendsInteractorImpl: FriendsInteractor {
 
+    private var user: FirebaseUser? = null
+
     private var friendsRef: DatabaseReference? = null
     private lateinit var friendsListener: ChildEventListener
 
-    override fun getFriends(listener: FriendsInteractor.OnFirebaseListener) {
-        val user = FirebaseAuth.getInstance().currentUser
+    init {
+        user = FirebaseAuth.getInstance().currentUser
+    }
 
+    override fun getFriends(listener: FriendsInteractor.OnFirebaseListener) {
         friendsRef = FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user?.uid}")
         friendsRef?.keepSynced(true)
 
@@ -21,7 +26,7 @@ class FriendsInteractorImpl: FriendsInteractor {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
@@ -29,7 +34,7 @@ class FriendsInteractorImpl: FriendsInteractor {
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -41,7 +46,6 @@ class FriendsInteractorImpl: FriendsInteractor {
     }
 
     override fun removeFriend(uid: String, listener: FriendsInteractor.OnFirebaseListener) {
-        val user = FirebaseAuth.getInstance().currentUser
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user?.uid}/$uid").removeValue()
                 .addOnSuccessListener {
                     listener.unfriended(uid)

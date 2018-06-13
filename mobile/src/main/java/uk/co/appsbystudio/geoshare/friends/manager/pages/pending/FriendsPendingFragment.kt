@@ -1,7 +1,9 @@
 package uk.co.appsbystudio.geoshare.friends.manager.pages.pending
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +11,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_friends_pending.*
 import uk.co.appsbystudio.geoshare.R
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManagerView
 import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsPendingAdapter
 import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters.FriendsRequestAdapter
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification
 import java.util.*
 
-class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAdapter.Callback, FriendsPendingAdapter.Callback {
+class FriendsPendingFragment : Fragment(), FriendsPendingView {
 
+    private var fragmentCallback: FriendsManagerView? = null
     private var presenter: FriendsPendingPresenter? = null
 
     private var friendsIncomingAdapter: FriendsRequestAdapter? = null
@@ -23,6 +28,16 @@ class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAda
 
     private val uidIncoming = ArrayList<String>()
     private val uidOutgoing = ArrayList<String>()
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        try {
+            fragmentCallback = context as FriendsManager
+        } catch (e: ClassCastException) {
+            throw ClassCastException("""${activity.toString()}must implement FriendsManagerView""")
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_friends_pending, container, false)
@@ -55,14 +70,17 @@ class FriendsPendingFragment : Fragment(), FriendsPendingView, FriendsRequestAda
             layoutManager = LinearLayoutManager(context)
             adapter = friendsOutgoingAdapter
         }
+
+        scroll_recycler_pending.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            when {
+                scrollY > oldScrollY -> fragmentCallback?.fabState(false)
+                scrollY < oldScrollY -> fragmentCallback?.fabState(true)
+            }
+        })
     }
 
-    override fun onAcceptReject(accept: Boolean?, uid: String) {
-        presenter?.requestAction(accept!!, uid)
-    }
-
-    override fun onReject(uid: String) {
-        presenter?.requestAction(false, uid)
+    override fun accept(uid: String, accept: Boolean) {
+        presenter?.requestAction(accept, uid)
     }
 
     override fun addIncoming(uid: String) {

@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment
 
 interface MainView {
 
-    fun updateFriendsList(uid: String?, name: String?)
+    fun updateFriendsList(uid: String? = null, name: String? = null)
 
     fun removeFromFriendList(uid: String?)
 

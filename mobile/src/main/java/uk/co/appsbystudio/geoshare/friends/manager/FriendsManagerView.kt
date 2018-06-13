@@ -6,5 +6,7 @@ interface FriendsManagerView {
 
     fun searchIntent()
 
+    fun fabState(visible: Boolean)
+
     fun finish()
 }

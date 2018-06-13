@@ -15,8 +15,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_layout.view.*
 import uk.co.appsbystudio.geoshare.R
@@ -30,7 +28,6 @@ import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
-import uk.co.appsbystudio.geoshare.utils.firebase.listeners.UpdatedProfilePicturesListener
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService
 import uk.co.appsbystudio.geoshare.utils.ui.SettingsActivity
 
@@ -41,7 +38,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     //FIREBASE
     private var firebaseAuth: FirebaseAuth? = null
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
-    private var databaseReference: DatabaseReference? = null
 
     private var header: View? = null
 
@@ -66,13 +62,11 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
                 ShowMarkerPreferencesHelper(getSharedPreferences("showOnMap", Context.MODE_PRIVATE)),
                 TrackingPreferencesHelper(getSharedPreferences("tracking", Context.MODE_PRIVATE)),
                 SettingsPreferencesHelper(PreferenceManager.getDefaultSharedPreferences(applicationContext)),
-                MainInteractorImpl())
+                MainInteractorImpl(cacheDir.toString()))
 
         presenter?.setTrackingService()
 
         firebaseAuth = FirebaseAuth.getInstance()
-
-        databaseReference = FirebaseDatabase.getInstance().reference
 
         /* HANDLES FOR VARIOUS VIEWS */
         if (savedInstanceState == null) {
@@ -130,6 +124,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
         presenter?.run {
             getFriends()
             getFriendsTrackingState()
+            updatedProfileListener()
         }
 
         friendsNavAdapter = FriendsNavAdapter(this@MainActivity, recycler_right_nav_main, friendsMap, hasTracking, this)
@@ -149,8 +144,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
         switch_markers_main.setOnCheckedChangeListener({ buttonView, isChecked ->
             mapsFragment.setAllMarkersVisibility(isChecked)
         })
-
-        databaseReference?.child("picture")?.addChildEventListener(UpdatedProfilePicturesListener(friendsNavAdapter, this@MainActivity.cacheDir.toString()))
 
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val currentUser = firebaseAuth.currentUser
@@ -199,9 +192,9 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     override fun updateFriendsList(uid: String?, name: String?) {
         if (uid != null && name != null) {
             friendsMap[uid] = name
-            friendsNavAdapter?.notifyDataSetChanged()
             add_friends.visibility = View.GONE
         }
+        friendsNavAdapter?.notifyDataSetChanged()
     }
 
     override fun removeFromFriendList(uid: String?) {

@@ -3,6 +3,7 @@ package uk.co.appsbystudio.geoshare.friends.profile.friends.adapters
 import android.content.Context
 import android.content.res.ColorStateList
 import android.support.constraint.ConstraintLayout
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -37,24 +38,20 @@ class FriendshipStatusAdapter(private val context: Context?,
         if (!userId.isEmpty()) holder.profile.setProfilePicture(userId[position], context?.cacheDir.toString())
 
         when {
-            MainActivity.friendsMap.containsKey(userId[position]) -> {
-                holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_person_white_24dp))
-                holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(R.color.colorPrimary)!!)
-            }
-            FriendsManager.pendingUid.containsKey(userId[position]) -> {
-                holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_person_white_24dp))
-                holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(android.R.color.darker_gray)!!)
-            }
+            MainActivity.friendsMap.containsKey(userId[position]) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, R.color.colorPrimary)
+            FriendsManager.pendingUid.containsKey(userId[position]) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, android.R.color.darker_gray)
             else -> {
-                holder.sendRequestButton.setImageDrawable(context?.getDrawable(R.drawable.ic_send_black_24dp))
-                holder.sendRequestButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(android.R.color.darker_gray)!!)
+                holder.sendRequestButton.setRequestButton(R.drawable.ic_send_black_24dp, android.R.color.darker_gray)
                 holder.sendRequestButton.setOnClickListener {
                     callback?.onSendRequest(userId[holder.adapterPosition])
-                    /*holder.sendRequestButton.setImageDrawable(context.getDrawable(R.drawable.ic_person_white_24dp));
-                    holder.sendRequestButton.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.darker_gray)));*/
                 }
             }
         }
+    }
+
+    private fun ImageButton.setRequestButton(drawable: Int, color: Int) {
+        this@setRequestButton.setImageDrawable(context.getDrawable(drawable))
+        this@setRequestButton.imageTintList = ColorStateList.valueOf(ResourcesCompat.getColor(context.resources, color, null))
     }
 
     override fun getItemCount(): Int {

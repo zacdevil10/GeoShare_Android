@@ -10,6 +10,8 @@ interface MainPresenter {
 
     fun getFriendsTrackingState()
 
+    fun updatedProfileListener()
+
     fun setTrackingService()
 
     fun stopTrackingService()

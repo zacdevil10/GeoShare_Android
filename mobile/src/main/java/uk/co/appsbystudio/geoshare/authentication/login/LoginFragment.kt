@@ -53,7 +53,7 @@ class LoginFragment : Fragment(), LoginView {
         try {
             fragmentCallback = context as AuthActivity
         } catch (e: ClassCastException) {
-            throw ClassCastException(activity.toString() + "must implement AuthView")
+            throw ClassCastException("""${activity.toString()}must implement AuthView""")
         }
     }
 

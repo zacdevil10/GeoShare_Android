@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_friend_search.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.search.adapter.FriendSearchAdapter
 
-class FriendSearchActivity : AppCompatActivity(), FriendSearchView, FriendSearchAdapter.Callback {
+class FriendSearchActivity : AppCompatActivity(), FriendSearchView {
 
     private var presenter: FriendSearchPresenter? = null
 
@@ -57,8 +57,8 @@ class FriendSearchActivity : AppCompatActivity(), FriendSearchView, FriendSearch
         })
     }
 
-    override fun onSendRequest(friendId: String) {
-        presenter?.request(friendId)
+    override fun onSendRequest(uid: String) {
+        presenter?.request(uid)
     }
 
     override fun add(uid: String, name: String) {

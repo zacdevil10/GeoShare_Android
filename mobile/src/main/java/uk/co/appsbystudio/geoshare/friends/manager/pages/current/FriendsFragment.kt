@@ -1,6 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.manager.pages.current
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,11 +12,12 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_friends.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.pages.current.adapter.FriendsCurrentAdapter
+import uk.co.appsbystudio.geoshare.friends.profile.ProfileActivity
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import java.util.*
 
-class FriendsFragment : Fragment(), FriendsView, FriendsCurrentAdapter.Callback {
+class FriendsFragment : Fragment(), FriendsView {
 
     private var presenter: FriendsPresenter? = null
 
@@ -47,10 +49,6 @@ class FriendsFragment : Fragment(), FriendsView, FriendsCurrentAdapter.Callback 
         }
     }
 
-    override fun onRemoveFriend(friendId: String) {
-        presenter?.removeFriend(friendId)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         presenter?.stop()
@@ -68,6 +66,16 @@ class FriendsFragment : Fragment(), FriendsView, FriendsCurrentAdapter.Callback 
         friendsCurrentAdapter?.notifyDataSetChanged()
 
         if (uidArray.isEmpty()) text_no_friends_manager?.visibility = View.VISIBLE
+    }
+
+    override fun adapterRemoveFriend(uid: String) {
+        presenter?.removeFriend(uid)
+    }
+
+    override fun showProfile(uid: String) {
+        val intent = Intent(context, ProfileActivity::class.java)
+        intent.putExtra("uid", uid)
+        context?.startActivity(intent)
     }
 
     override fun showToast(message: String) {

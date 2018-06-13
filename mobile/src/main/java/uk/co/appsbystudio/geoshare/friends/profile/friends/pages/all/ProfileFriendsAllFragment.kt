@@ -8,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_profile_friends_all.*
-
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.profile.friends.adapters.FriendshipStatusAdapter
-import java.util.ArrayList
+import java.util.*
 
 class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipStatusAdapter.Callback {
 
@@ -59,7 +58,7 @@ class ProfileFriendsAllFragment : Fragment(), ProfileFriendsAllView, FriendshipS
     }
 
     override fun addItem(uid: String?) {
-        if (!uidArray.contains(uid) && uid != null) {
+        if (uid != null && !uidArray.contains(uid)) {
             uidArray.add(uid)
             friendAdapter?.notifyDataSetChanged()
         }
