@@ -163,4 +163,8 @@ class MapsPresenterImpl(private val view: MapsView,
             view.setMapStyle(R.raw.map_style)
         }
     }
+
+    override fun stop() {
+        interactor.removeListeners()
+    }
 }

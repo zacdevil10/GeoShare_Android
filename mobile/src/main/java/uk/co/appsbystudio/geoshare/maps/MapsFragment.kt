@@ -101,8 +101,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_maps, container, false)
-
         val settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         settingsHelper = SettingsPreferencesHelper(settingsSharedPreferences)
@@ -125,7 +123,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.registerNetworkReceiver()
         presenter?.registerSettingsPreferencesListener()
 
-        return view
+        return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -184,11 +182,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
             presenter?.updateBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
         }
 
-        googleMap.setOnCameraMoveStartedListener({
+        googleMap.setOnCameraMoveStartedListener {
             //if (it == 1 && selectedMarker != null) selectedMarker = null
 
             if (it == 1 && isTracking) presenter?.updateTrackingState(false)
-        })
+        }
 
         googleMap.setOnMarkerClickListener(GoogleMap.OnMarkerClickListener { marker ->
             if (marker.tag == 0) return@OnMarkerClickListener true
@@ -267,6 +265,9 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.updateNearbyFriendsRadius(currentLocation)
     }
 
+    /**
+     * Check to see if location services are enabled
+     */
     private fun locationSettingsRequest(context: Context?) {
         if (context != null) {
             val locationRequest = LocationRequest.create()
@@ -332,11 +333,17 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.run {
             unregisterSettingsPreferencesListener()
             unregisterNetworkReceiver()
+            stop()
         }
         locationManager?.removeUpdates(locationListener)
         savedInstance = false
     }
 
+    /**
+     * Find the marker on the map
+     *
+     * @param friendId is the uid of the friend and the tag of the marker
+     */
     fun findFriendOnMap(friendId: String) {
         if (friendMarkerList.containsKey(friendId)) {
             val marker = friendMarkerList[friendId]
@@ -348,13 +355,20 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Add a new marker to the map
+     *
+     * @param uid is the uid of the friend
+     * @param markerPointer is the custom marker image
+     * @param databaseLocations contains the coordinates and timestamp of the location
+     */
     override fun addFriendMarker(uid: String?, markerPointer: Bitmap?, databaseLocations: DatabaseLocations?) {
         if (databaseLocations != null) {
             val markerOptions = MarkerOptions()
                     .position(LatLng(databaseLocations.lat, databaseLocations.longitude))
                     .icon(BitmapDescriptorFactory.fromBitmap(markerPointer))
             val friendMarker = googleMap?.addMarker(markerOptions)
-            if (showMarkerHelper?.getMarkerVisibilityState(uid) != null) friendMarker?.isVisible = showMarkerHelper!!.getMarkerVisibilityState(uid)!!
+            if (showMarkerHelper?.getMarkerVisibilityState(uid) != null) friendMarker?.isVisible = showMarkerHelper?.getMarkerVisibilityState(uid)!!
 
             friendMarker?.tag = uid
 
@@ -365,6 +379,12 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Update an existing marker
+     *
+     * @param uid is the uid of the friend
+     * @param databaseLocations is the new location and timestamp for the marker
+     */
     override fun updateFriendMarker(uid: String?, databaseLocations: DatabaseLocations?) {
         val friendMarker = friendMarkerList[uid]
         if (databaseLocations != null) friendMarker?.position = LatLng(databaseLocations.lat, databaseLocations.longitude)
@@ -372,26 +392,17 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         friendMarkerList[uid] = friendMarker
     }
 
+    /**
+     * Remove a marker from the map
+     *
+     * @param uid is the uid of the friend
+     */
     override fun removeFriendMarker(uid: String?) {
         val friendMarker = friendMarkerList[uid]
 
         friendMarker?.remove()
 
         friendMarkerList.remove(uid)
-    }
-
-    override fun updateLocationMarkerIndicator(location: LatLng) {
-        if (myLocation == null) {
-            val myLocationMarker = BitmapFactory.decodeResource(resources, R.drawable.navigation)
-            val scaledLocation = Bitmap.createScaledBitmap(myLocationMarker, 72, 72, false)
-
-            myLocation = googleMap?.addMarker(MarkerOptions()
-                    .position(location)
-                    .flat(true)
-                    .icon(BitmapDescriptorFactory.fromBitmap(scaledLocation))
-                    .anchor(0.5f, 0.5f))
-            myLocation?.tag = 0
-        }
     }
 
     /**
@@ -403,6 +414,12 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         return friendMarkerList.containsKey(uid)
     }
 
+    /**
+     * Set the visibility of individual markers
+     *
+     * @param uid is the uid of the friend
+     * @param visible is the visibility state to change the marker to
+     */
     override fun setMarkerVisibility(uid: String, visible: Boolean) {
         if (friendMarkerList.containsKey(uid)) {
             val marker = friendMarkerList[uid]
@@ -411,6 +428,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         showMarkerHelper?.setMarkerVisibilityState(uid, visible)
     }
 
+    /**
+     * Set the visibility of all markers
+     *
+     * @param visible is the visibility state to change the markers to
+     * */
     override fun setAllMarkersVisibility(visible: Boolean) {
         if (googleMap != null) {
             for (markerId in friendMarkerList.keys) {
@@ -422,6 +444,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Set the state of the bottom sheet
+     *
+     * @param state is the state of the bottom sheet (visible, hidden etc)
+     * */
     override fun setBottomSheetState(state: Int) {
         bottomSheetBehavior?.state = state
 
@@ -434,10 +461,20 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Change the map style
+     *
+     * @param style is the resource location for the json style files
+     */
     override fun setMapStyle(style: Int) {
         googleMap?.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, style))
     }
 
+    /**
+     * Sets the tracking state for the myLocation marker
+     *
+     * @param trackingState determines whether or not the map should be tracking
+     */
     override fun updateTrackingButton(trackingState: Boolean) {
         isTracking = trackingState
 
@@ -448,6 +485,13 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Updates the maps camera position
+     *
+     * @param latLng is the coordinates of the centre point of the camera
+     * @param zoomLevel is the zoom level of the camera
+     * @param animated is true if the camera moves to the new position and false if it jumps to the new position
+     */
     override fun updateCameraPosition(latLng: LatLng, zoomLevel: Int, animated: Boolean) {
         val cameraPosition = CameraPosition.Builder().target(latLng).zoom(zoomLevel.toFloat()).build()
         if (animated) {
@@ -457,10 +501,23 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * Sets the nearby text at the top of the fragment
+     *
+     * @param nearbyCount is the number of friends within the specified radius
+     */
     override fun updateNearbyText(nearbyCount: Int) {
         text_nearby_count_map?.text = if (nearbyCount != 1) String.format(Locale.getDefault(), "%d FRIENDS AROUND YOU", nearbyCount) else String.format(Locale.getDefault(), "%d FRIEND AROUND YOU", nearbyCount)
     }
 
+    /**
+     * Updates the bottom sheet text when a marker is selected
+     *
+     * @param uid is the uid of the friend
+     * @param address is the address given by the reverse geocoder
+     * @param timestamp is the time elapsed since the location was shared
+     * @param distance is the distance between the friends marker and myLocation marker
+     */
     override fun updateBottomSheetText(uid: String?, address: LiveData<String>, timestamp: String?, distance: String) {
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/$uid").addListenerForSingleValueEvent(GetUserFromDatabase(text_name_map))
         text_timestamp_map.text = timestamp
@@ -474,6 +531,12 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         address.observe(this, observer)
     }
 
+    /**
+     * If the myLocation marker moves, this function is called to move the circle
+     *
+     * @param radius is the size of the circle in meters
+     * @param centerPoint is the coordinates of the centre point
+     */
     override fun updateNearbyRadiusCircle(radius: Int?, centerPoint: LatLng) {
         if (nearbyCircle != null) {
             nearbyCircle?.center = centerPoint
@@ -491,6 +554,11 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.updateNearbyFriendsCount(centerPoint, friendMarkerList)
     }
 
+    /**
+     * Changes the radius of the circle
+     *
+     * @param radius is the radius of the circle in meters
+     */
     override fun updateRadiusCircleSize(radius: Int?) {
         if (radius != null) {
             nearbyCircle?.radius = radius.toDouble()
@@ -510,6 +578,9 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         context?.unregisterReceiver(broadcastReceiver)
     }
 
+    /**
+     * When a network connection is detected, the snackbar is dismissed
+     */
     override fun networkAvailable() {
         val snack = snackbar
         if (snack != null) {
@@ -519,8 +590,13 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
     }
 
+    /**
+     * When no network is detected, display a snackbar
+     *
+     * @param message Is the error message
+     */
     override fun networkError(message: String) {
-        snackbar = Snackbar.make(coordinator_map, "No network connection detected", Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(coordinator_map, message, Snackbar.LENGTH_INDEFINITE)
         snackbar?.setAction("DISMISS") { snackbar?.dismiss() }?.show()
     }
 

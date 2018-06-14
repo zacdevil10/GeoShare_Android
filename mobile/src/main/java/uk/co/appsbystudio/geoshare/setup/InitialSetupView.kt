@@ -14,5 +14,5 @@ interface InitialSetupView {
 
     fun onShowProfileDialog()
 
-    fun onError(error: String)
+    fun showToast(message: String)
 }

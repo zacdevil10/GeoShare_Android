@@ -14,8 +14,6 @@ interface MapsView {
 
     fun removeFriendMarker(uid: String?)
 
-    fun updateLocationMarkerIndicator(location: LatLng)
-
     fun markerExists(uid: String): Boolean
 
     fun setMarkerVisibility(uid: String, visible: Boolean)

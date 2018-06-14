@@ -35,4 +35,6 @@ interface MapsPresenter {
 
     fun unregisterSettingsPreferencesListener()
 
+    fun stop()
+
 }

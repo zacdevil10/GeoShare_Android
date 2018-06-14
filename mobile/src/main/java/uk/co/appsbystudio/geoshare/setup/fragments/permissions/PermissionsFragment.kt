@@ -28,12 +28,9 @@ class PermissionsFragment : Fragment(), PermissionsView {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_permissions, container, false)
-
         presenter = PermissionsPresenterImpl(this)
 
-        return view
+        return inflater.inflate(R.layout.fragment_permissions, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +49,12 @@ class PermissionsFragment : Fragment(), PermissionsView {
         }
     }
 
-    override fun onResult(message: String) {
+    /**
+     * Show toast
+     *
+     * @param message is the message to display in the toast
+     */
+    override fun showToast(message: String) {
         Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show()
     }
 }

@@ -3,29 +3,37 @@ package uk.co.appsbystudio.geoshare.maps
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import uk.co.appsbystudio.geoshare.utils.bitmapCanvas
-import uk.co.appsbystudio.geoshare.utils.firebase.*
+import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
+import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo
 import java.io.File
 
 class MapsInteractorImpl: MapsInteractor {
 
+    private var user: FirebaseUser? = null
+
     private var staticRef: DatabaseReference? = null
     private var trackingRef: DatabaseReference? = null
 
-    private var trackingListener: ChildEventListener? = null
+    private lateinit var staticLocationListener: ChildEventListener
+    private lateinit var trackingListener: ChildEventListener
 
     private var syncState: Boolean = false
 
-    override fun staticFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
-        val user = FirebaseAuth.getInstance().currentUser
+    init {
+        user = FirebaseAuth.getInstance().currentUser
+    }
 
+    override fun staticFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
         if (user != null) {
-            staticRef = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/${user.uid}")
+            staticRef = FirebaseDatabase.getInstance().getReference(FirebaseHelper.CURRENT_LOCATION + "/${user?.uid}")
             staticRef?.keepSynced(true)
 
-            val staticLocationListener = object : ChildEventListener {
+            staticLocationListener = object : ChildEventListener {
 
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     if (dataSnapshot.exists()) {
@@ -59,10 +67,8 @@ class MapsInteractorImpl: MapsInteractor {
     }
 
     override fun trackingFriends(storageDirectory: String?, listener: MapsInteractor.OnFirebaseRequestFinishedListener) {
-        val user = FirebaseAuth.getInstance().currentUser
-
         if (user != null) {
-            trackingRef = FirebaseDatabase.getInstance().getReference("${FirebaseHelper.TRACKING}/${user.uid}/${FirebaseHelper.TRACKING}")
+            trackingRef = FirebaseDatabase.getInstance().getReference("${FirebaseHelper.TRACKING}/${user?.uid}/${FirebaseHelper.TRACKING}")
             trackingRef?.keepSynced(true)
 
             trackingListener = object : ChildEventListener {
@@ -140,12 +146,17 @@ class MapsInteractorImpl: MapsInteractor {
 
         if (sync && !syncState) {
             syncState = true
-            trackingRef?.addChildEventListener(trackingListener as ChildEventListener)
+            trackingRef?.addChildEventListener(trackingListener)
         } else if (!sync) {
             syncState = false
-            trackingRef?.removeEventListener(trackingListener as ChildEventListener)
+            trackingRef?.removeEventListener(trackingListener)
         }
 
         return syncState
+    }
+
+    override fun removeListeners() {
+        staticRef?.removeEventListener(staticLocationListener)
+        trackingRef?.removeEventListener(trackingListener)
     }
 }

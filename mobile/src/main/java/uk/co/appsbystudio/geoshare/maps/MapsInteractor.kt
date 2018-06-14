@@ -24,4 +24,6 @@ interface MapsInteractor {
 
     fun trackingSync(sync: Boolean): Boolean
 
+    fun removeListeners()
+
 }

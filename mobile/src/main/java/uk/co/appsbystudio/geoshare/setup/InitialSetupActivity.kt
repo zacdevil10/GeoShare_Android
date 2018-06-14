@@ -12,19 +12,17 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_initial_setup.*
-
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult
-import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
+import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.setup.fragments.GetStartedFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.permissions.PermissionsFragment
-import uk.co.appsbystudio.geoshare.setup.fragments.radius.RadiusSetupFragment
 import uk.co.appsbystudio.geoshare.setup.fragments.profile.SetupProfileFragment
+import uk.co.appsbystudio.geoshare.setup.fragments.radius.RadiusSetupFragment
+import uk.co.appsbystudio.geoshare.utils.ProfileSelectionResult
 import uk.co.appsbystudio.geoshare.utils.SettingsPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.dialog.ProfilePictureOptions
 
 class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
 
@@ -123,7 +121,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
         ProfilePictureOptions().show(fragmentManager, "profile_dialog")
     }
 
-    override fun onError(error: String) {
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

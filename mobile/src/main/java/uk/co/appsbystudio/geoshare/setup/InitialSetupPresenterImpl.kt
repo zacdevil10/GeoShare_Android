@@ -8,13 +8,12 @@ import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 class InitialSetupPresenterImpl(private val view: InitialSetupView): InitialSetupPresenter {
 
     override fun addDeviceToken() {
-        val auth: FirebaseAuth = FirebaseAuth.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser
+        val token = FirebaseInstanceId.getInstance().token
 
-        if (auth.currentUser != null && FirebaseInstanceId.getInstance().token != null) {
+        if (user != null && token != null) {
             FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN)
-                    .child(auth.currentUser?.uid!!)
-                    .child(FirebaseInstanceId.getInstance().token!!)
-                    .child("platform")
+                    .child("${user.uid}/$token/platform")
                     .setValue("android")
         }
     }
@@ -24,6 +23,6 @@ class InitialSetupPresenterImpl(private val view: InitialSetupView): InitialSetu
     }
 
     override fun onError(error: String) {
-        view.onError(error)
+        view.showToast(error)
     }
 }

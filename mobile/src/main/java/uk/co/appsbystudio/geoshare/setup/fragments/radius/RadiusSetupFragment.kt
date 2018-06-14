@@ -31,12 +31,9 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_radius_setup, container, false)
-
         presenter = RadiusSetupPresenterImpl(this)
 
-        return view
+        return inflater.inflate(R.layout.fragment_radius_setup, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +42,7 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
         seek_radius.max = 200
         seek_radius.progress = 100
 
-        seek_radius.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        val seekListener = object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 text_progress_radius.text = i.toString()
                 text_progress_radius.measure(0, 0)
@@ -64,7 +61,9 @@ class RadiusSetupFragment : Fragment(), RadiusSetupView {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
 
             }
-        })
+        }
+
+        seek_radius.setOnSeekBarChangeListener(seekListener)
 
         button_back_radius.setOnClickListener {
             fragmentCallback?.onBack()
