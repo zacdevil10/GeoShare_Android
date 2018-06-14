@@ -72,7 +72,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
         isRunning = false;
 
-        TrackingServiceNotification.notify(this, 1);
+        TrackingServiceNotification.INSTANCE.notify(this, 1);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -118,7 +118,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
             locationManager.removeUpdates(locationListener);
         }
 
-        TrackingServiceNotification.cancel(this);
+        TrackingServiceNotification.INSTANCE.cancel(this);
 
         isRunning = false;
     }
@@ -208,7 +208,7 @@ public class TrackingService extends Service implements SharedPreferences.OnShar
 
             builder.setStyle(inboxStyle);
 
-            TrackingServiceNotification.notify(getApplicationContext(), builder.build());
+            TrackingServiceNotification.INSTANCE.notify(getApplicationContext(), builder.build());
         }
 
         @Override

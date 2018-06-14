@@ -4,7 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -24,16 +27,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import kotlinx.android.synthetic.main.fragment_maps.*
@@ -71,10 +73,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     private var locationManager: LocationManager? = null
     private var locationServiceEnabled: Boolean = false
 
-    private var bestProvider: String? = null
-
-    private var settingsSharedPreferences: SharedPreferences? = null
-
     private var myLocation: Marker? = null
     private var selectedMarker: Marker? = null
 
@@ -87,8 +85,6 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     private var friendMarkerList = HashMap<String?, Marker?>()
     private var friendMarkerTimestamp = HashMap<String?, Long?>()
 
-    private var storageDirectory: String? = null
-
     companion object {
         private const val DEFAULT_ZOOM = 16
         private const val GET_PERMS = 1
@@ -96,7 +92,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        storageDirectory = context?.cacheDir.toString()
+
         try {
             fragmentCallback = context as MainActivity
         } catch (e: ClassCastException) {
@@ -107,7 +103,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
-        settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         settingsHelper = SettingsPreferencesHelper(settingsSharedPreferences)
         showMarkerHelper = ShowMarkerPreferencesHelper(context?.getSharedPreferences("showOnMap", Context.MODE_PRIVATE))
@@ -249,8 +245,8 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         }
 
         if (!savedInstance) presenter?.run {
-            getStaticFriends(storageDirectory)
-            getTrackingFriends(storageDirectory)
+            getStaticFriends(context?.cacheDir.toString())
+            getTrackingFriends(context?.cacheDir.toString())
             syncState = setTrackingSync(true)
             moveMapCamera(currentLocation, DEFAULT_ZOOM, false)
             updateTrackingState(true)
@@ -273,30 +269,31 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
 
     private fun locationSettingsRequest(context: Context?) {
         if (context != null) {
-            val googleApiClient = GoogleApiClient.Builder(context)
-                    .addApi(LocationServices.API).build()
-            googleApiClient.connect()
-
             val locationRequest = LocationRequest.create()
             locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             locationRequest.interval = 10000
             locationRequest.fastestInterval = (10000 / 2).toLong()
 
-            val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-            builder.setAlwaysShow(true)
+            val locationSettingsRequest = LocationSettingsRequest.Builder()
+            locationSettingsRequest.addLocationRequest(locationRequest)
 
-            val result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
-            result.setResultCallback { locationSettingsResult ->
-                val status = locationSettingsResult.status
-                when (status.statusCode) {
-                    LocationSettingsStatusCodes.SUCCESS -> println("ALL LOCATION SETTINGS ARE SATISFIED")
-                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-                        status.startResolutionForResult(activity, 213)
-                    } catch (e: IntentSender.SendIntentException) {
-                        e.printStackTrace()
+            val results: Task<LocationSettingsResponse> = LocationServices.getSettingsClient(context).checkLocationSettings(locationSettingsRequest.build())
+
+            results.addOnCompleteListener {
+                try {
+                    val response = it.getResult(ApiException::class.java)
+                    println(response)
+                } catch (exception: ApiException) {
+                    when (exception.statusCode) {
+                        LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                            try {
+                                val resolvableApiException: ResolvableApiException = exception as ResolvableApiException
+                                resolvableApiException.startResolutionForResult(activity, 213)
+                            } catch (e: IntentSender.SendIntentException) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
-
-                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> println("STUFF")
                 }
             }
         }
@@ -317,7 +314,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         criteria.accuracy = Criteria.ACCURACY_FINE
         criteria.isCostAllowed = true
 
-        bestProvider = locationManager!!.getBestProvider(criteria, false)
+        val bestProvider = locationManager!!.getBestProvider(criteria, false)
 
         locationManager?.requestLocationUpdates(bestProvider, 0, 0f, locationListener)
     }
