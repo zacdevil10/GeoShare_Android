@@ -35,24 +35,15 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     private var presenter: MainPresenter? = null
 
-    //FIREBASE
-    private var firebaseAuth: FirebaseAuth? = null
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
     private var header: View? = null
+    private var friendsNavAdapter: FriendsNavAdapter? = null
 
     private var mapsFragment: MapsFragment = MapsFragment()
 
-    private var friendsNavAdapter: FriendsNavAdapter? = null
-
     private val hasTracking = HashMap<String, Boolean>()
-
-    private var navItemSelected: Boolean = false
-    private var checkedItem: Int = 0
-
-    companion object {
-        val friendsMap = LinkedHashMap<String, String>()
-    }
+    private val friendsMap = LinkedHashMap<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,8 +57,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
         presenter?.setTrackingService()
 
-        firebaseAuth = FirebaseAuth.getInstance()
-
         /* HANDLES FOR VARIOUS VIEWS */
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().replace(R.id.frame_content_map_main, mapsFragment, "maps_fragment").commit()
@@ -76,7 +65,10 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
             presenter?.swapFragment(mapsFragment)
         }
 
-        drawer_left_nav_main.setNavigationItemSelectedListener({ item ->
+        var navItemSelected = false
+        var checkedItem = 0
+
+        drawer_left_nav_main.setNavigationItemSelectedListener { item ->
             navItemSelected = true
             drawer_layout?.closeDrawers()
             when (item.itemId) {
@@ -87,7 +79,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
                 R.id.feedback -> checkedItem = R.id.feedback
             }
             false
-        })
+        }
 
 
         val drawerListener = object : DrawerLayout.DrawerListener {
@@ -141,9 +133,9 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
             setMarkerVisibilityState()
         }
 
-        switch_markers_main.setOnCheckedChangeListener({ buttonView, isChecked ->
+        switch_markers_main.setOnCheckedChangeListener { buttonView, isChecked ->
             mapsFragment.setAllMarkersVisibility(isChecked)
-        })
+        }
 
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val currentUser = firebaseAuth.currentUser
@@ -169,7 +161,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     override fun onStart() {
         super.onStart()
-        firebaseAuth?.addAuthStateListener(authStateListener)
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
     }
 
     override fun onResume() {
@@ -180,7 +172,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
 
     override fun onStop() {
         super.onStop()
-        firebaseAuth?.removeAuthStateListener(authStateListener)
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener)
     }
 
     override fun onDestroy() {
@@ -218,7 +210,9 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     }
 
     override fun friendsIntent() {
-        startActivity(Intent(this@MainActivity, FriendsManager::class.java))
+        val intent = Intent(this@MainActivity, FriendsManager::class.java)
+        intent.putExtra("friends_map", friendsMap)
+        startActivity(intent)
     }
 
     override fun settingsIntent() {

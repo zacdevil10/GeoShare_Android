@@ -13,6 +13,4 @@ class SeekBarTextIndicator(context: Context, attrs: AttributeSet) : AppCompatSee
         super.setThumb(thumb)
         mThumb = thumb
     }
-
-    fun getSeekBarThumb() {}
 }

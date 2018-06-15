@@ -101,6 +101,8 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
+
         val settingsSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         settingsHelper = SettingsPreferencesHelper(settingsSharedPreferences)
@@ -123,7 +125,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         presenter?.registerNetworkReceiver()
         presenter?.registerSettingsPreferencesListener()
 
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -13,19 +13,17 @@ class FirebaseMessagingService : com.google.firebase.messaging.FirebaseMessaging
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         if (remoteMessage != null) {
-            if (remoteMessage.data["tag"] == "request" && sharedPreferences.getBoolean("friend_notification", true)) {
-                //Friend request
-                NewFriendNotification.notify(this, remoteMessage.data["title"], 1)
-            } else if (remoteMessage.data["tag"] == "share" && sharedPreferences.getBoolean("location_notification", true)) {
-                //New shared location
-                NewShareLocationNotification.notify(this, remoteMessage.data["title"], 1)
-            } else if (remoteMessage.data["tag"] == "dfnf") {
-                //Stop tracking
-                getSharedPreferences("tracking", Context.MODE_PRIVATE).edit().remove(remoteMessage.data["name"]).apply()
-            } else if (remoteMessage.data["tag"] == "location_update") {
-                //Location request
-                NewRequestNotification.notify(this, remoteMessage.data["title"], 1)
+            when {
+                remoteMessage.data["tag"] == "request" && sharedPreferences.getBoolean("friend_notification", true) -> //Friend request
+                    NewFriendNotification.notify(this, remoteMessage.data["title"], 1)
+                remoteMessage.data["tag"] == "share" && sharedPreferences.getBoolean("location_notification", true) -> //New shared location
+                    NewShareLocationNotification.notify(this, remoteMessage.data["title"], 1)
+                remoteMessage.data["tag"] == "dfnf" -> //Stop tracking
+                    getSharedPreferences("tracking", Context.MODE_PRIVATE).edit().remove(remoteMessage.data["name"]).apply()
+                remoteMessage.data["tag"] == "location_update" -> //Location request
+                    NewRequestNotification.notify(this, remoteMessage.data["title"], 1)
             }
         }
+
     }
 }

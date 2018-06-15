@@ -6,14 +6,16 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_profile.*
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.friends.profile.friends.ProfileFriendsFragment
 import uk.co.appsbystudio.geoshare.friends.profile.info.ProfileInfoFragment
 import uk.co.appsbystudio.geoshare.friends.profile.staticmap.ProfileStaticMapFragment
 import uk.co.appsbystudio.geoshare.utils.ShowMarkerPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
+import uk.co.appsbystudio.geoshare.utils.firebase.listeners.GetUserFromDatabase
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
 
 class ProfileActivity : AppCompatActivity(), ProfileView {
@@ -38,7 +40,7 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
 
         image_avatar_profile.setProfilePicture(uid, this.cacheDir.toString())
 
-        text_name_profile.text = MainActivity.friendsMap[uid]
+        FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/$uid").addListenerForSingleValueEvent(GetUserFromDatabase(text_name_profile))
 
         view_pager_profile.apply {
             adapter = object : FragmentPagerAdapter(supportFragmentManager) {
@@ -62,21 +64,21 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
             finish()
         }
 
-        button_remove_friend_profile.setOnClickListener({
+        button_remove_friend_profile.setOnClickListener {
             presenter?.removeFriendDialog(uid)
-        })
+        }
     }
 
     override fun showDialog(uid: String?) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.run {
             setMessage("Are you sure you want to remove this person from your friends list?")
-            setPositiveButton("OK", { dialogInterface, i ->
+            setPositiveButton("OK") { dialogInterface, i ->
                 presenter?.removeFriend(uid)
-            })
-            setNegativeButton("Cancel", { dialogInterface, i ->
+            }
+            setNegativeButton("Cancel") { dialogInterface, i ->
                 dialogInterface.dismiss()
-            })
+            }
             create()
             show()
         }

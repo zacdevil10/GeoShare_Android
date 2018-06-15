@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_friends_manager.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.pages.current.FriendsFragment
 import uk.co.appsbystudio.geoshare.friends.manager.pages.pending.FriendsPendingFragment
 import uk.co.appsbystudio.geoshare.friends.manager.search.FriendSearchActivity
-import java.util.*
 
 class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
@@ -21,13 +21,16 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
     companion object {
         val pendingUid = HashMap<String?, Boolean>()
+        var friendsMap = HashMap<String?, String?>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends_manager)
 
-        presenter = FriendsManagerPresenterImpl(this)
+        presenter = FriendsManagerPresenterImpl(this, FriendsManagerInteractorImpl())
+
+        presenter?.friends()
 
         toolbar_manager.setTitle(R.string.title_activity_friends_manager)
         setSupportActionBar(toolbar_manager)
@@ -84,6 +87,14 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
         firebaseAuth?.removeAuthStateListener(authStateListener)
     }
 
+    override fun updateFriendsList(uid: String?, name: String?) {
+        friendsMap[uid] = name
+    }
+
+    override fun removeFromFriendList(uid: String?) {
+        friendsMap.remove(uid)
+    }
+
     override fun setViewpagerItem(item: Int) {
         view_pager_manager.currentItem = item
     }
@@ -102,5 +113,11 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
     override fun onDestroy() {
         super.onDestroy()
         pendingUid.clear()
+        friendsMap.clear()
+        presenter?.stop()
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

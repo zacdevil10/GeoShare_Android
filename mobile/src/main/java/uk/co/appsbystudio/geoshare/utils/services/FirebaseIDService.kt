@@ -20,7 +20,7 @@ class FirebaseIDService : FirebaseInstanceIdService() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null && token != null) {
-            databaseReference.child(user.uid).child(token).child("platform").setValue("android")
+            databaseReference.child("${user.uid}/$token/platform").setValue("android")
         }
     }
 }

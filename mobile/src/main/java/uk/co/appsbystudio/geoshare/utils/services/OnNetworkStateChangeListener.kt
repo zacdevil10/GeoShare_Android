@@ -4,10 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-
-import java.util.HashSet
-
-import uk.co.appsbystudio.geoshare.utils.*
+import uk.co.appsbystudio.geoshare.utils.isConnected
+import uk.co.appsbystudio.geoshare.utils.isConnectedMobile
+import uk.co.appsbystudio.geoshare.utils.isConnectedWifi
+import java.util.*
 
 class OnNetworkStateChangeListener : BroadcastReceiver() {
 

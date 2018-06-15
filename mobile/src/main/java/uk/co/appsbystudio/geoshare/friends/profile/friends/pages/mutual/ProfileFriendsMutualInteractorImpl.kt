@@ -1,7 +1,7 @@
 package uk.co.appsbystudio.geoshare.friends.profile.friends.pages.mutual
 
 import com.google.firebase.database.*
-import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 
 class ProfileFriendsMutualInteractorImpl: ProfileFriendsMutualInteractor {
@@ -14,7 +14,7 @@ class ProfileFriendsMutualInteractorImpl: ProfileFriendsMutualInteractor {
         friendsListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, string: String?) {
-                if (MainActivity.friendsMap.containsKey(dataSnapshot.key)) listener.added(dataSnapshot.key)
+                if (FriendsManager.friendsMap.containsKey(dataSnapshot.key)) listener.added(dataSnapshot.key)
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, string: String?) {

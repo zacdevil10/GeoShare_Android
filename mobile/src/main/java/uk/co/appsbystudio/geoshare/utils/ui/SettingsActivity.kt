@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 
@@ -17,7 +18,7 @@ import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private var userId: String? = null
+    private var user: FirebaseUser? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,23 +32,18 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         PreferenceManager.getDefaultSharedPreferences(applicationContext).registerOnSharedPreferenceChangeListener(this)
 
-        val auth = FirebaseAuth.getInstance()
-
-        if (auth.currentUser != null) {
-            userId = auth.currentUser!!.uid
-        }
+        user = FirebaseAuth.getInstance().currentUser
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        ProfileSelectionResult().profilePictureResult(this, requestCode, resultCode, data, userId)
+        ProfileSelectionResult().profilePictureResult(this, requestCode, resultCode, data, user?.uid)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == "display_name") {
             val name = sharedPreferences.getString(key, "DEFAULT")
             val userInfo = UserInformation(name, name.toLowerCase())
-            val user = FirebaseAuth.getInstance().currentUser
-            if (user != null) FirebaseDatabase.getInstance().reference.child("users").child(user.uid).setValue(userInfo)
+            if (user != null) FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).setValue(userInfo)
 
             val profileChangeRequest = UserProfileChangeRequest.Builder().setDisplayName(name).build()
 

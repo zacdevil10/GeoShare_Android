@@ -39,6 +39,6 @@ class GeocodingFromLatLngTask(private val lat: Double, private val lng: Double, 
             return
         }
 
-        liveData?.value = "Request took too long..."
+        liveData?.value = "Could not get address..."
     }
 }

@@ -12,7 +12,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.base.MainActivity
 import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.friends.manager.search.FriendSearchView
 import uk.co.appsbystudio.geoshare.utils.setProfilePicture
@@ -32,7 +31,7 @@ class FriendSearchAdapter(private val context: Context, private val userMap: Lin
         holder.profile.setProfilePicture(uid, context.cacheDir.toString())
 
         when {
-            MainActivity.friendsMap.containsKey(uid) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, R.color.colorPrimary)
+            FriendsManager.friendsMap.containsKey(uid) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, R.color.colorPrimary)
             FriendsManager.pendingUid.containsKey(uid) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, android.R.color.darker_gray)
             else -> {
                 holder.sendRequestButton.setRequestButton(R.drawable.ic_send_black_24dp, android.R.color.darker_gray)

@@ -12,7 +12,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_profile_info.*
 import uk.co.appsbystudio.geoshare.R
-import uk.co.appsbystudio.geoshare.base.MainActivity
+import uk.co.appsbystudio.geoshare.friends.manager.FriendsManager
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.dialog.ShareOptions
 
@@ -81,7 +81,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
 
     override fun showShareDialog() {
         val arguments = Bundle()
-        arguments.putString("name", MainActivity.friendsMap[uid])
+        arguments.putString("name", FriendsManager.friendsMap[uid])
         arguments.putString("friendId", uid)
         arguments.putString("uid", FirebaseAuth.getInstance()?.currentUser?.uid)
 

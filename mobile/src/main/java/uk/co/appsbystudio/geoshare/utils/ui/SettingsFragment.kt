@@ -20,36 +20,18 @@ class SettingsFragment : PreferenceFragment() {
         val deleteAccount = preferenceScreen.findPreference("delete_user")
 
         profilePicture.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            profilePictureSettings()
+            ProfilePictureOptions().show(fragmentManager, "")
             false
         }
 
         changePassword.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            changePasswordDialog()
+            ChangePasswordDialog().show(fragmentManager, "")
             false
         }
 
         deleteAccount.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            deleteAccountDialog()
+            DeleteUser().show(fragmentManager, "")
             false
         }
-    }
-
-    private fun deleteAccountDialog() {
-        val fragmentManager = fragmentManager
-        val deleteDialog = DeleteUser()
-        deleteDialog.show(fragmentManager, "")
-    }
-
-    private fun changePasswordDialog() {
-        val fragmentManager = fragmentManager
-        val deleteDialog = ChangePasswordDialog()
-        deleteDialog.show(fragmentManager, "")
-    }
-
-    private fun profilePictureSettings() {
-        val fragmentManager = fragmentManager
-        val profileDialog = ProfilePictureOptions()
-        profileDialog.show(fragmentManager, "")
     }
 }
