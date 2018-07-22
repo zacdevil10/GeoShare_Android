@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.utils.setup.fragments.SetupProfileFragment">
+    tools:context=".setup.fragments.profile.SetupProfileFragment">
 
     <ImageView
         android:id="@+id/imageView"
@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="TODO" />
+        android:contentDescription="@string/setup_image_header" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,10 +25,10 @@
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@id/imageView" />
 
     <TextView
         android:id="@+id/descriptionProfile"
@@ -42,46 +42,43 @@
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
 
     <Button
-        android:id="@+id/setPictureButton"
+        android:id="@+id/button_set_picture_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/round_edge_green_background"
         android:backgroundTint="@color/colorAccent"
-        android:onClick="onButtonPressed"
         android:text="@string/upload_photo"
         android:textColor="#FFF"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/notNowButton"
+        app:layout_constraintBottom_toTopOf="@id/button_next_profile"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionProfile" />
+        app:layout_constraintTop_toBottomOf="@id/descriptionProfile" />
 
     <Button
-        android:id="@+id/backButton"
+        android:id="@+id/button_back_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:onClick="onButtonPressed"
         android:text="@string/back"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/notNowButton" />
+        app:layout_constraintRight_toLeftOf="@id/button_next_profile" />
 
     <Button
-        android:id="@+id/notNowButton"
+        android:id="@+id/button_next_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:onClick="onButtonPressed"
-        android:text="@string/not_now"
+        android:text="@string/next"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/backButton"
+        app:layout_constraintLeft_toRightOf="@id/button_back_profile"
         app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

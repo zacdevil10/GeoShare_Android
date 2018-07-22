@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="uk.co.appsbystudio.geoshare.friends.profile.ProfileStaticMapFragment">
+    tools:context="uk.co.appsbystudio.geoshare.friends.profile.friends.ProfileFriendsFragment">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             <android.support.design.widget.TabLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/profile_friends_tab"
+                android:id="@+id/tabs_friends_profile"
                 app:tabTextColor="@android:color/darker_gray"
                 app:tabSelectedTextColor="@color/colorPrimary"
                 app:tabMode="fixed"/>
@@ -29,7 +29,7 @@
             <uk.co.appsbystudio.geoshare.utils.ui.NoSwipeViewPager
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/profile_friends_view_pager"/>
+                android:id="@+id/view_pager_friends_profile"/>
 
         </LinearLayout>
 

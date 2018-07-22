@@ -2,12 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.friends.pages.FriendsPendingFragment">
+    tools:context=".friends.manager.pages.pending.FriendsPendingFragment">
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll_recycler_pending"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:paddingBottom="72dp"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,15 +24,17 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="4dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"/>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/friend_incoming_list"
+                android:id="@+id/recycler_incoming_pending"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/friends_request_list_item"/>
 
             <TextView
-                android:id="@+id/friends_no_requests"
+                android:id="@+id/text_no_incoming_pending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -45,15 +50,17 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="36dp"
                 android:layout_marginBottom="4dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"/>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/friend_outgoing_list"
+                android:id="@+id/recycler_outgoing_pending"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/friends_pending_list_item"/>
 
             <TextView
-                android:id="@+id/friends_no_pending"
+                android:id="@+id/text_no_outgoing_pending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

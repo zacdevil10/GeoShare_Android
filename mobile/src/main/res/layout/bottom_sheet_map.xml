@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:focusable="true"
+    app:layout_behavior="BottomSheetBehavior"
+    app:behavior_hideable="true"
+    android:elevation="16dp">
+
+    <TextView
+        android:id="@+id/text_name_map"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textSize="32sp"
+        tools:text="@tools:sample/full_names"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/progress_map"/>
+
+    <ProgressBar
+        android:id="@+id/progress_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_name_map"
+        app:layout_constraintBottom_toBottomOf="@id/text_name_map"/>
+
+    <TextView
+        android:id="@+id/text_address_map"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        tools:text="@tools:sample/cities"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_name_map" />
+
+    <TextView
+        android:id="@+id/text_timestamp_map"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        tools:text="@tools:sample/date/ddmmyy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_address_map"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/image_distance_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_distance"
+        android:tint="@android:color/darker_gray"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@id/text_timestamp_map"
+        app:layout_constraintTop_toTopOf="@id/text_timestamp_map"
+        app:layout_constraintBottom_toBottomOf="@id/text_timestamp_map"
+        android:contentDescription="@string/distance_icon_image_desc" />
+
+    <TextView
+        android:id="@+id/text_distance_map"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="bottom"
+        android:layout_marginStart="8dp"
+        tools:text="@tools:sample/date/hhmmss"
+        app:layout_constraintStart_toEndOf="@id/image_distance_map"
+        app:layout_constraintTop_toTopOf="@id/text_timestamp_map"
+        app:layout_constraintBottom_toBottomOf="@id/text_timestamp_map"/>
+
+</android.support.constraint.ConstraintLayout>

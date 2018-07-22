@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="uk.co.appsbystudio.geoshare.MainActivity"
+    tools:context="uk.co.appsbystudio.geoshare.base.MainActivity"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,7 +11,7 @@
     <android.support.v4.widget.DrawerLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:id="@+id/right_nav_drawer">
+        android:id="@+id/drawer_right_nav_main">
 
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/coordinator"
@@ -19,70 +19,63 @@
             android:layout_height="match_parent">
 
             <FrameLayout
-                android:id="@+id/content_frame_map"
+                android:id="@+id/frame_content_map_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <FrameLayout
-                android:id="@+id/content_frame"
+                android:id="@+id/frame_content_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-
-            <!--<android.support.design.widget.FloatingActionButton
-                android:id="@+id/searchLocationShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:src="@drawable/ic_search_white_48px"
-                app:backgroundTint="@color/colorAccent" />
-
-            <LinearLayout
-                android:id="@+id/bottom_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:behavior_peekHeight="0dp"
-                android:clipToPadding="true"
-                android:clickable="true"
-                app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/bottom_sheet_container"/>
-
-            </LinearLayout>-->
 
         </android.support.design.widget.CoordinatorLayout>
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="304dp"
             android:layout_height="match_parent"
-            android:background="@drawable/right_nav_background"
+            android:background="@color/colorPrimary"
             android:orientation="vertical"
             android:layout_gravity="end"
             android:fitsSystemWindows="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:id="@+id/labels"
+                android:layout_marginTop="33dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/search_key_line"
+                android:layout_marginEnd="@dimen/search_key_line"
+                android:orientation="horizontal"
+                android:gravity="end"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Friends"
+                    android:textSize="24sp"
+                    android:textColor="@android:color/white"/>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/add_friends"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="You have no friends ;("
-                android:layout_marginTop="?attr/actionBarSize"
+                android:text="You currently have no friends"
                 android:gravity="end"
                 android:paddingEnd="8dp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labels"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:textColor="@color/colorPrimary"/>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/right_friends_drawer"
+                android:id="@+id/recycler_right_nav_main"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:paddingTop="?attr/actionBarSize"
                 android:choiceMode="singleChoice"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
@@ -90,7 +83,7 @@
                 android:overScrollMode="never"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labels"
                 app:layout_constraintBottom_toTopOf="@id/show_hide_button_bar"/>
 
             <LinearLayout
@@ -110,11 +103,11 @@
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <Switch
-                    android:id="@+id/show_hide_markers"
+                    android:id="@+id/switch_markers_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/show_markers"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@android:color/white"
                     android:theme="@style/SwitchTheme"/>
 
             </LinearLayout>
@@ -124,7 +117,7 @@
     </android.support.v4.widget.DrawerLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/left_nav_view"
+        android:id="@+id/drawer_left_nav_main"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
         android:layout_gravity="start"

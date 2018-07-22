@@ -1,9 +1,33 @@
-<android.support.v7.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/profile_friends_all_list"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="8dp"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clipToPadding="false"
-    tools:context="uk.co.appsbystudio.geoshare.friends.profile.pages.ProfileFriendsAllFragment"/>
+    tools:context=".friends.profile.friends.pages.all.ProfileFriendsAllFragment">
+
+    <TextView
+        android:id="@+id/text_no_friends_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="No friends"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="4dp"
+        android:textColor="#AAA"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/recycler_friends_all_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

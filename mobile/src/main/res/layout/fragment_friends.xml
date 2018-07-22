@@ -2,16 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.friends.pages.FriendsFragment">
+    tools:context=".friends.manager.pages.current.FriendsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/friend_list"
-        android:paddingTop="8dp"/>
+        android:id="@+id/recycler_friends_manager"
+        tools:listitem="@layout/friends_list_item"
+        android:paddingTop="8dp"
+        android:paddingBottom="72dp"
+        android:clipToPadding="false"/>
 
     <TextView
-        android:id="@+id/friends_no_friends"
+        android:id="@+id/text_no_friends_manager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

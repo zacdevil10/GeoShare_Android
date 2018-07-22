@@ -1,21 +1,32 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/map_coordinator"
+    android:id="@+id/coordinator_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include layout="@layout/map_layout_main" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/trackingFab"
+    <include layout="@layout/bottom_sheet_map" />
+
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_gps_fixed_black_24dp"
-        android:tint="@color/colorPrimary"
-        android:background="?android:attr/selectableItemBackground"
-        app:backgroundTint="@android:color/white"
-        android:layout_gravity="bottom|end"/>
+        app:layout_anchor="@id/constraint_bottom_sheet"
+        app:layout_anchorGravity="end"
+        android:layout_gravity="top|end">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_tracking_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_gps_fixed_black_24dp"
+            android:tint="@android:color/darker_gray"
+            android:background="?android:attr/selectableItemBackground"
+            app:backgroundTint="@android:color/white" />
+
+    </FrameLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

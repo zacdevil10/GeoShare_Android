@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="uk.co.appsbystudio.geoshare.utils.setup.fragments.PermissionsFragment">
+    tools:context=".setup.fragments.permissions.PermissionsFragment">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -14,7 +14,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/imageView"
-        android:contentDescription="TODO" />
+        android:contentDescription="@string/setup_image_header" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,25 +23,25 @@
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@id/imageView" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/finishButton"
+        app:layout_constraintBottom_toTopOf="@+id/button_finish_radius"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+        app:layout_constraintTop_toBottomOf="@id/imageView">
 
         <TextView
-            android:id="@+id/progressText"
+            android:id="@+id/text_progress_radius"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/setRadiusSeekBar"
+            android:layout_above="@id/seek_radius"
             android:layout_toStartOf="@+id/dummy"
             android:text="@string/_100"
             android:textColor="@android:color/white"
@@ -58,15 +58,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/progressText"
+            android:layout_alignBaseline="@id/text_progress_radius"
             android:layout_centerHorizontal="true"
-            android:layout_toEndOf="@+id/progressText"
+            android:layout_toEndOf="@id/text_progress_radius"
             android:text="@string/m"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
         <uk.co.appsbystudio.geoshare.utils.ui.SeekBarTextIndicator
-            android:id="@+id/setRadiusSeekBar"
+            android:id="@+id/seek_radius"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -81,27 +81,25 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/backButton"
+        android:id="@+id/button_back_radius"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:onClick="onButtonPressed"
         android:text="@string/back"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/finishButton" />
+        app:layout_constraintRight_toLeftOf="@id/button_finish_radius" />
 
     <Button
+        android:id="@+id/button_finish_radius"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
-        android:id="@+id/finishButton"
         android:text="@string/finish"
-        android:onClick="onButtonPressed"
         android:background="@color/colorPrimaryDark"
         android:textColor="@android:color/white"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/backButton"
+        app:layout_constraintLeft_toRightOf="@id/button_back_radius"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

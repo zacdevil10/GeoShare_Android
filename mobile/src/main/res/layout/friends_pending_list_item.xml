@@ -1,44 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="72dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:orientation="horizontal">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/friend_profile_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
+        android:id="@+id/image_profile_pending"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_profile_picture" />
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_profile_picture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/friend_name"
-        android:layout_width="match_parent"
+        android:id="@+id/text_name_pending"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/friend_reject"
-        android:layout_toEndOf="@id/friend_profile_image"
-        android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
-        android:textSize="16sp"
-        android:singleLine="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:ellipsize="marquee"
-        android:text="" />
+        android:singleLine="true"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/image_remove_pending"
+        app:layout_constraintStart_toEndOf="@id/image_profile_pending"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@tools:sample/full_names" />
 
     <ImageView
-        android:id="@+id/friend_reject"
+        android:id="@+id/image_remove_pending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
         android:layout_centerVertical="true"
-        android:src="@mipmap/decline"
-        android:contentDescription="@string/friends_reject_request"
+        android:layout_marginEnd="16dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
-        android:focusable="true"/>
+        android:contentDescription="@string/friends_reject_request"
+        android:focusable="true"
+        android:src="@mipmap/decline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
