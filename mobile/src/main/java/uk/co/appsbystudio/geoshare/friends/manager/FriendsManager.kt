@@ -32,6 +32,7 @@ class FriendsManager : AppCompatActivity(), FriendsManagerView {
 
         presenter?.friends()
 
+
         toolbar_manager.setTitle(R.string.title_activity_friends_manager)
         setSupportActionBar(toolbar_manager)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

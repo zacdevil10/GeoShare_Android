@@ -21,7 +21,7 @@ class FirebaseMessagingService : com.google.firebase.messaging.FirebaseMessaging
                 remoteMessage.data["tag"] == "dfnf" -> //Stop tracking
                     getSharedPreferences("tracking", Context.MODE_PRIVATE).edit().remove(remoteMessage.data["name"]).apply()
                 remoteMessage.data["tag"] == "location_update" -> //Location request
-                    NewRequestNotification.notify(this, remoteMessage.data["title"], 1)
+                    NewRequestNotification.notify(this, remoteMessage.data["title"], 3, remoteMessage.data["uid"])
             }
         }
 

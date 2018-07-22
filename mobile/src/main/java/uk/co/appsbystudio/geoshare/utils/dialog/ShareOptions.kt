@@ -15,6 +15,7 @@ import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations
 import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.firebase.TrackingInfo
 import uk.co.appsbystudio.geoshare.utils.services.TrackingService
+import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewRequestNotification
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +34,8 @@ class ShareOptions : DialogFragment() {
         val name = args.getString("name")
         val friendId = args.getString("friendId")
         val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        NewRequestNotification.cancel(mContext, friendId)
 
         val gpsTracking = GPSTracking(mContext)
 

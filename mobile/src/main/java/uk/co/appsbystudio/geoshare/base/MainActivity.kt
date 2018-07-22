@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
             false
         }
 
-
         val drawerListener = object : DrawerLayout.DrawerListener {
             override fun onDrawerStateChanged(newState: Int) {}
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
