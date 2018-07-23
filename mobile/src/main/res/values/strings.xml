@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">GeoShare</string>
 
-    <string name="api_key">AIzaSyBRJhQvg9qgozhW37sgLz8GpH2PBJjfEfI</string>
-    <string name="server_key">AIzaSyCMzZatGotT2XcOm5DOmKMBnybNZgRg1jQ</string>
-
-
     <!-- AUTH -->
     <string name="prompt_name">Name</string>
     <string name="prompt_email">Email</string>

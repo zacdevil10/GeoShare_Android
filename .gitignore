@@ -6,3 +6,5 @@
 .DS_Store
 /build
 /captures
+/mobile/google-services.json
+/mobile/src/main/res/values/api.xml
