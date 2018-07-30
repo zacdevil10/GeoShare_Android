@@ -106,6 +106,7 @@
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string-array name="pref_sync_frequency_titles">
+        <item>10 seconds</item>
         <item>10 minutes</item>
         <item>15 minutes</item>
         <item>20 minutes</item>
@@ -115,6 +116,7 @@
     </string-array>
 
     <string-array name="pref_sync_frequency_values">
+        <item>10</item>
         <item>600</item>
         <item>900</item>
         <item>1200</item>

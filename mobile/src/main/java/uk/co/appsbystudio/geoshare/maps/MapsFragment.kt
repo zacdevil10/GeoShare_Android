@@ -187,7 +187,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         googleMap.setOnCameraMoveStartedListener {
             //if (it == 1 && selectedMarker != null) selectedMarker = null
 
-            if (it == 1 && isTracking) presenter?.updateTrackingState(false)
+            if (it == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE && isTracking) presenter?.updateTrackingState(false)
         }
 
         googleMap.setOnMarkerClickListener(GoogleMap.OnMarkerClickListener { marker ->
@@ -204,7 +204,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
             selectedMarker = marker
 
             presenter?.updateBottomSheetState(BottomSheetBehavior.STATE_EXPANDED)
-            presenter?.updateBottomSheet(selectedMarker?.tag as String, myLocation!!.position, selectedMarker!!.position, friendMarkerTimestamp[selectedMarker!!.tag])
+            presenter?.updateBottomSheet(selectedMarker?.tag as String, myLocation?.position!!, selectedMarker?.position!!, friendMarkerTimestamp[selectedMarker?.tag as String])
 
             presenter?.moveMapCamera(marker.position, 18, true)
 
@@ -392,6 +392,14 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
         if (databaseLocations != null) friendMarker?.position = LatLng(databaseLocations.lat, databaseLocations.longitude)
 
         friendMarkerList[uid] = friendMarker
+        friendMarkerTimestamp[uid] = databaseLocations?.timestamp
+
+        if (selectedMarker != null && selectedMarker?.tag == uid) {
+            presenter?.updateBottomSheetState(BottomSheetBehavior.STATE_EXPANDED)
+            presenter?.updateBottomSheet(uid!!, myLocation?.position!!, friendMarker?.position!!, friendMarkerTimestamp[uid])
+
+            if (databaseLocations != null) presenter?.moveMapCamera(LatLng(databaseLocations.lat, databaseLocations.longitude), 18, true)
+        }
     }
 
     /**
