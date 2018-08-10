@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     }
 
     override fun openFriendsNavDrawer() {
-        drawer_right_nav_main?.openDrawer(GravityCompat.END)
+        drawer_layout?.openDrawer(GravityCompat.END)
     }
 
     override fun closeNavDrawer() {
@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     }
 
     override fun closeFriendsNavDrawer() {
-        drawer_right_nav_main?.closeDrawer(GravityCompat.END)
+        drawer_layout?.closeDrawer(GravityCompat.END)
     }
 
     override fun showError(message: String) {
@@ -310,7 +310,7 @@ class MainActivity : AppCompatActivity(), MainView, FriendsNavAdapter.Callback {
     override fun onBackPressed() {
         when {
             drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
-            drawer_right_nav_main.isDrawerOpen(GravityCompat.END) -> drawer_right_nav_main.closeDrawer(GravityCompat.END)
+            drawer_layout.isDrawerOpen(GravityCompat.END) -> drawer_layout.closeDrawer(GravityCompat.END)
             else -> super.onBackPressed()
         }
     }
