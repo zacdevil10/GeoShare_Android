@@ -73,7 +73,7 @@ class ProfileInfoFragment : Fragment(), ProfileInfoView {
         }
 
         if (address == null) {
-            text_location_profile.text = "No location"
+            text_location_profile.text = getString(R.string.no_location)
         }
 
         address?.observe(this, observer)

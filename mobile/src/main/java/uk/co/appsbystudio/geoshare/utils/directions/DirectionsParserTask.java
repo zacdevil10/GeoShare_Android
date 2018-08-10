@@ -2,7 +2,6 @@ package uk.co.appsbystudio.geoshare.utils.directions;
 
 import android.os.AsyncTask;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -17,11 +16,11 @@ import uk.co.appsbystudio.geoshare.R;
 
 class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>>{
 
-    private final GoogleMap googleMap;
+    //private final GoogleMap googleMap;
 
-    DirectionsParserTask(GoogleMap googleMap) {
+    /*DirectionsParserTask(GoogleMap googleMap) {
         this.googleMap = googleMap;
-    }
+    }*/
 
     @Override
     protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {

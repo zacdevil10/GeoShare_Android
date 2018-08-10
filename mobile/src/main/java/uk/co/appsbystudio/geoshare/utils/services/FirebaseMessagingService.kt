@@ -2,12 +2,29 @@ package uk.co.appsbystudio.geoshare.utils.services
 
 import android.content.Context
 import android.preference.PreferenceManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.RemoteMessage
+import uk.co.appsbystudio.geoshare.utils.firebase.FirebaseHelper
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewFriendNotification
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewRequestNotification
 import uk.co.appsbystudio.geoshare.utils.ui.notifications.NewShareLocationNotification
 
 class FirebaseMessagingService : com.google.firebase.messaging.FirebaseMessagingService() {
+
+    override fun onNewToken(s: String?) {
+        sendRegistrationToServer(s)
+    }
+
+    private fun sendRegistrationToServer(token: String?) {
+        //Add to secure part of firebase database
+        val databaseReference = FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN)
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null && token != null) {
+            databaseReference.child("${user.uid}/$token/platform").setValue("android")
+        }
+    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)

@@ -47,12 +47,12 @@ class FriendsNavAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: FriendsNavAdapter.ViewHolder, position: Int) {
-        holder.friend_name.text = friends.values.toTypedArray()[position]
+        holder.friendName.text = friends.values.toTypedArray()[position]
 
         val uid = friends.keys.toTypedArray()[position]
 
         //Set friends profile picture
-        holder.friends_pictures.setProfilePicture(uid, context.cacheDir.toString())
+        holder.friendsPictures.setProfilePicture(uid, context.cacheDir.toString())
 
         if (hasTracking.containsKey(uid) && hasTracking.getValue(uid)) {
             holder.trackingIndicator.visibility = View.VISIBLE
@@ -65,9 +65,9 @@ class FriendsNavAdapter(private val context: Context,
         holder.nameItem.isActivated = isExpanded
 
         if (isExpanded) {
-            holder.friend_name.setTextColor(ResourcesCompat.getColor(context.resources, R.color.colorAccent, null))
+            holder.friendName.setTextColor(ResourcesCompat.getColor(context.resources, R.color.colorAccent, null))
         } else {
-            holder.friend_name.setTextColor(ResourcesCompat.getColor(context.resources, android.R.color.white, null))
+            holder.friendName.setTextColor(ResourcesCompat.getColor(context.resources, android.R.color.white, null))
         }
 
         holder.nameItem.setOnClickListener {
@@ -96,7 +96,7 @@ class FriendsNavAdapter(private val context: Context,
         } else {
             holder.sendLocationText.setText(R.string.share_current_location)
             holder.sendLocation.setOnClickListener {
-                callback.sendLocationDialog(holder.friend_name.text as String, uid)
+                callback.sendLocationDialog(holder.friendName.text as String, uid)
 
                 expandedPosition = if (isExpanded) -1 else holder.adapterPosition
                 TransitionManager.beginDelayedTransition(recyclerView)
@@ -115,8 +115,8 @@ class FriendsNavAdapter(private val context: Context,
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val friend_name: TextView = itemView.findViewById(R.id.friend_name)
-        val friends_pictures: CircleImageView = itemView.findViewById(R.id.friend_profile_image)
+        val friendName: TextView = itemView.findViewById(R.id.friend_name)
+        val friendsPictures: CircleImageView = itemView.findViewById(R.id.friend_profile_image)
         val trackingIndicator: CircleImageView = itemView.findViewById(R.id.trackingIndicator)
         val sendLocation: RelativeLayout = itemView.findViewById(R.id.sendLocation)
         val sendLocationText: TextView = itemView.findViewById(R.id.sendLocationText)
