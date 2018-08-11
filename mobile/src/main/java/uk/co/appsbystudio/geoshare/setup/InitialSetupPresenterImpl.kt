@@ -9,12 +9,13 @@ class InitialSetupPresenterImpl(private val view: InitialSetupView): InitialSetu
 
     override fun addDeviceToken() {
         val user = FirebaseAuth.getInstance().currentUser
-        val token = FirebaseInstanceId.getInstance().token
 
-        if (user != null && token != null) {
-            FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN)
-                    .child("${user.uid}/$token/platform")
-                    .setValue("android")
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            if (user != null) {
+                FirebaseDatabase.getInstance().getReference(FirebaseHelper.TOKEN)
+                        .child("${user.uid}/${it.token}/platform")
+                        .setValue("android")
+            }
         }
     }
 

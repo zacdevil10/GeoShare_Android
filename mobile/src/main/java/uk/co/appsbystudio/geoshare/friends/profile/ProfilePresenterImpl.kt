@@ -17,14 +17,18 @@ class ProfilePresenterImpl(private val view: ProfileView, private val trackingPr
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null && uid != null) {
             FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.FRIENDS}/${user.uid}/$uid").removeValue()
-                    .addOnSuccessListener({
+                    .addOnSuccessListener {
                         view.closeProfile()
-                    })
-                    .addOnFailureListener({
+                    }
+                    .addOnFailureListener {
                         view.showError("Could not remove friend")
-                    })
+                    }
             if (trackingPreferencesHelper.exists(uid)!!) trackingPreferencesHelper.removeEntry(uid)
             if (markerPreferencesHelper.exists(uid)!!) markerPreferencesHelper.removeEntry(uid)
         }
+    }
+
+    override fun setViewPagerPosition(position: Int) {
+        view.setPosition(position)
     }
 }

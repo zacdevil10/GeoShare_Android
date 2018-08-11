@@ -41,7 +41,7 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> results) {
         ArrayList<LatLng> points;
-        PolylineOptions polylineOptions = null;
+        PolylineOptions polylineOptions;
 
         for (int i = 0; i < results.size(); i++) {
             points = new ArrayList<>();
@@ -61,11 +61,11 @@ class DirectionsParserTask extends AsyncTask<String, Integer, List<List<HashMap<
 
             polylineOptions.addAll(points);
             polylineOptions.width(10);
-            polylineOptions.color(Application.Companion.getContext().getResources().getColor(R.color.colorAccent));
+            if (Application.Companion.getContext() != null) polylineOptions.color(Application.Companion.getContext().getResources().getColor(R.color.colorAccent));
         }
 
-        if (polylineOptions != null) {
-            //MapsFragment.Companion.setDirections(googleMap.addPolyline(polylineOptions));
-        }
+        /*if (polylineOptions != null) {
+            MapsFragment.Companion.setDirections(googleMap.addPolyline(polylineOptions));
+        }*/
     }
 }

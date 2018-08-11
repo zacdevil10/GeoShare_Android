@@ -145,8 +145,10 @@ class MainInteractorImpl(private val storage: String): MainInteractor {
     }
 
     override fun removeToken() {
-        val token = FirebaseInstanceId.getInstance().token
-        if (user != null) FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TOKEN}/${user?.uid}/$token").removeValue()
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            if (user != null) FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.TOKEN}/${user?.uid}/${it.token}").removeValue()
+        }
+
     }
 
     override fun removeAllListeners() {

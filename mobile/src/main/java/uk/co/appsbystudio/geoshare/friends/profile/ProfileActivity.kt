@@ -58,6 +58,15 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
                 }
             }
             offscreenPageLimit = 2
+            pageMargin = (8 * context.resources.displayMetrics.density).toInt()
+        }
+
+        view_left_profile.setOnClickListener {
+            presenter?.setViewPagerPosition(view_pager_profile.currentItem - 1)
+        }
+
+        view_right_profile.setOnClickListener {
+            presenter?.setViewPagerPosition(view_pager_profile.currentItem + 1)
         }
 
         image_back_button_profile.setOnClickListener {
@@ -67,6 +76,10 @@ class ProfileActivity : AppCompatActivity(), ProfileView {
         button_remove_friend_profile.setOnClickListener {
             presenter?.removeFriendDialog(uid)
         }
+    }
+
+    override fun setPosition(position: Int) {
+        view_pager_profile.currentItem = position
     }
 
     override fun showDialog(uid: String?) {

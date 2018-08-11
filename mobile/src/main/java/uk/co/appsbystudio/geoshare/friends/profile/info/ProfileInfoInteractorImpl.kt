@@ -37,11 +37,11 @@ class ProfileInfoInteractorImpl: ProfileInfoInteractor {
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.CURRENT_LOCATION}/${user.uid}/$uid").removeValue()
-                    .addOnSuccessListener({
+                    .addOnSuccessListener {
                         listener.resetLocationText()
                         listener.updateDeleteState(View.GONE)
                         listener.success("Location deleted")
-                    }).addOnFailureListener {
+                    }.addOnFailureListener {
                         listener.error(it.message.toString())
                     }
         }

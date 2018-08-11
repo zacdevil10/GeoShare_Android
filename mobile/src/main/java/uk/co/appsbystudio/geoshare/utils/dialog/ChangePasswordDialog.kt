@@ -56,7 +56,7 @@ class ChangePasswordDialog : DialogFragment() {
                 if (user?.email != null) {
                     val credential = EmailAuthProvider.getCredential(user.email!!, oldPasswordText)
 
-                    user.reauthenticate(credential).addOnSuccessListener {
+                    user.reauthenticate(credential).addOnSuccessListener { it ->
                         user.updatePassword(newPasswordText).addOnSuccessListener {
                             dismiss()
                         }.addOnFailureListener {

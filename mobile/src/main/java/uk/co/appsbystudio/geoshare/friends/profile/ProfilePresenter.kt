@@ -5,4 +5,6 @@ interface ProfilePresenter {
     fun removeFriendDialog(uid: String?)
 
     fun removeFriend(uid: String?)
+
+    fun setViewPagerPosition(position: Int)
 }

@@ -2,6 +2,7 @@ package uk.co.appsbystudio.geoshare.places.placesadapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,14 +32,15 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         this.countryName = countryName;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull final ViewGroup viewGroup, int viewType) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recent_card_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.city.setText(cityName.get(position).toString());
         holder.country.setText(countryName.get(position).toString());
 

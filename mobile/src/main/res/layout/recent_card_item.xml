@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 android:id="@+id/mapImage"
-                android:contentDescription="TODO" />
+                android:contentDescription="@string/todo" />
 
         </RelativeLayout>
 
@@ -76,7 +76,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SHOW ON MAP"
+                android:text="@string/show_on_map_caps"
                 android:padding="16dp"
                 android:textSize="14sp" />
 
