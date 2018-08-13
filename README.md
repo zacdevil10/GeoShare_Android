@@ -3,7 +3,7 @@
 ## Dependency updates
 To check for dependency updates run **dependency update.bat**
 
-Currently all updates are done manually and the new versions are shown as below.
+Currently all updates are done manually and the new dependency versions are shown as below.
 
 ```
   The following dependencies are using the latest milestone version:
@@ -22,6 +22,22 @@ Currently all updates are done manually and the new versions are shown as below.
   Gradle updates:
    - Gradle: [4.9 -> 4.10-rc-1]
 ```
+
+To customise the output, edit **dependency update.bat**
+
+- Current config:
+```
+  call ./gradlew dependencyUpdates
+  pause
+```
+
+- Example config change:
+```
+  call ./gradlew dependencyUpdates -Drevision=release -DoutputFormatter=json
+  pause
+```
+
+For more options visit https://github.com/ben-manes/gradle-versions-plugin
 
 ## Firebase and Maps API setup
 To build and successfully run this app you will need to set it up with Firebase and the Google Maps API.
