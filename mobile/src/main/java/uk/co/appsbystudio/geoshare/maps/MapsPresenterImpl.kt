@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.BroadcastReceiver
 import android.graphics.Bitmap
 import android.location.Location

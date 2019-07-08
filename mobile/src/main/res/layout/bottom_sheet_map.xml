@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint_bottom_sheet"
@@ -8,7 +8,7 @@
     android:background="@android:color/white"
     android:clickable="true"
     android:focusable="true"
-    app:layout_behavior="BottomSheetBehavior"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     app:behavior_hideable="true"
     android:elevation="16dp">
 
@@ -80,4 +80,4 @@
         app:layout_constraintTop_toTopOf="@id/text_timestamp_map"
         app:layout_constraintBottom_toBottomOf="@id/text_timestamp_map"/>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

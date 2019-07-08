@@ -55,7 +55,7 @@ class ShareOptions : DialogFragment() {
 
         dialog.show()
 
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { it ->
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             when {
                 dialog.listView.checkedItemPositions.get(0) && !dialog.listView.checkedItemPositions.get(1) -> {
                     val lastShare = if (timerPreferences != null) System.currentTimeMillis() - timerPreferences.getLong(friendId, 0) else 0

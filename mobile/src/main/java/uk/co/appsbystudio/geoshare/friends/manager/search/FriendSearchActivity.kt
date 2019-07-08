@@ -1,11 +1,11 @@
 package uk.co.appsbystudio.geoshare.friends.manager.search
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_friend_search.*
 import uk.co.appsbystudio.geoshare.R
 import uk.co.appsbystudio.geoshare.friends.manager.search.adapter.FriendSearchAdapter

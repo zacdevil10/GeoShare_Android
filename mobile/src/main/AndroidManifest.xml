@@ -121,7 +121,7 @@
             android:process=":remote" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="uk.co.appsbystudio.geoshare.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

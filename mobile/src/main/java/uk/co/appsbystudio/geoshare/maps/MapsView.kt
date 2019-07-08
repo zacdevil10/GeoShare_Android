@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.maps
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.BroadcastReceiver
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng

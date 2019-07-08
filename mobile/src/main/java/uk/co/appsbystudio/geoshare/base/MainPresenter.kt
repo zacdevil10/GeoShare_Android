@@ -1,7 +1,7 @@
 package uk.co.appsbystudio.geoshare.base
 
 import android.app.DialogFragment
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import de.hdodenhof.circleimageview.CircleImageView
 
 interface MainPresenter {

@@ -18,7 +18,7 @@ class LoginInteractorImpl: LoginInteractor {
         }
 
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { it: Task<AuthResult> ->
+                .addOnCompleteListener {
                     if (it.isSuccessful) {
                         listener.onSuccess()
                     } else {

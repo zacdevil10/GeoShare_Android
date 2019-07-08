@@ -7,7 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import uk.co.appsbystudio.geoshare.BuildConfig
 import uk.co.appsbystudio.geoshare.R
 import java.io.File

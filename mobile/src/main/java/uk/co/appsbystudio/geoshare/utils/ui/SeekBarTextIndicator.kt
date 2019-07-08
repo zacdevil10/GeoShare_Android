@@ -2,7 +2,7 @@ package uk.co.appsbystudio.geoshare.utils.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.AppCompatSeekBar
+import androidx.appcompat.widget.AppCompatSeekBar
 import android.util.AttributeSet
 
 class SeekBarTextIndicator(context: Context, attrs: AttributeSet) : AppCompatSeekBar(context, attrs) {

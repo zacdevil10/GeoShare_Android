@@ -7,10 +7,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_initial_setup.*
@@ -114,7 +114,7 @@ class InitialSetupActivity : AppCompatActivity(), InitialSetupView {
 
     @TargetApi(Build.VERSION_CODES.M)
     override fun requestPermissions() {
-        requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PERMS)
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMS)
     }
 
     override fun onShowProfileDialog() {

@@ -16,11 +16,11 @@ interface MainInteractor {
         fun error(error: String)
     }
 
-    fun getFriends(listener: MainInteractor.OnFirebaseRequestFinishedListener)
+    fun getFriends(listener: OnFirebaseRequestFinishedListener)
 
-    fun getTrackingState(listener: MainInteractor.OnFirebaseRequestFinishedListener)
+    fun getTrackingState(listener: OnFirebaseRequestFinishedListener)
 
-    fun setUpdatedProfileListener(listener: MainInteractor.OnFirebaseRequestFinishedListener)
+    fun setUpdatedProfileListener(listener: OnFirebaseRequestFinishedListener)
 
     fun removeToken()
 

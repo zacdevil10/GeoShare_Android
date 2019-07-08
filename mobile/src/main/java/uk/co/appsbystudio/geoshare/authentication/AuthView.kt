@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.authentication
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 
 interface AuthView {
 

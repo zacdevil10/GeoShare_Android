@@ -14,8 +14,8 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.preference.PreferenceManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
@@ -45,7 +45,7 @@ class TrackingService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         isRunning = true
-        return Service.START_STICKY
+        return START_STICKY
     }
 
     override fun onCreate() {
@@ -145,7 +145,7 @@ class TrackingService : Service(), SharedPreferences.OnSharedPreferenceChangeLis
                 userId = user!!.uid
             }
 
-            if (!shares.entries.isEmpty()) {
+            if (shares.entries.isNotEmpty()) {
                 for ((key, value) in shares) {
                     if (value as Boolean) {
                         hasTrue = true

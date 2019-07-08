@@ -2,14 +2,14 @@ package uk.co.appsbystudio.geoshare.friends.profile.friends.adapters
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
@@ -34,7 +34,7 @@ class FriendshipStatusAdapter(private val context: Context?,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/${userId[position]}").addListenerForSingleValueEvent(GetUserFromDatabase(holder.name))
 
-        if (!userId.isEmpty()) holder.profile.setProfilePicture(userId[position], context?.cacheDir.toString())
+        if (userId.isNotEmpty()) holder.profile.setProfilePicture(userId[position], context?.cacheDir.toString())
 
         when {
             FriendsManager.friendsMap.containsKey(userId[position]) -> holder.sendRequestButton.setRequestButton(R.drawable.ic_person_white_24dp, R.color.colorPrimary)

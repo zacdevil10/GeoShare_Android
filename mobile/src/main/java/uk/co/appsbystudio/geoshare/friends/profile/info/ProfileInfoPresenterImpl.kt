@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.profile.info
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import uk.co.appsbystudio.geoshare.utils.TrackingPreferencesHelper
 import uk.co.appsbystudio.geoshare.utils.convertDate
 import uk.co.appsbystudio.geoshare.utils.firebase.DatabaseLocations

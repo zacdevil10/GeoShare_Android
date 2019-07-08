@@ -1,7 +1,6 @@
 package uk.co.appsbystudio.geoshare.authentication.forgotpassword
 
 import android.text.TextUtils
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgotPasswordInteractorImpl: ForgotPasswordInteractor {
@@ -12,7 +11,7 @@ class ForgotPasswordInteractorImpl: ForgotPasswordInteractor {
             return
         }
 
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener { it: Task<Void> ->
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener {
             if (it.isSuccessful) {
                 listener.onSuccess()
             } else {

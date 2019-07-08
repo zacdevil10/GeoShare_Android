@@ -1,12 +1,12 @@
 package uk.co.appsbystudio.geoshare.friends.manager.pages.pending.adapters
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.FirebaseDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
@@ -27,7 +27,7 @@ class FriendsRequestAdapter(private val context: Context?,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         FirebaseDatabase.getInstance().reference.child("${FirebaseHelper.USERS}/${userIncoming[position]}").addListenerForSingleValueEvent(GetUserFromDatabase(holder.name))
 
-        if (!userIncoming.isEmpty()) holder.profile.setProfilePicture(userIncoming[position], context?.cacheDir.toString())
+        if (userIncoming.isNotEmpty()) holder.profile.setProfilePicture(userIncoming[position], context?.cacheDir.toString())
 
         holder.accept.setOnClickListener { view.accept(userIncoming[holder.adapterPosition], true) }
 

@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.friends.profile.info
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 
 interface ProfileInfoView {
 

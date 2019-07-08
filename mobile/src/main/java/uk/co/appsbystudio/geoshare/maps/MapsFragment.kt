@@ -2,8 +2,6 @@ package uk.co.appsbystudio.geoshare.maps
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
@@ -18,15 +16,15 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -36,6 +34,8 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import kotlinx.android.synthetic.main.fragment_maps.*
@@ -219,7 +219,7 @@ class MapsFragment : Fragment(), MapsView, OnMapReadyCallback {
 
         if (activity != null) {
             if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), GET_PERMS)
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GET_PERMS)
                 return
             }
         }

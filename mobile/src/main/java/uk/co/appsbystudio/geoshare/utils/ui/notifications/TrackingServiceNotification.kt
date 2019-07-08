@@ -6,7 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import uk.co.appsbystudio.geoshare.R

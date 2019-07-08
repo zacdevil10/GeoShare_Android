@@ -1,6 +1,6 @@
 package uk.co.appsbystudio.geoshare.utils.geocoder
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.os.AsyncTask
 import org.json.JSONArray
 import org.json.JSONException

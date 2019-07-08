@@ -19,7 +19,7 @@ class Application : android.app.Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (!FirebaseApp.getApps(this).isEmpty()) {
+        if (FirebaseApp.getApps(this).isNotEmpty()) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         }
     }

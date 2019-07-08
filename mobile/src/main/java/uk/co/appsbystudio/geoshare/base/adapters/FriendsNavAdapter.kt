@@ -2,10 +2,6 @@ package uk.co.appsbystudio.geoshare.base.adapters
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.constraint.ConstraintLayout
-import android.support.transition.TransitionManager
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +9,10 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
 import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import uk.co.appsbystudio.geoshare.R
@@ -37,16 +37,16 @@ class FriendsNavAdapter(private val context: Context,
         fun stopSharing(friendId: String)
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FriendsNavAdapter.ViewHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.friends_nav_item, viewGroup, false)
 
         sharedPreferences = context.getSharedPreferences("tracking", Context.MODE_PRIVATE)
         showOnMapPreference = context.getSharedPreferences("showOnMap", Context.MODE_PRIVATE)
 
-        return FriendsNavAdapter.ViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: FriendsNavAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.friendName.text = friends.values.toTypedArray()[position]
 
         val uid = friends.keys.toTypedArray()[position]

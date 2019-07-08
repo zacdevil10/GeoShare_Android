@@ -30,7 +30,7 @@ class SignupInteractorImpl: SignupInteractor {
             return
         }
 
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener { it: Task<AuthResult> ->
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful) {
                 val profileChangeRequest: UserProfileChangeRequest = UserProfileChangeRequest.Builder().setDisplayName(name).build()
                 val user = FirebaseAuth.getInstance().currentUser

@@ -5,7 +5,6 @@ apply plugin: 'com.github.ben-manes.versions'
 android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
-
     defaultConfig {
         applicationId "uk.co.appsbystudio.geoshare"
         minSdkVersion versions.minSdk
@@ -19,33 +18,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     useLibrary 'org.apache.http.legacy'
+    flavorDimensions 'firebase'
+    productFlavors {
+        releaseConfig {
+            dimension = 'firebase'
+        }
+        devConfig {
+            dimension = 'firebase'
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation libraries.supportAppCompat
     implementation libraries.supportDesign
     implementation libraries.supportSupport
     implementation libraries.supportCardView
     implementation libraries.supportRecyclerview
     implementation libraries.supportConstraintLayout
-
     implementation libraries.maps
     implementation libraries.location
-
     implementation libraries.firebaseCore
     implementation libraries.firebaseAuth
     implementation libraries.firebaseDatabase
     implementation libraries.firebaseStorage
     implementation libraries.firebaseMessaging
-
     implementation libraries.circleImageView
     implementation libraries.imageCropper
     implementation libraries.loadingButton
-
     implementation libraries.kotlinReflect
 
     testImplementation libraries.junit
