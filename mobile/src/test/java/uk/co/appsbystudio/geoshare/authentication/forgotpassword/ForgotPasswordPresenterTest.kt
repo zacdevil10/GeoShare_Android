@@ -10,10 +10,9 @@ import org.mockito.MockitoAnnotations
 class ForgotPasswordPresenterTest {
 
     private var presenter: ForgotPasswordPresenter? = null
+    private val interactor = ForgotPasswordInteractorImpl()
     @Mock
     val view: ForgotPasswordView = mock(ForgotPasswordView::class.java)
-
-    private val interactor = ForgotPasswordInteractorImpl()
     @Mock
     val listener: ForgotPasswordInteractor.OnRecoverFinishedListener = mock(ForgotPasswordInteractor.OnRecoverFinishedListener::class.java)
 
