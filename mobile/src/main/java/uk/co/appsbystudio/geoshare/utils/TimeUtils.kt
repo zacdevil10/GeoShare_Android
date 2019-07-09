@@ -1,9 +1,7 @@
 package uk.co.appsbystudio.geoshare.utils
 
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 private const val SECOND_MILLIS = 1000
 private const val MINUTE_MILLIS = 60 * SECOND_MILLIS
@@ -30,7 +28,8 @@ fun Long.convertDate(): String {
     return getString(dateMilli, currentTime, date, currentDate, lessThanSevenDays, moreThanSevenDays)
 }
 
-private fun getString(dateMilli: Long?, currentTime: Long, date: Date, currentDate: Date, lessThanSevenDays: SimpleDateFormat, moreThanSevenDays: SimpleDateFormat): String {
+//TODO: Show year for dates before Jan 01 of the current year
+fun getString(dateMilli: Long?, currentTime: Long, date: Date, currentDate: Date, lessThanSevenDays: SimpleDateFormat, moreThanSevenDays: SimpleDateFormat): String {
     val diff = currentTime - dateMilli!!
     when {
         diff < MINUTE_MILLIS -> return "Just now"

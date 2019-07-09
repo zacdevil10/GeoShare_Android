@@ -2,7 +2,7 @@ package uk.co.appsbystudio.geoshare.utils
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import java.lang.Math.round
+import kotlin.math.round
 
 fun distance(startLatLng: LatLng, endLatLng: LatLng): String {
     val startLocation = Location("start")
@@ -17,7 +17,7 @@ fun distance(startLatLng: LatLng, endLatLng: LatLng): String {
     return round(startLocation.distanceTo(endLocation)).distanceConverter()
 }
 
-private fun Int.distanceConverter(): String {
-    if (this > 999) return "${this.div(1000)} KM"
-    return "$this M"
+fun Float.distanceConverter(): String {
+    if (this >= 1000) return "${this.div(1000)} KM"
+    return "${this.toInt()} M"
 }
