@@ -1,12 +1,11 @@
 package uk.co.appsbystudio.geoshare.authentication.forgotpassword
 
-import android.text.TextUtils
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgotPasswordInteractorImpl: ForgotPasswordInteractor {
 
     override fun recover(email: String, listener: ForgotPasswordInteractor.OnRecoverFinishedListener) {
-        if (TextUtils.isEmpty(email)) {
+        if (email.isEmpty()) {
             listener.onEmailError()
             return
         }

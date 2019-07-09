@@ -1,18 +1,15 @@
 package uk.co.appsbystudio.geoshare.authentication.login
 
-import android.text.TextUtils
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginInteractorImpl: LoginInteractor {
 
     override fun login(email: String, password: String, listener: LoginInteractor.OnLoginFinishedListener) {
-        if (TextUtils.isEmpty(email)) {
+        if (email.isEmpty()) {
             listener.onEmailError()
             return
         }
-        if (TextUtils.isEmpty(password)) {
+        if (password.isEmpty()) {
             listener.onPasswordError()
             return
         }

@@ -1,8 +1,5 @@
 package uk.co.appsbystudio.geoshare.authentication.signup
 
-import android.text.TextUtils
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
@@ -12,15 +9,15 @@ import uk.co.appsbystudio.geoshare.utils.firebase.UserInformation
 class SignupInteractorImpl: SignupInteractor {
 
     override fun signup(name: String, email: String, password: String, terms: Boolean, listener: SignupInteractor.OnSignupFinishedListener) {
-        if (TextUtils.isEmpty(name)) {
+        if (name.isEmpty()) {
             listener.onNameError()
             return
         }
-        if (TextUtils.isEmpty(email)) {
+        if (email.isEmpty()) {
             listener.onEmailError()
             return
         }
-        if (TextUtils.isEmpty(password)) {
+        if (password.isEmpty()) {
             listener.onPasswordError()
             return
         }
